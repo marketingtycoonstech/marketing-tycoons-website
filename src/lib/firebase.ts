@@ -24,19 +24,10 @@ import {
   query,
   orderBy,
   where,
-  serverTimestamp
+  serverTimestamp,
+  enableIndexedDbPersistence
 } from 'firebase/firestore';
-
-// Configuration loaded dynamically from applet environment config
-const firebaseConfig = {
-  projectId: "gen-lang-client-0582688920",
-  appId: "1:398312105646:web:48f516eb1cd402b4f1af3f",
-  apiKey: "AIzaSyBZdUxo4jhCz09k4lZiPK-vfo59oBfs0Kw",
-  authDomain: "gen-lang-client-0582688920.firebaseapp.com",
-  firestoreDatabaseId: "ai-studio-marketingtycoons-49a79192-b32c-4bf7-9d81-60abdf0790cf",
-  storageBucket: "gen-lang-client-0582688920.firebasestorage.app",
-  messagingSenderId: "398312105646"
-};
+import firebaseConfig from '../../firebase-applet-config.json';
 
 // Initialize Firebase App singleton
 let app: FirebaseApp;
@@ -62,6 +53,15 @@ try {
     app,
     firebaseConfig.firestoreDatabaseId || '(default)'
   );
+}
+
+// Enable local offline persistence for instantaneous local cache reads to prevent boot timeouts
+try {
+  enableIndexedDbPersistence(firestoreInstance).catch((err) => {
+    console.info("Firestore offline persistence operating in memory mode:", err.message);
+  });
+} catch (e) {
+  // Ignore fallback
 }
 
 export const db: Firestore = firestoreInstance;
