@@ -1,0 +1,7 @@
+# Robots.txt for Marketing Tycoons
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /#admin
+
+Sitemap: https://marketingtycoons.tech/sitemap.xml

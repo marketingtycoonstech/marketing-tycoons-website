@@ -1,0 +1,6 @@
+{
+  "name": "Marketing Tycoons",
+  "description": "Marketing Tycoons provides digital marketing, website development, branding, graphic design, SEO, social media marketing and Meta Ads solutions.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

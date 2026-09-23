@@ -1,0 +1,130 @@
+{
+  "$schema": "https://firebase.google.com/docs/firestore/blueprint.schema.json",
+  "entities": {
+    "users": {
+      "title": "User Profiles",
+      "description": "Authenticated users and admin roles",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["Super Admin", "Editor", "Client"] },
+        "isGoogleVerified": { "type": "boolean" },
+        "lastLoginAt": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "legal_documents": {
+      "title": "Legal Policies & Compliance",
+      "description": "Google Legal compliance documents including Privacy Policy and Terms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "lastUpdated": { "type": "string" },
+        "effectiveDate": { "type": "string" },
+        "summary": { "type": "string" },
+        "sections": { "type": "array" },
+        "contactEmail": { "type": "string" },
+        "dpoContact": { "type": "string" },
+        "dataRetention": { "type": "string" }
+      },
+      "required": ["id", "title"]
+    },
+    "settings": {
+      "title": "Website Global Settings",
+      "description": "Marketing agency branding and configuration",
+      "type": "object",
+      "properties": {
+        "companyName": { "type": "string" },
+        "tagline": { "type": "string" },
+        "domain": { "type": "string" },
+        "primaryEmail": { "type": "string" },
+        "phone": { "type": "string" },
+        "whatsappNumber": { "type": "string" },
+        "address": { "type": "string" }
+      }
+    },
+    "services": {
+      "title": "Agency Services",
+      "description": "Offered digital marketing and web services",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "shortDescription": { "type": "string" },
+        "fullDescription": { "type": "string" },
+        "iconName": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "order": { "type": "number" }
+      },
+      "required": ["id", "title"]
+    },
+    "portfolio": {
+      "title": "Portfolio Projects",
+      "description": "Client case studies and creative showcases",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "featured": { "type": "boolean" },
+        "order": { "type": "number" }
+      },
+      "required": ["id", "title", "category"]
+    },
+    "reviews": {
+      "title": "Client Reviews",
+      "description": "Verified client reviews and feedback",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "rating": { "type": "number" },
+        "review": { "type": "string" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "isGoogleVerified": { "type": "boolean" }
+      },
+      "required": ["id", "name", "rating", "review"]
+    },
+    "messages": {
+      "title": "Contact Messages",
+      "description": "Client inquiries and lead forms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "service": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string", "enum": ["New", "Read", "Replied", "Archived"] }
+      },
+      "required": ["id", "name", "email", "message"]
+    },
+    "discoveries": {
+      "title": "Project Discoveries",
+      "description": "Interactive multi-step client project discovery inquiries",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "service": { "type": "string" },
+        "timeline": { "type": "string" },
+        "audience": { "type": "string" },
+        "audienceDesc": { "type": "string" },
+        "features": { "type": "array" },
+        "competitors": { "type": "string" },
+        "vision": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "service"]
+    }
+  }
+}

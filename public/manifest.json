@@ -1,0 +1,49 @@
+{
+  "name": "Marketing Tycoons – Premier Digital Marketing & Web Agency",
+  "short_name": "Marketing Tycoons",
+  "description": "Marketing Tycoons builds high-converting digital solutions, bespoke web development, ROI-driven brand architectures, and performance marketing.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#010103",
+  "theme_color": "#010103",
+  "orientation": "portrait-primary",
+  "categories": [
+    "business",
+    "marketing",
+    "productivity",
+    "design",
+    "technology"
+  ],
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Services",
+      "url": "#services",
+      "description": "Explore bespoke digital marketing & development services"
+    },
+    {
+      "name": "Portfolio",
+      "url": "#portfolio",
+      "description": "View verified case studies and brand architectures"
+    },
+    {
+      "name": "Contact Desk",
+      "url": "#contact",
+      "description": "Book a strategic consultation with Marketing Tycoons"
+    }
+  ]
+}

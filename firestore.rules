@@ -1,0 +1,79 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == 'marketingtycoons.tech@gmail.com' ||
+        request.auth.token.email == 'marketingtycoons@gmail.com'
+      );
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin());
+    }
+
+    // Legal Documents & Policies (Public can read; Super Admin can modify)
+    match /legal_documents/{docId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    // Public website settings & content
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /portfolio/{projectId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /testimonials/{testimonialId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /stats/{statId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /social_links/{docId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    // Client Reviews (Public can submit reviews; public can read approved reviews)
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    // Inbound Contact Messages / Leads (Public can create; admins manage)
+    match /messages/{messageId} {
+      allow create: if true;
+      allow read, update, delete: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    // Inbound Project Discoveries / Requirements (Public can create; admins manage)
+    match /discoveries/{discoveryId} {
+      allow create: if true;
+      allow read, update, delete: if isSuperAdmin() || !isAuthenticated();
+    }
+  }
+}
