@@ -175,7 +175,7 @@ export interface WebsiteSettings {
 export interface AdminUser {
   username: string;
   email: string;
-  role: 'Super Admin' | 'Editor';
+  role: 'Super Admin' | 'Editor' | 'Manager';
   lastLogin?: string;
 }
 
@@ -184,6 +184,105 @@ export interface AuthUser {
   email: string | null;
   displayName: string | null;
   photoURL: string | null;
-  role: 'Super Admin' | 'Editor' | 'Client';
+  role: 'Super Admin' | 'Editor' | 'Manager' | 'Client';
   isGoogleVerified?: boolean;
+}
+
+// ==========================================
+// NEW CMS & WEBSITE MANAGEMENT SCHEMAS
+// ==========================================
+
+export interface BlogPost {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  tags: string[];
+  author: string;
+  excerpt: string;
+  content: string;
+  imageUrl: string;
+  status: 'Draft' | 'Published' | 'Scheduled';
+  publishedAt: string;
+  metaTitle?: string;
+  metaDescription?: string;
+}
+
+export interface ProductItem {
+  id: string;
+  title: string;
+  sku: string;
+  price: number;
+  discountPrice?: number;
+  stock: number;
+  category: string;
+  description: string;
+  imageUrl: string;
+  status: 'Live' | 'Draft';
+  createdAt: string;
+}
+
+export interface CustomPage {
+  id: string;
+  title: string;
+  slug: string;
+  content: string;
+  imageUrl?: string;
+  status: 'Published' | 'Draft';
+  metaTitle?: string;
+  metaDescription?: string;
+  sectionsOrder?: string[]; // e.g. ['hero', 'ticker', 'stats', 'services', 'about', 'story', 'portfolio', 'testimonials', 'faq', 'cta', 'contact']
+}
+
+export interface FormField {
+  id: string;
+  label: string;
+  type: 'text' | 'email' | 'phone' | 'textarea' | 'select';
+  required: boolean;
+  options?: string[];
+}
+
+export interface CustomForm {
+  id: string;
+  title: string;
+  slug: string;
+  fields: FormField[];
+  submissionsCount: number;
+}
+
+export interface FormSubmission {
+  id: string;
+  formId: string;
+  formTitle: string;
+  data: Record<string, string>;
+  createdAt: string;
+}
+
+export interface MediaAsset {
+  id: string;
+  name: string;
+  type: string;
+  size: string;
+  url: string;
+  createdAt: string;
+}
+
+export interface NavigationMenuItem {
+  id: string;
+  label: string;
+  path: string;
+  order: number;
+  enabled: boolean;
+  isExternal: boolean;
+  parentId?: string;
+}
+
+export interface CMSUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'Super Admin' | 'Editor' | 'Manager' | 'Client';
+  status: 'Active' | 'Blocked';
+  createdAt: string;
+  lastActive: string;
 }

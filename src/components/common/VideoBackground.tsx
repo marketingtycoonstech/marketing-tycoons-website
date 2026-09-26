@@ -32,6 +32,9 @@ export const VideoBackground: React.FC<VideoBackgroundProps> = ({
   const [hasError, setHasError] = useState(false);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isSlowConnection, setIsSlowConnection] = useState(false);
+  const [isTabVisible, setIsTabVisible] = useState(true);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
 
   useEffect(() => {
     // Detect reduced motion preference
@@ -47,11 +50,51 @@ export const VideoBackground: React.FC<VideoBackgroundProps> = ({
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
+    // Detect slow connection / data saver
+    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    if (conn) {
+      setIsSlowConnection(conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType));
+    }
+
+    // Detect browser tab visibility state
+    const handleVisibilityChange = () => {
+      setIsTabVisible(document.visibilityState === 'visible');
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
       mediaReduced.removeEventListener('change', handleMotionChange);
       window.removeEventListener('resize', checkMobile);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, []);
+
+  // Determine active video source
+  const activeSrc = isMobile && mobileVideoSrc ? mobileVideoSrc : videoSrc;
+  const canPlayVideo = Boolean(activeSrc) && !hasError && !isReducedMotion && !isSlowConnection;
+
+  // Handle smart autoplay policy (Battery saver, Tab visibility, Connection speed)
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !autoplay) return;
+
+    if (isTabVisible && !isSlowConnection && !isReducedMotion) {
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            setAutoplayBlocked(false);
+          })
+          .catch((err) => {
+            // Log block state and display static poster instead or allow manual trigger
+            console.warn('Autoplay blocked by browser or low power mode is active:', err);
+            setAutoplayBlocked(true);
+          });
+      }
+    } else {
+      video.pause();
+    }
+  }, [isTabVisible, isSlowConnection, isReducedMotion, autoplay, activeSrc]);
 
   // Handle interactive playback speed boost if requested
   useEffect(() => {
@@ -59,10 +102,6 @@ export const VideoBackground: React.FC<VideoBackgroundProps> = ({
       videoRef.current.playbackRate = speedBoost ? 1.4 : 1.0;
     }
   }, [speedBoost, videoLoaded]);
-
-  // Determine active video source
-  const activeSrc = isMobile && mobileVideoSrc ? mobileVideoSrc : videoSrc;
-  const canPlayVideo = Boolean(activeSrc) && !hasError && !isReducedMotion;
 
   return (
     <div className={`relative overflow-hidden w-full h-full select-none ${className}`}>
@@ -73,7 +112,7 @@ export const VideoBackground: React.FC<VideoBackgroundProps> = ({
         loading={priority ? 'eager' : 'lazy'}
         style={{ objectPosition }}
         className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-          videoLoaded && canPlayVideo ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          videoLoaded && canPlayVideo && !autoplayBlocked ? 'opacity-0 pointer-events-none' : 'opacity-100'
         }`}
       />
 
@@ -82,7 +121,6 @@ export const VideoBackground: React.FC<VideoBackgroundProps> = ({
         <video
           ref={videoRef}
           src={activeSrc}
-          autoPlay={autoplay}
           loop={loop}
           muted={muted}
           playsInline
@@ -95,7 +133,7 @@ export const VideoBackground: React.FC<VideoBackgroundProps> = ({
           }}
           style={{ objectPosition }}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-            videoLoaded ? 'opacity-100' : 'opacity-0'
+            videoLoaded && !autoplayBlocked ? 'opacity-100' : 'opacity-0'
           }`}
         />
       )}

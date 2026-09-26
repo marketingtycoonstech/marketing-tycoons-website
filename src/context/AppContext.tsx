@@ -7,7 +7,15 @@ import {
   DEFAULT_SOCIAL_LINKS,
   DEFAULT_STATS,
   DEFAULT_TESTIMONIALS,
-  DEFAULT_WEBSITE_SETTINGS
+  DEFAULT_WEBSITE_SETTINGS,
+  DEFAULT_BLOGS,
+  DEFAULT_PRODUCTS,
+  DEFAULT_PAGES,
+  DEFAULT_FORMS,
+  DEFAULT_SUBMISSIONS,
+  DEFAULT_MEDIA,
+  DEFAULT_MENUS,
+  DEFAULT_CMS_USERS
 } from '../data/defaultData';
 import {
   AdminUser,
@@ -22,7 +30,15 @@ import {
   TestimonialItem,
   ThemeMode,
   UserReview,
-  WebsiteSettings
+  WebsiteSettings,
+  BlogPost,
+  ProductItem,
+  CustomPage,
+  CustomForm,
+  FormSubmission,
+  MediaAsset,
+  NavigationMenuItem,
+  CMSUser
 } from '../types';
 import {
   auth,
@@ -41,6 +57,7 @@ import {
   handleFirestoreError,
   OperationType
 } from '../lib/firebase';
+import { setProjectMeta, setServiceMeta, resetDefaultMeta } from '../utils/seo';
 
 interface AppContextType {
   theme: ThemeMode;
@@ -117,6 +134,55 @@ interface AppContextType {
   loginWithGoogle: () => Promise<boolean>;
   adminLogout: () => Promise<void>;
   isFirebaseLive: boolean;
+
+  // ==========================================
+  // NEW CMS & WEBSITE MANAGEMENT SUB-SYSTEMS
+  // ==========================================
+
+  // Blogs
+  blogs: BlogPost[];
+  addBlog: (blog: Omit<BlogPost, 'id' | 'publishedAt'>) => void;
+  updateBlog: (id: string, updated: Partial<BlogPost>) => void;
+  deleteBlog: (id: string) => void;
+
+  // Products
+  products: ProductItem[];
+  addProduct: (product: Omit<ProductItem, 'id' | 'createdAt'>) => void;
+  updateProduct: (id: string, updated: Partial<ProductItem>) => void;
+  deleteProduct: (id: string) => void;
+
+  // Pages
+  pages: CustomPage[];
+  addPage: (page: Omit<CustomPage, 'id'>) => void;
+  updatePage: (id: string, updated: Partial<CustomPage>) => void;
+  deletePage: (id: string) => void;
+
+  // Forms & submissions
+  customForms: CustomForm[];
+  addCustomForm: (form: Omit<CustomForm, 'id' | 'submissionsCount'>) => void;
+  updateCustomForm: (id: string, updated: Partial<CustomForm>) => void;
+  deleteCustomForm: (id: string) => void;
+  formSubmissions: FormSubmission[];
+  submitCustomForm: (formId: string, data: Record<string, string>) => Promise<boolean>;
+  deleteSubmission: (id: string) => void;
+
+  // Media Asset Management
+  mediaLibrary: MediaAsset[];
+  addMediaAsset: (asset: Omit<MediaAsset, 'id' | 'createdAt'>) => void;
+  deleteMediaAsset: (id: string) => void;
+
+  // Menu Navigation CMS
+  menus: NavigationMenuItem[];
+  updateMenuOrder: (updatedMenus: NavigationMenuItem[]) => void;
+  addMenuItem: (item: Omit<NavigationMenuItem, 'id'>) => void;
+  updateMenuItem: (id: string, updated: Partial<NavigationMenuItem>) => void;
+  deleteMenuItem: (id: string) => void;
+
+  // CMS User Role Management
+  cmsUsers: CMSUser[];
+  updateUserRole: (id: string, role: CMSUser['role']) => void;
+  updateUserStatus: (id: string, status: CMSUser['status']) => void;
+  deleteUser: (id: string) => void;
 
   // Modals
   activeServiceModal: ServiceItem | null;
@@ -309,6 +375,78 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return DEFAULT_MESSAGES;
   });
 
+  // Blogs state
+  const [blogs, setBlogs] = useState<BlogPost[]>(() => {
+    const saved = localStorage.getItem('mt_blogs');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DEFAULT_BLOGS; }
+    }
+    return DEFAULT_BLOGS;
+  });
+
+  // Products state
+  const [products, setProducts] = useState<ProductItem[]>(() => {
+    const saved = localStorage.getItem('mt_products');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DEFAULT_PRODUCTS; }
+    }
+    return DEFAULT_PRODUCTS;
+  });
+
+  // Pages state
+  const [pages, setPages] = useState<CustomPage[]>(() => {
+    const saved = localStorage.getItem('mt_pages');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DEFAULT_PAGES; }
+    }
+    return DEFAULT_PAGES;
+  });
+
+  // Forms state
+  const [customForms, setCustomForms] = useState<CustomForm[]>(() => {
+    const saved = localStorage.getItem('mt_forms');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DEFAULT_FORMS; }
+    }
+    return DEFAULT_FORMS;
+  });
+
+  // Submissions state
+  const [formSubmissions, setFormSubmissions] = useState<FormSubmission[]>(() => {
+    const saved = localStorage.getItem('mt_submissions');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DEFAULT_SUBMISSIONS; }
+    }
+    return DEFAULT_SUBMISSIONS;
+  });
+
+  // Media state
+  const [mediaLibrary, setMediaLibrary] = useState<MediaAsset[]>(() => {
+    const saved = localStorage.getItem('mt_media');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DEFAULT_MEDIA; }
+    }
+    return DEFAULT_MEDIA;
+  });
+
+  // Navigation Menu state
+  const [menus, setMenus] = useState<NavigationMenuItem[]>(() => {
+    const saved = localStorage.getItem('mt_menus');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DEFAULT_MENUS; }
+    }
+    return DEFAULT_MENUS;
+  });
+
+  // CMS Users state
+  const [cmsUsers, setCmsUsers] = useState<CMSUser[]>(() => {
+    const saved = localStorage.getItem('mt_cms_users');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return DEFAULT_CMS_USERS; }
+    }
+    return DEFAULT_CMS_USERS;
+  });
+
   // Listen to Firebase Auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
@@ -419,16 +557,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       snapshot => {
         if (!snapshot.empty) {
           const list = snapshot.docs.map(d => d.data() as PortfolioProject).sort((a, b) => a.order - b.order);
-          // Auto-seed the newly added Pinterest web project if it does not exist in the database list
-          const hasPinterestProject = list.some(p => p.id === 'port-pinterest-web');
-          if (!hasPinterestProject) {
-            const pinterestProj = DEFAULT_PORTFOLIO.find(p => p.id === 'port-pinterest-web');
-            if (pinterestProj) {
-              setDoc(doc(db, 'portfolio', 'port-pinterest-web'), pinterestProj).catch(() => {});
-            }
+          
+          // Filter out the Pinterest project if it's still in the local list or Firestore
+          const filteredList = list.filter(p => p.id !== 'port-pinterest-web');
+
+          // Delete from Firestore if found
+          const hasPinterest = snapshot.docs.some(d => d.id === 'port-pinterest-web');
+          if (hasPinterest) {
+            deleteDoc(doc(db, 'portfolio', 'port-pinterest-web')).catch(() => {});
           }
-          setPortfolio(list);
-          localStorage.setItem('mt_portfolio', JSON.stringify(list));
+
+          // Auto-seed any missing projects from DEFAULT_PORTFOLIO list (excluding the removed Pinterest project)
+          DEFAULT_PORTFOLIO.forEach(p => {
+            const exists = filteredList.some(existing => existing.id === p.id);
+            if (!exists) {
+              setDoc(doc(db, 'portfolio', p.id), p).catch(() => {});
+            }
+          });
+
+          setPortfolio(filteredList);
+          localStorage.setItem('mt_portfolio', JSON.stringify(filteredList));
         } else {
           // Initialize remote portfolio in Firestore if empty
           DEFAULT_PORTFOLIO.forEach(p => {
@@ -814,6 +962,314 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   };
 
+  // ==========================================
+  // NEW CMS & WEBSITE MANAGEMENT SUB-SYSTEMS MUTATIONS
+  // ==========================================
+
+  // Blogs mutations
+  const addBlog = async (newBlog: Omit<BlogPost, 'id' | 'publishedAt'>) => {
+    const id = `blog-${Date.now()}`;
+    const item: BlogPost = {
+      ...newBlog,
+      id,
+      publishedAt: new Date().toISOString()
+    };
+    const updated = [item, ...blogs];
+    setBlogs(updated);
+    localStorage.setItem('mt_blogs', JSON.stringify(updated));
+    try {
+      await setDoc(doc(db, 'blogs', id), item);
+    } catch (e) {
+      console.warn('Firestore blog write failed:', e);
+    }
+  };
+
+  const updateBlog = async (id: string, updatedFields: Partial<BlogPost>) => {
+    const list = blogs.map(b => (b.id === id ? { ...b, ...updatedFields } : b));
+    setBlogs(list);
+    localStorage.setItem('mt_blogs', JSON.stringify(list));
+    try {
+      await updateDoc(doc(db, 'blogs', id), updatedFields);
+    } catch (e) {
+      console.warn('Firestore blog update failed:', e);
+    }
+  };
+
+  const deleteBlog = async (id: string) => {
+    const list = blogs.filter(b => b.id !== id);
+    setBlogs(list);
+    localStorage.setItem('mt_blogs', JSON.stringify(list));
+    try {
+      await deleteDoc(doc(db, 'blogs', id));
+    } catch (e) {
+      console.warn('Firestore blog delete failed:', e);
+    }
+  };
+
+  // Products mutations
+  const addProduct = async (newProd: Omit<ProductItem, 'id' | 'createdAt'>) => {
+    const id = `prod-${Date.now()}`;
+    const item: ProductItem = {
+      ...newProd,
+      id,
+      createdAt: new Date().toISOString()
+    };
+    const updated = [item, ...products];
+    setProducts(updated);
+    localStorage.setItem('mt_products', JSON.stringify(updated));
+    try {
+      await setDoc(doc(db, 'products', id), item);
+    } catch (e) {
+      console.warn('Firestore product write failed:', e);
+    }
+  };
+
+  const updateProduct = async (id: string, updatedFields: Partial<ProductItem>) => {
+    const list = products.map(p => (p.id === id ? { ...p, ...updatedFields } : p));
+    setProducts(list);
+    localStorage.setItem('mt_products', JSON.stringify(list));
+    try {
+      await updateDoc(doc(db, 'products', id), updatedFields);
+    } catch (e) {
+      console.warn('Firestore product update failed:', e);
+    }
+  };
+
+  const deleteProduct = async (id: string) => {
+    const list = products.filter(p => p.id !== id);
+    setProducts(list);
+    localStorage.setItem('mt_products', JSON.stringify(list));
+    try {
+      await deleteDoc(doc(db, 'products', id));
+    } catch (e) {
+      console.warn('Firestore product delete failed:', e);
+    }
+  };
+
+  // Pages mutations
+  const addPage = async (newPage: Omit<CustomPage, 'id'>) => {
+    const id = `page-${Date.now()}`;
+    const item: CustomPage = { ...newPage, id };
+    const updated = [...pages, item];
+    setPages(updated);
+    localStorage.setItem('mt_pages', JSON.stringify(updated));
+    try {
+      await setDoc(doc(db, 'pages', id), item);
+    } catch (e) {
+      console.warn('Firestore page write failed:', e);
+    }
+  };
+
+  const updatePage = async (id: string, updatedFields: Partial<CustomPage>) => {
+    const list = pages.map(p => (p.id === id ? { ...p, ...updatedFields } : p));
+    setPages(list);
+    localStorage.setItem('mt_pages', JSON.stringify(list));
+    try {
+      await updateDoc(doc(db, 'pages', id), updatedFields);
+    } catch (e) {
+      console.warn('Firestore page update failed:', e);
+    }
+  };
+
+  const deletePage = async (id: string) => {
+    const list = pages.filter(p => p.id !== id);
+    setPages(list);
+    localStorage.setItem('mt_pages', JSON.stringify(list));
+    try {
+      await deleteDoc(doc(db, 'pages', id));
+    } catch (e) {
+      console.warn('Firestore page delete failed:', e);
+    }
+  };
+
+  // Forms mutations
+  const addCustomForm = async (newForm: Omit<CustomForm, 'id' | 'submissionsCount'>) => {
+    const id = `form-${Date.now()}`;
+    const item: CustomForm = { ...newForm, id, submissionsCount: 0 };
+    const updated = [...customForms, item];
+    setCustomForms(updated);
+    localStorage.setItem('mt_forms', JSON.stringify(updated));
+    try {
+      await setDoc(doc(db, 'forms', id), item);
+    } catch (e) {
+      console.warn('Firestore form write failed:', e);
+    }
+  };
+
+  const updateCustomForm = async (id: string, updatedFields: Partial<CustomForm>) => {
+    const list = customForms.map(f => (f.id === id ? { ...f, ...updatedFields } : f));
+    setCustomForms(list);
+    localStorage.setItem('mt_forms', JSON.stringify(list));
+    try {
+      await updateDoc(doc(db, 'forms', id), updatedFields);
+    } catch (e) {
+      console.warn('Firestore form update failed:', e);
+    }
+  };
+
+  const deleteCustomForm = async (id: string) => {
+    const list = customForms.filter(f => f.id !== id);
+    setCustomForms(list);
+    localStorage.setItem('mt_forms', JSON.stringify(list));
+    try {
+      await deleteDoc(doc(db, 'forms', id));
+    } catch (e) {
+      console.warn('Firestore form delete failed:', e);
+    }
+  };
+
+  const submitCustomForm = async (formId: string, data: Record<string, string>): Promise<boolean> => {
+    const form = customForms.find(f => f.id === formId);
+    if (!form) return false;
+
+    const subId = `sub-${Date.now()}`;
+    const submission: FormSubmission = {
+      id: subId,
+      formId,
+      formTitle: form.title,
+      data,
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedSubs = [submission, ...formSubmissions];
+    setFormSubmissions(updatedSubs);
+    localStorage.setItem('mt_submissions', JSON.stringify(updatedSubs));
+
+    const updatedForms = customForms.map(f => f.id === formId ? { ...f, submissionsCount: f.submissionsCount + 1 } : f);
+    setCustomForms(updatedForms);
+    localStorage.setItem('mt_forms', JSON.stringify(updatedForms));
+
+    try {
+      await setDoc(doc(db, 'submissions', subId), submission);
+      await updateDoc(doc(db, 'forms', formId), { submissionsCount: form.submissionsCount + 1 });
+    } catch (e) {
+      console.warn('Firestore submission write failed:', e);
+    }
+    return true;
+  };
+
+  const deleteSubmission = async (id: string) => {
+    const list = formSubmissions.filter(s => s.id !== id);
+    setFormSubmissions(list);
+    localStorage.setItem('mt_submissions', JSON.stringify(list));
+    try {
+      await deleteDoc(doc(db, 'submissions', id));
+    } catch (e) {
+      console.warn('Firestore submission delete failed:', e);
+    }
+  };
+
+  // Media mutations
+  const addMediaAsset = async (asset: Omit<MediaAsset, 'id' | 'createdAt'>) => {
+    const id = `med-${Date.now()}`;
+    const item: MediaAsset = {
+      ...asset,
+      id,
+      createdAt: new Date().toISOString()
+    };
+    const updated = [item, ...mediaLibrary];
+    setMediaLibrary(updated);
+    localStorage.setItem('mt_media', JSON.stringify(updated));
+    try {
+      await setDoc(doc(db, 'media', id), item);
+    } catch (e) {
+      console.warn('Firestore media write failed:', e);
+    }
+  };
+
+  const deleteMediaAsset = async (id: string) => {
+    const list = mediaLibrary.filter(m => m.id !== id);
+    setMediaLibrary(list);
+    localStorage.setItem('mt_media', JSON.stringify(list));
+    try {
+      await deleteDoc(doc(db, 'media', id));
+    } catch (e) {
+      console.warn('Firestore media delete failed:', e);
+    }
+  };
+
+  // Menu navigation mutations
+  const updateMenuOrder = async (updatedMenus: NavigationMenuItem[]) => {
+    setMenus(updatedMenus);
+    localStorage.setItem('mt_menus', JSON.stringify(updatedMenus));
+    try {
+      for (const m of updatedMenus) {
+        await setDoc(doc(db, 'menus', m.id), m);
+      }
+    } catch (e) {
+      console.warn('Firestore menu order write failed:', e);
+    }
+  };
+
+  const addMenuItem = async (item: Omit<NavigationMenuItem, 'id'>) => {
+    const id = `menu-${Date.now()}`;
+    const newItem: NavigationMenuItem = { ...item, id };
+    const updated = [...menus, newItem].sort((a, b) => a.order - b.order);
+    setMenus(updated);
+    localStorage.setItem('mt_menus', JSON.stringify(updated));
+    try {
+      await setDoc(doc(db, 'menus', id), newItem);
+    } catch (e) {
+      console.warn('Firestore menu item write failed:', e);
+    }
+  };
+
+  const updateMenuItem = async (id: string, updatedFields: Partial<NavigationMenuItem>) => {
+    const list = menus.map(m => (m.id === id ? { ...m, ...updatedFields } : m)).sort((a, b) => a.order - b.order);
+    setMenus(list);
+    localStorage.setItem('mt_menus', JSON.stringify(list));
+    try {
+      await updateDoc(doc(db, 'menus', id), updatedFields);
+    } catch (e) {
+      console.warn('Firestore menu item update failed:', e);
+    }
+  };
+
+  const deleteMenuItem = async (id: string) => {
+    const list = menus.filter(m => m.id !== id);
+    setMenus(list);
+    localStorage.setItem('mt_menus', JSON.stringify(list));
+    try {
+      await deleteDoc(doc(db, 'menus', id));
+    } catch (e) {
+      console.warn('Firestore menu item delete failed:', e);
+    }
+  };
+
+  // CMS Users mutations
+  const updateUserRole = async (id: string, role: CMSUser['role']) => {
+    const list = cmsUsers.map(u => (u.id === id ? { ...u, role } : u));
+    setCmsUsers(list);
+    localStorage.setItem('mt_cms_users', JSON.stringify(list));
+    try {
+      await updateDoc(doc(db, 'cms_users', id), { role });
+    } catch (e) {
+      console.warn('Firestore user role update failed:', e);
+    }
+  };
+
+  const updateUserStatus = async (id: string, status: CMSUser['status']) => {
+    const list = cmsUsers.map(u => (u.id === id ? { ...u, status } : u));
+    setCmsUsers(list);
+    localStorage.setItem('mt_cms_users', JSON.stringify(list));
+    try {
+      await updateDoc(doc(db, 'cms_users', id), { status });
+    } catch (e) {
+      console.warn('Firestore user status update failed:', e);
+    }
+  };
+
+  const deleteUser = async (id: string) => {
+    const list = cmsUsers.filter(u => u.id !== id);
+    setCmsUsers(list);
+    localStorage.setItem('mt_cms_users', JSON.stringify(list));
+    try {
+      await deleteDoc(doc(db, 'cms_users', id));
+    } catch (e) {
+      console.warn('Firestore user delete failed:', e);
+    }
+  };
+
   // Google Authentication Flow (Firebase Auth)
   const loginWithGoogle = async (): Promise<boolean> => {
     try {
@@ -832,7 +1288,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       return false;
     } catch (err) {
       console.error('Login with Google error:', err);
-      return false;
+      throw err;
     }
   };
 
@@ -894,6 +1350,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.removeItem('mt_messages');
     localStorage.removeItem('mt_stats');
     localStorage.removeItem('mt_social_v2');
+    localStorage.removeItem('mt_blogs');
+    localStorage.removeItem('mt_products');
+    localStorage.removeItem('mt_pages');
+    localStorage.removeItem('mt_forms');
+    localStorage.removeItem('mt_submissions');
+    localStorage.removeItem('mt_media');
+    localStorage.removeItem('mt_menus');
+    localStorage.removeItem('mt_cms_users');
 
     setSettings(DEFAULT_WEBSITE_SETTINGS);
     setServices(DEFAULT_SERVICES);
@@ -903,7 +1367,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setMessages(DEFAULT_MESSAGES);
     setStats(DEFAULT_STATS);
     setSocialLinks(DEFAULT_SOCIAL_LINKS);
+    setBlogs(DEFAULT_BLOGS);
+    setProducts(DEFAULT_PRODUCTS);
+    setPages(DEFAULT_PAGES);
+    setCustomForms(DEFAULT_FORMS);
+    setFormSubmissions(DEFAULT_SUBMISSIONS);
+    setMediaLibrary(DEFAULT_MEDIA);
+    setMenus(DEFAULT_MENUS);
+    setCmsUsers(DEFAULT_CMS_USERS);
   };
+
+  // Dynamically synchronize active portfolio/service elements to Google SEO crawlers and OpenGraph engines
+  useEffect(() => {
+    if (activeProjectModal) {
+      setProjectMeta(activeProjectModal);
+    } else if (activeServiceModal) {
+      setServiceMeta(activeServiceModal);
+    } else {
+      resetDefaultMeta();
+    }
+  }, [activeProjectModal, activeServiceModal]);
 
   return (
     <AppContext.Provider
@@ -951,6 +1434,40 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         loginWithGoogle,
         adminLogout,
         isFirebaseLive,
+
+        // New CMS states
+        blogs,
+        addBlog,
+        updateBlog,
+        deleteBlog,
+        products,
+        addProduct,
+        updateProduct,
+        deleteProduct,
+        pages,
+        addPage,
+        updatePage,
+        deletePage,
+        customForms,
+        addCustomForm,
+        updateCustomForm,
+        deleteCustomForm,
+        formSubmissions,
+        submitCustomForm,
+        deleteSubmission,
+        mediaLibrary,
+        addMediaAsset,
+        deleteMediaAsset,
+        menus,
+        updateMenuOrder,
+        addMenuItem,
+        updateMenuItem,
+        deleteMenuItem,
+        cmsUsers,
+        updateUserRole,
+        updateUserStatus,
+        deleteUser,
+
         activeServiceModal,
         setActiveServiceModal,
         activeProjectModal,

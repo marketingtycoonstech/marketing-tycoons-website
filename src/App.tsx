@@ -5,16 +5,15 @@ import { Hero } from './components/Hero';
 import { ClientTicker } from './components/ClientTicker';
 import { StatsStrip } from './components/StatsStrip';
 import { ServicesSection } from './components/ServicesSection';
-import { FullWidthVideoSection } from './components/FullWidthVideoSection';
 import { AboutSection } from './components/AboutSection';
 import { StorytellingSection } from './components/StorytellingSection';
-import { WorkInMotionSection } from './components/WorkInMotionSection';
 import { PortfolioSection } from './components/PortfolioSection';
 import { TestimonialsSection } from './components/TestimonialsSection';
 import { FaqSection } from './components/FaqSection';
 import { CinematicCtaSection } from './components/CinematicCtaSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
+import { GlobalReach } from './components/GlobalReach';
 
 // Cinematic Experience Enhancements
 import { ScrollProgress } from './components/common/ScrollProgress';
@@ -35,7 +34,10 @@ import { LegalModals } from './components/modals/LegalModals';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 
 const MainAppContent: React.FC = () => {
-  const { currentView, setCurrentView, isAdminLoggedIn, setIsLoginModalOpen } = useApp();
+  const { currentView, setCurrentView, isAdminLoggedIn, setIsLoginModalOpen, pages } = useApp();
+
+  const homePage = pages.find(p => p.id === 'page-home');
+  const sectionsOrder = homePage?.sectionsOrder || ['hero', 'ticker', 'stats', 'services', 'about', 'story', 'portfolio', 'testimonials', 'reach', 'faq', 'cta', 'contact'];
 
   // Listen to browser path or hash changes (e.g. /admin or #admin) and keyboard stealth shortcut
   useEffect(() => {
@@ -95,44 +97,36 @@ const MainAppContent: React.FC = () => {
       <Navbar />
 
       <main id="main-content" className="relative">
-        {/* 1. Cinematic Hero Section with Dual-Theme Light/Dark Visual Composition */}
-        <Hero />
-
-        {/* 1b. Smooth, Auto-scrolling Infinite Partner & Client Logo Ticker */}
-        <ClientTicker />
-
-        {/* 2. Dynamic Animated Statistics Strip */}
-        <StatsStrip />
-
-        {/* 3. Interactive Services Showcase with Light Sweeps */}
-        <ServicesSection />
-
-        {/* 4. Full-Width Visual Video Montage */}
-        <FullWidthVideoSection />
-
-        {/* 5. About Agency & Creative Studio Visual Panel */}
-        <AboutSection />
-
-        {/* 6. 5-Stage Scroll-Based Video Storytelling (IDEA -> STRATEGY -> DESIGN -> BUILD -> GROW) */}
-        <StorytellingSection />
-
-        {/* 7. Dedicated 'Our Work In Motion' Video Carousel */}
-        <WorkInMotionSection />
-
-        {/* 8. Landmark Portfolio Showcase with Video Previews & Category Filters */}
-        <PortfolioSection />
-
-        {/* 8. Testimonials & Verified Client Feedback */}
-        <TestimonialsSection />
-
-        {/* 8b. Luxury Accordion Frequently Asked Questions (FAQ) Section */}
-        <FaqSection />
-
-        {/* 9. Cinematic CTA Section with Gold Perimeter Glow */}
-        <CinematicCtaSection />
-
-        {/* 10. Interactive Contact & Inquiry Desk */}
-        <ContactSection />
+        {sectionsOrder.map((sectionId) => {
+          switch (sectionId) {
+            case 'hero':
+              return <Hero key="hero" />;
+            case 'ticker':
+              return <ClientTicker key="ticker" />;
+            case 'stats':
+              return <StatsStrip key="stats" />;
+            case 'services':
+              return <ServicesSection key="services" />;
+            case 'about':
+              return <AboutSection key="about" />;
+            case 'story':
+              return <StorytellingSection key="story" />;
+            case 'portfolio':
+              return <PortfolioSection key="portfolio" />;
+            case 'testimonials':
+              return <TestimonialsSection key="testimonials" />;
+            case 'reach':
+              return <GlobalReach key="globalReach" />;
+            case 'faq':
+              return <FaqSection key="faq" />;
+            case 'cta':
+              return <CinematicCtaSection key="cta" />;
+            case 'contact':
+              return <ContactSection key="contact" />;
+            default:
+              return null;
+          }
+        })}
       </main>
 
       {/* Luxury Footer */}

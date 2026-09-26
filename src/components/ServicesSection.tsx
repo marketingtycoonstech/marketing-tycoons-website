@@ -1,9 +1,9 @@
 import React from 'react';
 import { useApp } from '../context/AppContext';
 import { DynamicIcon } from './common/DynamicIcon';
-import { ScrollReveal } from './common/ScrollReveal';
 import { ArrowRight } from 'lucide-react';
 import { ServiceItem } from '../types';
+import { motion } from 'framer-motion';
 
 export const ServicesSection: React.FC = () => {
   const { services, setActiveServiceModal } = useApp();
@@ -16,6 +16,44 @@ export const ServicesSection: React.FC = () => {
     setActiveServiceModal(service);
   };
 
+  // Framer Motion variants for stagger effect
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.12,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const headerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1] as const, // Custom cubic-bezier
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: 'spring' as const,
+        stiffness: 80,
+        damping: 16,
+        mass: 1,
+      },
+    },
+  };
+
   return (
     <section
       id="services"
@@ -23,34 +61,46 @@ export const ServicesSection: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
-        {/* Framed Section Box matching image */}
+        {/* Framed Section Box */}
         <div className="rounded-3xl p-6 sm:p-10 md:p-12 bg-white dark:bg-[#0B0F14] border border-black/10 dark:border-[#2A3441] shadow-xl dark:shadow-[0_10px_40px_rgba(0,0,0,0.8)] relative overflow-hidden">
           
           {/* Subtle Ambient Glow */}
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#D4AF37]/5 dark:bg-[#D4AF37]/8 rounded-full blur-[140px] pointer-events-none" />
 
-          {/* Section Header */}
-          <div className="text-left max-w-3xl mb-10 md:mb-12 relative z-10">
-            <ScrollReveal animation="fade-up" delay={0.1}>
+          {/* Animating the whole section content as a staggered group */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-80px" }}
+          >
+            {/* Section Header */}
+            <motion.div 
+              variants={headerVariants}
+              className="text-left max-w-3xl mb-10 md:mb-12 relative z-10"
+            >
               <h2 className="font-display text-2xl sm:text-4xl font-extrabold tracking-tight text-[#111111] dark:text-[#FFFFFF]">
                 Our Services
               </h2>
-            </ScrollReveal>
-
-            <ScrollReveal animation="fade-up" delay={0.2}>
               <p className="mt-2.5 text-sm sm:text-base text-gray-600 dark:text-[#9CA3AF] font-normal leading-relaxed">
                 We offer a complete range of digital solutions to help your brand grow, get noticed and achieve real results.
               </p>
-            </ScrollReveal>
-          </div>
+            </motion.div>
 
-          {/* 6 Services Grid in 3x2 format */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 relative z-10">
-            {enabledServices.map((service, idx) => (
-              <ScrollReveal key={service.id || idx} animation="fade-up" delay={0.08 * idx}>
-                <div
+            {/* 6 Services Grid in 3x2 format */}
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 relative z-10"
+            >
+              {enabledServices.map((service, idx) => (
+                <motion.div
+                  key={service.id || idx}
+                  variants={itemVariants}
                   onClick={() => handleCardClick(service)}
-                  className="group relative rounded-2xl p-6 sm:p-7 bg-gray-50 dark:bg-[#111820] hover:dark:bg-[#161D26] border border-black/10 dark:border-[#2A3441] hover:border-[#D4AF37] hover:dark:border-[#D4AF37] transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-[0_0_25px_rgba(212,175,55,0.2)] flex flex-col justify-between cursor-pointer min-h-[220px]"
+                  whileHover={{ 
+                    y: -6, 
+                    transition: { duration: 0.2, ease: "easeOut" } 
+                  }}
+                  className="group relative rounded-2xl p-6 sm:p-7 bg-gray-50 dark:bg-[#111820] hover:dark:bg-[#161D26] border border-black/10 dark:border-[#2A3441] hover:border-[#D4AF37] hover:dark:border-[#D4AF37] transition-all duration-300 hover:shadow-lg dark:hover:shadow-[0_0_25px_rgba(212,175,55,0.2)] flex flex-col justify-between cursor-pointer min-h-[220px]"
                 >
                   <div>
                     {/* Top Row: Warm Gold Icon */}
@@ -76,10 +126,10 @@ export const ServicesSection: React.FC = () => {
                       <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                     </span>
                   </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
 
         </div>
 

@@ -174,7 +174,25 @@ export async function signInWithGoogle(): Promise<{
     return { user, isAdmin };
   } catch (error: any) {
     console.error('Google Sign-in failed:', error);
-    throw error;
+    
+    let friendlyMessage = error?.message || String(error);
+    const code = error?.code;
+    const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+    
+    if (code === 'auth/unauthorized-domain') {
+      friendlyMessage = `Unauthorized Domain: Please add '${hostname}' to your Firebase console (Authentication > Settings > Authorized Domains). Copy this domain and allow it in Firebase console to enable secure login.`;
+    } else if (code === 'auth/popup-blocked') {
+      friendlyMessage = 'Popup Blocked: Your browser blocked the Google login window. Please enable popups for this site (look for the popup blocker icon in your browser address bar) and try again.';
+    } else if (code === 'auth/web-storage-unsupported') {
+      friendlyMessage = 'Web Storage Unsupported: Google login cannot be completed inside a restricted iframe. Please open the application directly in a full browser tab or enable third-party cookies.';
+    } else if (code === 'auth/cancelled-popup-request') {
+      friendlyMessage = 'Sign-in cancelled: The authentication window was closed before completion. Please try again.';
+    }
+    
+    const enrichedError = new Error(friendlyMessage);
+    (enrichedError as any).code = code;
+    (enrichedError as any).originalError = error;
+    throw enrichedError;
   }
 }
 

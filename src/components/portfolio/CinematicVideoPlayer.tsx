@@ -70,15 +70,32 @@ export const CinematicVideoPlayer: React.FC<CinematicVideoPlayerProps> = ({
     };
   }, [videoUrl]);
 
-  // Tab visibility listener to pause video when switching tabs and resume when returning
+  const [isSlowConnection, setIsSlowConnection] = useState(false);
+  const [isReducedMotion, setIsReducedMotion] = useState(false);
+
+  // Tab visibility, reduced motion and slow connection listeners
   useEffect(() => {
     const handleVisibilityChange = () => {
       setIsTabVisible(document.visibilityState === 'visible');
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Detect prefers-reduced-motion
+    const mediaReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setIsReducedMotion(mediaReduced.matches);
+    const handleMotionChange = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
+    mediaReduced.addEventListener('change', handleMotionChange);
+
+    // Detect slow connection / data saver
+    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    if (conn) {
+      setIsSlowConnection(conn.saveData || ['slow-2g', '2g', '3g'].includes(conn.effectiveType));
+    }
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      mediaReduced.removeEventListener('change', handleMotionChange);
     };
   }, []);
 
@@ -86,10 +103,13 @@ export const CinematicVideoPlayer: React.FC<CinematicVideoPlayerProps> = ({
   // 1. Must have a valid videoUrl
   // 2. Must be visible within viewport (not scrolled out)
   // 3. Must have browser tab actively visible
+  // 4. Must not be a slow connection or a prefers-reduced-motion setup
   const shouldPlay =
     Boolean(videoUrl) &&
     isInViewport &&
-    isTabVisible;
+    isTabVisible &&
+    !isReducedMotion &&
+    !isSlowConnection;
 
   // Synchronization effect controlling video play / pause / resume
   useEffect(() => {

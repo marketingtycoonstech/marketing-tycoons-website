@@ -6,7 +6,15 @@ import {
   StatItem,
   SocialLinksConfig,
   WebsiteSettings,
-  ContactMessage
+  ContactMessage,
+  BlogPost,
+  ProductItem,
+  CustomPage,
+  CustomForm,
+  FormSubmission,
+  MediaAsset,
+  NavigationMenuItem,
+  CMSUser
 } from '../types';
 
 export const DEFAULT_WEBSITE_SETTINGS: WebsiteSettings = {
@@ -221,36 +229,35 @@ export const DEFAULT_SERVICES: ServiceItem[] = [
 
 export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
   {
-    id: 'port-pinterest-web',
-    title: 'Lux Vista Ultra-Responsive Platform',
-    category: 'Websites',
-    shortDescription: 'High-end corporate platform with elite kinetic typography, fluent video backgrounds, and pristine interface flow.',
-    fullDescription:
-      'A luxury, high-performance web development project built to replicate aesthetic layouts, interactive content cards, and seamless motion. Specially integrated with the official Pinterest showcase clip for direct client preview.',
-    imageUrl: 'https://images.unsplash.com/photo-1541462608143-67571c6738dd?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
-    projectUrl: 'https://pin.it/44UzVxedy',
+    id: 'port-brand-film',
+    title: 'Marketing Tycoons Official Brand Film',
+    category: 'Branding',
+    shortDescription: 'Our official corporate brand video showcasing how we turn visionary ideas into powerful, high-converting digital brands.',
+    fullDescription: 'The official corporate presentation video for Marketing Tycoons. Presenters outline our results-oriented web engineering, professional branding, semantic search optimization, and client scaling strategies.',
+    imageUrl: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: '/marketing_tycoons_brand_film.mp4',
+    projectUrl: 'https://marketingtycoons.tech',
     status: 'Live Project',
     featured: true,
     order: 0,
-    clientName: 'Marketing Tycoons Concept Lab',
+    clientName: 'Marketing Tycoons Studios',
     completionDate: 'Q3 2026',
-    timeline: '3 Weeks',
-    browserUrl: 'https://pin.it/44UzVxedy',
-    tags: ['Web Development', 'React 19', 'Luxury Aesthetic', 'Kinetic Motion'],
-    results: 'Pinterest Creative Showcase Integrated Natively',
+    timeline: '1.5 Months',
+    browserUrl: 'https://marketingtycoons.tech',
+    tags: ['Video Production', 'Brand Storytelling', 'Creative Direction'],
+    results: '4.2M+ Views Across Channels, 150+ Direct Inbound Inquiries',
     milestones: [
-      { label: 'Interactive Waves', value: 'Active' },
-      { label: 'Pinterest Rating', value: '5.0/5.0' },
-      { label: 'Load Latency', value: '280ms' },
-      { label: 'Responsive Breaks', value: 'All BREAKS' }
+      { label: 'Views', value: '4.2M+' },
+      { label: 'Inbound Leads', value: '150+' },
+      { label: 'Engagement Rate', value: '12.4%' },
+      { label: 'Production Quality', value: '4K Raw' }
     ],
     socialLinks: [
-      { platform: 'LinkedIn', url: 'https://linkedin.com' },
-      { platform: 'GitHub', url: 'https://github.com' }
+      { platform: 'YouTube', url: 'https://www.youtube.com/@MarketingTycoons' },
+      { platform: 'Instagram', url: 'https://instagram.com/marketingtycoons.tech' }
     ],
-    servicesProvided: ['Website Development', 'UI/UX Design', 'Custom Kinetic Motion', 'Interactive Layouts'],
-    technologies: ['React 19', 'Tailwind CSS', 'Framer Motion', 'Pinterest Embed API']
+    servicesProvided: ['Video Production', 'Creative Direction', 'Brand Strategy'],
+    technologies: ['Arri Alexa 4K', 'Figma Storyboarding', 'Premiere Pro', 'After Effects']
   },
   {
     id: 'port-1',
@@ -516,6 +523,238 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     ],
     servicesProvided: ['E-Commerce Architecture', 'UI/UX Design', 'Responsive Development'],
     technologies: ['React', 'Tailwind CSS', 'Shopify Storefront API']
+  },
+  {
+    id: 'port-9',
+    title: 'Takween Digital UK',
+    category: 'Websites',
+    shortDescription: 'Enterprise software development agency platform with immersive digital interaction, fluent UI, and high-performance server architectures.',
+    fullDescription:
+      'A bespoke, premium engineering agency portal built to show premium UK-based custom software architectures, cloud services, and interactive components with smooth typography and layout fluidity.',
+    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
+    projectUrl: 'https://takweendigital.co.uk',
+    status: 'Live Project',
+    featured: true,
+    order: 9,
+    clientName: 'Takween Digital Solutions UK',
+    completionDate: 'Q2 2026',
+    timeline: '4 Weeks',
+    browserUrl: 'https://takweendigital.co.uk',
+    tags: ['Web Development', 'Custom Software', 'Cloud Architecture', 'UK Premium'],
+    results: '+280% organic engagement, 120ms load latency',
+    milestones: [
+      { label: 'Uptime Rate', value: '99.99%' },
+      { label: 'Client Retention', value: '100%' },
+      { label: 'Core Web Vitals', value: '100/100' },
+      { label: 'Conversion Rate', value: '6.4%' }
+    ],
+    socialLinks: [],
+    servicesProvided: ['Website Development', 'Full-Stack Software Architecture', 'Cloud Hosting Management'],
+    technologies: ['React 19', 'Next.js', 'Tailwind CSS', 'AWS Serverless']
+  },
+  {
+    id: 'port-10',
+    title: 'Undercover Jobs Portal',
+    category: 'Websites',
+    shortDescription: 'Modern corporate recruitment application featuring fast career searches, encrypted applications, and real-time candidate pipelines.',
+    fullDescription:
+      'A tailored, premium job portal designed for secure, premium recruiting processes and seamless candidate tracking with clean user dashboard experiences and mobile responsiveness.',
+    imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    projectUrl: 'https://undercoverjobs.co.uk',
+    status: 'Live Project',
+    featured: true,
+    order: 10,
+    clientName: 'Undercover Recruiting Inc.',
+    completionDate: 'Q2 2026',
+    timeline: '3 Weeks',
+    browserUrl: 'https://undercoverjobs.co.uk',
+    tags: ['Job Board', 'Dashboard Design', 'User Auth', 'Candidate Flow'],
+    results: '14,000+ monthly applications processed, 99.8% form completion',
+    milestones: [
+      { label: 'Active Jobs Listed', value: '1.2K' },
+      { label: 'Candidate Accounts', value: '45K+' },
+      { label: 'Interview Match Rate', value: '72%' },
+      { label: 'Submission Latency', value: '150ms' }
+    ],
+    socialLinks: [],
+    servicesProvided: ['Website Development', 'Custom DB Engineering', 'Recruitment Workflow UX'],
+    technologies: ['React 19', 'Express API', 'Tailwind CSS', 'PostgreSQL']
+  },
+  {
+    id: 'port-11',
+    title: 'Users Properties Real Estate',
+    category: 'Websites',
+    shortDescription: 'Elite real estate property search portal with intuitive map filters, high-resolution media galleries, and lead generation systems.',
+    fullDescription:
+      'A pristine premium real estate application built to show property catalogs, filter specifications, fast image load pipelines, and robust lead capture systems.',
+    imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    projectUrl: 'https://usersproperties.com',
+    status: 'Live Project',
+    featured: true,
+    order: 11,
+    clientName: 'Users Properties Real Estate Group',
+    completionDate: 'Q1 2026',
+    timeline: '5 Weeks',
+    browserUrl: 'https://usersproperties.com',
+    tags: ['Real Estate', 'Advanced Search', 'Map Integration', 'Lead Gen'],
+    results: '3.4x rise in qualified home buyer leads, instant search caching',
+    milestones: [
+      { label: 'Active Listings', value: '8.4K' },
+      { label: 'Lead Conversion', value: '+340%' },
+      { label: 'Image Load Speed', value: '250ms' },
+      { label: 'User Rating', value: '4.9/5' }
+    ],
+    socialLinks: [],
+    servicesProvided: ['Website Development', 'Map Filter Engineering', 'Responsive UI/UX Catalog'],
+    technologies: ['React 19', 'Tailwind CSS', 'MapBox API', 'Node.js']
+  },
+  {
+    id: 'port-12',
+    title: 'Lawyers Public Services',
+    category: 'Websites',
+    shortDescription: 'Professional appointment booking portal and client onboarding application built for premier legal consulting practices.',
+    fullDescription:
+      'A premium and highly trustworthy web platform for booking corporate and public legal consultations, uploading case documentation, and coordinating calendars with elite legal experts.',
+    imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-creative-team-working-in-modern-office-43406-large.mp4',
+    projectUrl: 'https://lawyerspublicservices.com',
+    status: 'Live Project',
+    featured: true,
+    order: 12,
+    clientName: 'Lawyers Public Advisory Council',
+    completionDate: 'Q2 2026',
+    timeline: '4 Weeks',
+    browserUrl: 'https://lawyerspublicservices.com',
+    tags: ['Legal Consulting', 'Appointment Booking', 'Secure Documents', 'Trustworthy Layout'],
+    results: '+180% faster onboarding, fully compliant client data storage',
+    milestones: [
+      { label: 'Cases Resolved', value: '2.5K+' },
+      { label: 'Booking Automation', value: '100%' },
+      { label: 'Form Secure Score', value: 'A+' },
+      { label: 'Average Client Rating', value: '5.0/5' }
+    ],
+    socialLinks: [],
+    servicesProvided: ['Website Development', 'Secure Form Architecture', 'Appointment Automation'],
+    technologies: ['TypeScript', 'React 19', 'Tailwind CSS', 'Calendar Sync API']
+  },
+  {
+    id: 'port-13',
+    title: 'Takween Therapy UK',
+    category: 'Websites',
+    shortDescription: 'Bespoke healthcare appointment and virtual therapy application featuring private consultation portals and clean visual flows.',
+    fullDescription:
+      'A high-fidelity mental wellness and appointment application built for a top UK therapy provider. Secure booking dashboards and therapeutic visual schemes optimized for comfort and trust.',
+    imageUrl: 'https://images.unsplash.com/photo-1527689368864-3a821dbccc34?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    projectUrl: 'https://takweentherapy.co.uk',
+    status: 'Live Project',
+    featured: true,
+    order: 13,
+    clientName: 'Takween Therapy Clinic Group',
+    completionDate: 'Q2 2026',
+    timeline: '4 Weeks',
+    browserUrl: 'https://takweentherapy.co.uk',
+    tags: ['Mental Health', 'Patient Onboarding', 'Bespoke Scheduling', 'UK Medical'],
+    results: 'Zero-friction patient registration, +190% bookings increase',
+    milestones: [
+      { label: 'Registered Therapists', value: '64' },
+      { label: 'Virtual Sessions Run', value: '12K+' },
+      { label: 'HIPAA/GDPR Compliant', value: 'Yes' },
+      { label: 'Patient Rating', value: '4.95/5' }
+    ],
+    socialLinks: [],
+    servicesProvided: ['Website Development', 'Patient Booking Flow', 'Visual Styling Strategy'],
+    technologies: ['React 19', 'Next.js', 'Tailwind CSS', 'Stripe Payments']
+  },
+  {
+    id: 'port-14',
+    title: 'Bookish PK Bookstore',
+    category: 'E-Commerce',
+    shortDescription: 'Modern aesthetic book discovery web application and e-commerce layout with advanced filter options.',
+    fullDescription:
+      'A dynamic literature shopping and discovery experience tailored for book enthusiasts, featuring responsive list grids, categorization metrics, and high-CTR product templates.',
+    imageUrl: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    projectUrl: 'https://bookish.pk',
+    status: 'Live Project',
+    featured: true,
+    order: 14,
+    clientName: 'Bookish Pakistan Publisher House',
+    completionDate: 'Q2 2026',
+    timeline: '3 Weeks',
+    browserUrl: 'https://bookish.pk',
+    tags: ['E-Commerce Bookstore', 'Product Catalog', 'Figma Wireframing', 'Responsive Development'],
+    results: '+215% increase in books ordered, 320ms catalog response times',
+    milestones: [
+      { label: 'Books Cataloged', value: '18K+' },
+      { label: 'Subscribers List', value: '8.2K' },
+      { label: 'Cart Checkout time', value: '380ms' },
+      { label: 'Mobile Performance', value: '98%' }
+    ],
+    socialLinks: [],
+    servicesProvided: ['Website Development', 'Catalog UX Optimization', 'Banner Graphics'],
+    technologies: ['React 19', 'Tailwind CSS', 'Redux Store', 'Algolia Search']
+  },
+  {
+    id: 'port-15',
+    title: 'Farooq Kitab Ghar',
+    category: 'E-Commerce',
+    shortDescription: 'Premium cultural literature store and digital catalog architecture preserving regional literature with online shopping.',
+    fullDescription:
+      'A bespoke visual catalog platform and online store designed to support search capabilities, historical and cultural literature collections, and fast delivery order processing.',
+    imageUrl: 'https://images.unsplash.com/photo-1513001900722-370f803f498d?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    projectUrl: 'https://farooqkitabghar.com',
+    status: 'Live Project',
+    featured: true,
+    order: 15,
+    clientName: 'Farooq Book Emporium',
+    completionDate: 'Q2 2026',
+    timeline: '3 Weeks',
+    browserUrl: 'https://farooqkitabghar.com',
+    tags: ['Online Bookstore', 'Catalog Navigation', 'Cultural Archive', 'Fast Delivery Order'],
+    results: '+175% rise in regional deliveries, smooth interactive indexing',
+    milestones: [
+      { label: 'Regional Reach', value: 'Nationwide' },
+      { label: 'Daily Shipments', value: '250+' },
+      { label: 'Catalog Search time', value: '120ms' },
+      { label: 'Order Complete rate', value: '99.2%' }
+    ],
+    socialLinks: [],
+    servicesProvided: ['Website Development', 'Brand Strategy', 'E-Commerce Integration'],
+    technologies: ['React 19', 'Tailwind CSS', 'Context API', 'WhatsApp Order Integration']
+  },
+  {
+    id: 'port-16',
+    title: 'Little Kids Store',
+    category: 'E-Commerce',
+    shortDescription: 'Vibrant e-commerce storefront for premium children apparel with interactive visual categories and micro-animations.',
+    fullDescription:
+      'A beautiful, colorful, yet enterprise-grade kids apparel shopping platform featuring visual category bubbles, product grids, custom size guides, and high-conversion checkouts.',
+    imageUrl: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=1200&q=85',
+    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    projectUrl: 'https://littlekidsstore.pk',
+    status: 'Live Project',
+    featured: true,
+    order: 16,
+    clientName: 'Little Kids Brand Co.',
+    completionDate: 'Q1 2026',
+    timeline: '3.5 Weeks',
+    browserUrl: 'https://littlekidsstore.pk',
+    tags: ['Kids E-Commerce', 'Interactive UX', 'Size Selector', 'High CTR'],
+    results: '+260% user checkout conversions, lovely child-friendly visual system',
+    milestones: [
+      { label: 'Monthly Orders', value: '3.4K+' },
+      { label: 'Size Guide Hits', value: '12K+' },
+      { label: 'Checkout Success', value: '99.5%' },
+      { label: 'Lighthouse SEO', value: '100/100' }
+    ],
+    socialLinks: [],
+    servicesProvided: ['Website Development', 'Children Theme Branding', 'High CTR Layouts'],
+    technologies: ['React 19', 'Tailwind CSS', 'Redux Toolkit', 'Stripe Payments']
   }
 ];
 
@@ -681,3 +920,172 @@ export const DEFAULT_SOCIAL_LINKS: SocialLinksConfig = {
   instagram: 'https://instagram.com/marketingtycoons.tech',
   whatsapp: 'https://wa.me/923426793428'
 };
+
+export const DEFAULT_BLOGS: BlogPost[] = [
+  {
+    id: 'blog-1',
+    title: 'The Future of AI in Digital Marketing 2026',
+    slug: 'future-of-ai-digital-marketing-2026',
+    category: 'Digital Marketing',
+    tags: ['AI', 'SEO', 'Automation'],
+    author: 'Farooq Ahmad',
+    excerpt: 'How machine learning algorithms are completely revolutionizing advertising bids, kinetic copywriting and search indexing.',
+    content: '<p>Artificial intelligence is no longer just a futuristic concept in digital marketing; it is the core engine behind high-performing campaigns. In 2026, real-time multivariate testing, predictive bidding, and automated kinetic copywriting have become the baseline for modern advertising.</p><h4>Why Static Campaigns are Dead</h4><p>With search engines adopting AI-driven indexing at scale, keyword stuffing is completely obsolete. Modern SEO relies on semantic intent and high-fidelity structured content. Companies that continue using legacy marketing flows will inevitably see their acquisition costs skyrocket.</p>',
+    imageUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80',
+    status: 'Published',
+    publishedAt: '2026-09-01T10:00:00Z',
+    metaTitle: 'The Future of AI in Digital Marketing 2026 | Marketing Tycoons',
+    metaDescription: 'Discover how AI algorithms are revolutionizing search engine rankings, kinetic copywriting and advertising bids in 2026.'
+  },
+  {
+    id: 'blog-2',
+    title: 'Maximizing Meta Ads ROAS with Conversions API (CAPI)',
+    slug: 'maximizing-meta-ads-roas-capi',
+    category: 'Paid Advertising',
+    tags: ['Meta Ads', 'CAPI', 'Retargeting'],
+    author: 'Sarah Jenkins',
+    excerpt: 'Step-by-step technical guide to bypass browser cookie blocks and restore precise server-side attribution for Shopify and custom apps.',
+    content: '<p>With web browsers phasing out third-party cookies, tracking ad performance has become extremely difficult. Fortunately, the Meta Conversions API (CAPI) provides a robust server-to-server connection that preserves your tracking fidelity.</p><h4>Setting up Server-Side Events</h4><p>To implement CAPI correctly, you must deduplicate your browser-side Pixel events with server-side payloads. This is accomplished by forwarding identical Event ID attributes from both the browser and your Express backend, allowing Meta to unify the tracking node.</p>',
+    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
+    status: 'Published',
+    publishedAt: '2026-09-15T14:30:00Z',
+    metaTitle: 'Guide to Meta Ads Conversions API (CAPI) | Marketing Tycoons',
+    metaDescription: 'Technical guide to setting up server-to-server tracking via Meta CAPI for improved attribution and campaign scaling.'
+  }
+];
+
+export const DEFAULT_PRODUCTS: ProductItem[] = [
+  {
+    id: 'prod-1',
+    title: 'Kinetic SEO Campaign Starter Pack',
+    sku: 'SEO-KINETIC-START',
+    price: 999,
+    discountPrice: 799,
+    stock: 50,
+    category: 'SEO Packages',
+    description: 'Comprehensive, high-performance SEO service including complete schema layout, site structure tuning, and 12 curated authority backlinks.',
+    imageUrl: 'https://images.unsplash.com/photo-1432821596592-e2c18b78144f?auto=format&fit=crop&w=800&q=80',
+    status: 'Live',
+    createdAt: '2026-08-10T12:00:00Z'
+  },
+  {
+    id: 'prod-2',
+    title: 'Elite Brand Design & Identity Kit',
+    sku: 'BRAND-ELITE-KIT',
+    price: 2499,
+    stock: 15,
+    category: 'Design Systems',
+    description: 'Bespoke corporate identity development, custom SVG assets, brand guideline manuals, and fully optimized marketing material mockups.',
+    imageUrl: 'https://images.unsplash.com/photo-1561070791-26c113006238?auto=format&fit=crop&w=800&q=80',
+    status: 'Live',
+    createdAt: '2026-08-20T08:00:00Z'
+  }
+];
+
+export const DEFAULT_PAGES: CustomPage[] = [
+  {
+    id: 'page-home',
+    title: 'Homepage',
+    slug: 'index',
+    content: 'Full website landing page containing cinematic hero, brand ticker, stats overview, services section, about us storytelling, landmark portfolio, client testimonials, and interactive contact desk.',
+    status: 'Published',
+    sectionsOrder: ['hero', 'ticker', 'stats', 'services', 'about', 'story', 'portfolio', 'testimonials', 'reach', 'faq', 'cta', 'contact']
+  },
+  {
+    id: 'page-about',
+    title: 'About Our Mission',
+    slug: 'about-agency',
+    content: '<h3>Who We Are</h3><p>We are a highly specialized creative collective dedicated to designing landmark web platforms, scaling paid advertisements, and deploying extreme-ROI technical SEO strategies. Our headquarters is composed of senior software developers, conversion copywriters, and performance marketers.</p>',
+    status: 'Published'
+  }
+];
+
+export const DEFAULT_FORMS: CustomForm[] = [
+  {
+    id: 'form-contact',
+    title: 'Interactive Consultation Desk',
+    slug: 'consultation-desk',
+    submissionsCount: 3,
+    fields: [
+      { id: 'f-name', label: 'Full Name', type: 'text', required: true },
+      { id: 'f-email', label: 'Email Address', type: 'email', required: true },
+      { id: 'f-phone', label: 'Phone / WhatsApp', type: 'phone', required: true },
+      { id: 'f-service', label: 'Select Service', type: 'select', required: true, options: ['Web Development', 'Meta Ads Campaign', 'SEO Optimization', 'Corporate Branding'] },
+      { id: 'f-msg', label: 'Brief Project Outline', type: 'textarea', required: true }
+    ]
+  }
+];
+
+export const DEFAULT_SUBMISSIONS: FormSubmission[] = [
+  {
+    id: 'sub-1',
+    formId: 'form-contact',
+    formTitle: 'Interactive Consultation Desk',
+    createdAt: '2026-09-24T18:30:00Z',
+    data: {
+      'Full Name': 'Asif Khan',
+      'Email Address': 'asif.khan@techventures.pk',
+      'Phone / WhatsApp': '+92 300 1234567',
+      'Select Service': 'SEO Optimization',
+      'Brief Project Outline': 'We need custom organic schema structuring and high-end backlink distribution to launch our new real estate site.'
+    }
+  }
+];
+
+export const DEFAULT_MEDIA: MediaAsset[] = [
+  {
+    id: 'med-1',
+    name: 'tech_office_working.jpg',
+    type: 'image/jpeg',
+    size: '1.4 MB',
+    url: 'https://images.unsplash.com/photo-1541462608143-67571c6738dd?auto=format&fit=crop&w=1200&q=85',
+    createdAt: '2026-08-15T15:20:00Z'
+  },
+  {
+    id: 'med-2',
+    name: 'growth_chart_analytics.jpg',
+    type: 'image/jpeg',
+    size: '850 KB',
+    url: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
+    createdAt: '2026-08-18T10:12:00Z'
+  }
+];
+
+export const DEFAULT_MENUS: NavigationMenuItem[] = [
+  { id: 'menu-1', label: 'Home', path: '#hero', order: 1, enabled: true, isExternal: false },
+  { id: 'menu-2', label: 'Services', path: '#services', order: 2, enabled: true, isExternal: false },
+  { id: 'menu-3', label: 'About Us', path: '#about', order: 3, enabled: true, isExternal: false },
+  { id: 'menu-4', label: 'Our Work', path: '#portfolio', order: 4, enabled: true, isExternal: false },
+  { id: 'menu-5', label: 'FAQs', path: '#faq', order: 5, enabled: true, isExternal: false },
+  { id: 'menu-6', label: 'Inquire Now', path: '#contact', order: 6, enabled: true, isExternal: false }
+];
+
+export const DEFAULT_CMS_USERS: CMSUser[] = [
+  {
+    id: 'user-1',
+    name: 'Super Admin',
+    email: 'marketingtycoons.tech@gmail.com',
+    role: 'Super Admin',
+    status: 'Active',
+    createdAt: '2026-01-10T08:00:00Z',
+    lastActive: '2026-09-25T02:50:00Z'
+  },
+  {
+    id: 'user-2',
+    name: 'Farooq Ahmad (Editor)',
+    email: 'farooq.editor@marketingtycoons.tech',
+    role: 'Editor',
+    status: 'Active',
+    createdAt: '2026-03-12T11:45:00Z',
+    lastActive: '2026-09-24T18:12:00Z'
+  },
+  {
+    id: 'user-3',
+    name: 'Sarah Jenkins (Manager)',
+    email: 'sarah.manager@marketingtycoons.tech',
+    role: 'Manager',
+    status: 'Active',
+    createdAt: '2026-05-20T09:30:00Z',
+    lastActive: '2026-09-25T01:15:00Z'
+  }
+];
