@@ -9,8 +9,9 @@ export const CinematicCtaSection: React.FC = () => {
   const { settings } = useApp();
 
   const videoUrl =
-    settings.ctaVideoUrl ||
-    'https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-lines-flowing-in-dark-background-30043-large.mp4';
+    settings.ctaVideoUrl && !settings.ctaVideoUrl.includes('mixkit')
+      ? settings.ctaVideoUrl
+      : '/videos/gold_abstract.mp4';
   const posterUrl =
     settings.ctaVideoPoster ||
     'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1800&q=85';

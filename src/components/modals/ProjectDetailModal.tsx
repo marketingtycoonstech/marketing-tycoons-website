@@ -362,11 +362,16 @@ export const ProjectDetailModal: React.FC = () => {
           {activeProjectModal.videoUrl ? (
             <div className="relative w-full h-full pt-0">
               <video
-                src={activeProjectModal.videoUrl}
+                src={
+                  activeProjectModal.videoUrl && !activeProjectModal.videoUrl.includes('mixkit')
+                    ? activeProjectModal.videoUrl
+                    : '/videos/marketing_tycoons_brand_film.mp4'
+                }
                 poster={activeProjectModal.imageUrl}
                 controls
                 playsInline
                 autoPlay
+                muted
                 onLoadedData={() => setMediaLoaded(true)}
                 className={`w-full h-full object-cover transition-all duration-700 ${
                   mediaLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md'

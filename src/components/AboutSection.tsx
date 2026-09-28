@@ -8,8 +8,9 @@ export const AboutSection: React.FC = () => {
   const { settings } = useApp();
 
   const aboutVideo =
-    settings.aboutVideoUrl ||
-    'https://assets.mixkit.co/videos/preview/mixkit-creative-team-working-in-modern-office-43406-large.mp4';
+    settings.aboutVideoUrl && !settings.aboutVideoUrl.includes('mixkit')
+      ? settings.aboutVideoUrl
+      : '/videos/creative_office.mp4';
   const aboutPoster =
     settings.aboutVideoPoster ||
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=85';

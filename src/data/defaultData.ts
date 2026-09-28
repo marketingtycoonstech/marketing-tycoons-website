@@ -14,216 +14,459 @@ import {
   FormSubmission,
   MediaAsset,
   NavigationMenuItem,
-  CMSUser
+  CMSUser,
+  TeamMember,
+  IndustryItem
 } from '../types';
 
 export const DEFAULT_WEBSITE_SETTINGS: WebsiteSettings = {
   companyName: 'MARKETING TYCOONS',
-  tagline: 'Your Growth, Our Mission',
-  domain: 'marketingtycoons.tech',
+  tagline: 'Where Visionary Strategy Meets High-Impact Digital Growth',
+  domain: 'marketingtycoons.org',
   primaryEmail: 'marketingtycoons.tech@gmail.com',
   phone: '+92 342 6793428',
   whatsappNumber: '+923426793428',
   wechatId: 'MarketingTycoonsOfficial',
   address: 'Global Headquarters • Suite 4200, Tech Financial Plaza',
-  heroHeadlinePrefix: 'Your Vision.\nOur Strategy.',
-  heroHeadlineHighlight: 'Digital Success.',
+  heroHeadlinePrefix: 'Engineering',
+  heroHeadlineHighlight: 'Category-Defining Brands & Scalable Systems',
   heroDescription:
-    'We build powerful brands, stunning designs and high-converting digital solutions to grow your business.',
-  primaryCtaText: 'Get Started',
-  secondaryCtaText: 'Our Services',
-  footerText: 'We help ambitious companies accelerate revenue, scale market presence, and dominate their digital category through bespoke strategy and high-impact design.',
+    'We partner with ambitious enterprises and emerging founders to design category-defining brands, ultra-fast web architectures, and high-converting performance marketing funnels.',
+  primaryCtaText: 'Book Free Consultation',
+  secondaryCtaText: 'View Our Work',
+  footerText: 'Marketing Tycoons is a premier international digital agency engineering bespoke software, high-ROAS marketing funnels, and authoritative brand identities for enterprises globally.',
   aboutHeadline: 'We are Marketing Tycoons',
   aboutText:
-    'We are Marketing Tycoons — a results-driven digital agency helping businesses build powerful brands, create stunning designs and grow online with innovative strategies. Combining data-backed analytics with world-class aesthetic craft, we turn visionary founders and global enterprises into market leaders.',
+    'We are Marketing Tycoons — an elite international digital agency helping global enterprises and ambitious startups build authoritative brands, engineer high-performing software platforms, and drive exponential revenue through data-backed marketing systems. We combine senior-level strategic execution with aesthetic mastery.',
   aboutFeatures: [
-    'Creative & Professional Team',
-    'Customized Solutions',
-    'On-Time Delivery',
-    'Client-Focused Approach'
+    'Senior-Level Engineering & Creative Direction',
+    'Customized ROI-Driven Architecture',
+    'Fixed Milestone & On-Time Delivery Guarantee',
+    'Transparent Enterprise SLAs & 24/7 Support'
   ],
   heroImageUrl: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80',
   lightHeroImage: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
   darkHeroImage: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=1600&q=85',
 
   // Cinematic Video & Visual Settings
-  heroVideoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
-  lightHeroVideo: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
-  darkHeroVideo: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
+  heroVideoUrl: '/videos/code_screen.mp4',
+  lightHeroVideo: '/videos/code_screen.mp4',
+  darkHeroVideo: '/videos/code_screen.mp4',
   heroVideoPoster: 'https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=1600&q=85',
-  heroMobileVideoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
+  heroMobileVideoUrl: '/videos/code_screen.mp4',
   heroVideoEnabled: true,
   heroVideoOverlayOpacity: 0.35,
 
-  fullWidthVideoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-charts-and-data-31912-large.mp4',
+  fullWidthVideoUrl: '/videos/code_screen.mp4',
   fullWidthVideoPoster: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1800&q=85',
   fullWidthVideoEnabled: true,
   fullWidthHeadline: "WE DON'T JUST BUILD BRANDS. WE BUILD DIGITAL EXPERIENCES.",
   fullWidthSubheadline: 'From breakthrough web architecture to high-converting creative direction, we engineer digital authority for ambitious companies worldwide.',
 
-  aboutVideoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-creative-team-working-in-modern-office-43406-large.mp4',
+  aboutVideoUrl: '/videos/creative_office.mp4',
   aboutVideoPoster: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=85',
   aboutVideoEnabled: true,
 
-  ctaVideoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-lines-flowing-in-dark-background-30043-large.mp4',
+  ctaVideoUrl: '/videos/gold_abstract.mp4',
   ctaVideoPoster: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1800&q=85',
   ctaVideoEnabled: true,
-  ctaHeadline: 'READY TO BUILD SOMETHING GREAT?',
-  ctaSubheading: "Let's turn your vision into a digital experience that gets noticed, remembered and trusted."
+  ctaHeadline: 'READY TO ACCELERATE YOUR GROWTH?',
+  ctaSubheading: "Book a complimentary strategic consultation. We'll audit your current digital footprint and map out a high-converting growth architecture."
 };
 
 export const DEFAULT_STATS: StatItem[] = [
-  { id: 'stat-1', number: '100+', label: 'Happy Clients', order: 1 },
-  { id: 'stat-2', number: '150+', label: 'Projects Completed', order: 2 },
-  { id: 'stat-3', number: '5+', label: 'Years Experience', order: 3 },
-  { id: 'stat-4', number: '98%', label: 'Client Satisfaction', order: 4 }
+  { id: 'stat-1', number: '150+', label: 'Global Clients', order: 1 },
+  { id: 'stat-2', number: '$45M+', label: 'Client Revenue Generated', order: 2 },
+  { id: 'stat-3', number: '6+', label: 'Years Experience', order: 3 },
+  { id: 'stat-4', number: '99.4%', label: 'Client Retention & Satisfaction', order: 4 }
 ];
 
 export const DEFAULT_SERVICES: ServiceItem[] = [
   {
-    id: 'srv-1',
-    title: 'Website Development',
-    shortDescription: 'Modern, fast & responsive websites that convert.',
+    id: 'srv-digital-marketing',
+    title: 'Digital Marketing',
+    shortDescription: 'Multi-channel acquisition strategies that scale revenue predictably.',
     fullDescription:
-      'We engineer bespoke web applications and high-performance websites engineered for speed, search visibility, and maximum conversion rates. Built with modern architectures and pristine typography.',
-    iconName: 'Code',
+      'Full-funnel digital marketing engineered for international scale. We orchestrate omni-channel acquisition architectures across search, paid social, programmatic media, and automated conversion pipelines to lower customer acquisition costs and drive sustainable enterprise revenue.',
+    iconName: 'Megaphone',
     enabled: true,
     order: 1,
     features: [
-      'Tailored UX/UI wireframing & responsive design',
-      'Ultra-fast load times and SEO-first code structure',
-      'Mobile-first architecture and CMS integration',
-      'E-commerce & custom web portals'
+      'Full-funnel acquisition & retargeting architecture',
+      'Multi-channel attribution & conversion rate optimization (CRO)',
+      'Data-driven media buying across Google, Meta, and LinkedIn',
+      'Predictive customer lifetime value (LTV) modeling'
     ],
     deliverables: [
-      'Production-ready web application',
-      'Responsive design across all device breakpoints',
-      'Full technical SEO audit & schema integration',
-      'Speed optimization score 95+ on Google PageSpeed'
+      'Comprehensive Growth Architecture Blueprint',
+      'Live Multi-Touch Attribution & ROAS Dashboard',
+      'Iterative Creative Testing & Ad Asset Matrix',
+      'Weekly Executive Performance & Pipeline Reports'
     ],
-    startingPrice: '$1,950',
-    bgImageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4'
+    startingPrice: '$2,450 / mo',
+    bgImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
+    problemsSolved: [
+      'Unpredictable pipeline and fluctuating inbound lead flow',
+      'High Customer Acquisition Costs (CAC) eroding margin',
+      'Disjointed messaging across fragmented marketing channels',
+      'Inability to measure true ROAS due to broken pixel/CAPI tracking'
+    ],
+    approach:
+      'We treat digital marketing as a quantitative science. Every campaign is built upon rigorous market segmentation, unit-economics modeling, dynamic creative experimentation, and continuous conversion rate engineering.',
+    benefits: [
+      'Average +240% increase in qualified inbound opportunity volume',
+      '35% to 50% decrease in customer acquisition costs (CAC)',
+      '100% transparent live attribution reporting without vanity metrics',
+      'Direct alignment between marketing spend and bottom-line enterprise EBITDA'
+    ],
+    processSteps: [
+      { step: '01', title: 'Auditing & Unit Economics', description: 'Deep-dive analysis of your historical conversion data, buyer personas, and unit economics.' },
+      { step: '02', title: 'Full-Funnel Architecture', description: 'Structuring multi-channel paid touchpoints, dynamic hooks, and conversion routing.' },
+      { step: '03', title: 'Controlled Media Deployment', description: 'Launching systematic multivariate testing matrices to identify high-converting creative angles.' },
+      { step: '04', title: 'Aggressive Scaling & CRO', description: 'Doubling down on winning segments while continuously optimizing landing page conversions.' }
+    ],
+    faqs: [
+      {
+        question: 'How quickly can we expect to see tangible pipeline results?',
+        answer: 'Initial optimization and conversion tracking calibration occur in weeks 1-2. Significant pipeline acceleration and positive ROAS typically materialize within 30 to 45 days of consistent creative testing.'
+      },
+      {
+        question: 'What ad platforms do you specialize in?',
+        answer: 'We deploy enterprise-grade campaigns across Meta Ads (Facebook & Instagram), Google Search, Performance Max, YouTube, and LinkedIn Ads, tailored to whether your model is B2B or B2C.'
+      },
+      {
+        question: 'Who owns the ad accounts and creative assets?',
+        answer: 'You retain 100% ownership of all advertising accounts, tracking pixels, and custom-created design assets. We never hold your business accounts hostage.'
+      }
+    ]
   },
   {
-    id: 'srv-2',
-    title: 'Graphic & Banner Design',
-    shortDescription: 'Eye-catching designs that leave an impact.',
+    id: 'srv-seo',
+    title: 'SEO Services',
+    shortDescription: 'Technical search engineering & authoritative ranking that captures buyer intent.',
     fullDescription:
-      'Compelling visual storytelling for digital banners, display advertising campaigns, print collateral, and interactive creative assets that capture attention in high-noise feeds.',
-    iconName: 'Palette',
+      'Enterprise search engine optimization engineered for maximum commercial intent. We combine surgical technical audits, Core Web Vitals optimization, semantic entity clustering, high-authority backlink acquisition, and programmatic SEO to establish durable market leadership in Google organic results.',
+    iconName: 'TrendingUp',
     enabled: true,
     order: 2,
     features: [
-      'High-CTR digital ad sets (Meta, Google, LinkedIn)',
-      'Vector display banners and promotional creative suites',
-      'Marketing print assets & exhibition collateral',
-      'Consistent design system fidelity'
+      'Forensic technical SEO (Crawlability, Core Web Vitals, Schema.org)',
+      'High-intent commercial keyword mapping & topical clustering',
+      'Authoritative tier-1 editorial link acquisition & digital PR',
+      'AI search engine optimization (GEO / Search Generative Experience)'
     ],
     deliverables: [
-      'Full suite of multi-ratio display graphics',
-      'Editable Figma/Vector source deliverables',
-      'High-resolution print and web export formats',
-      'Comprehensive brand asset kit'
+      'Comprehensive 80-Point Technical SEO Audit & Code Fixes',
+      'Commercial Keyword Strategy & Competitor Moat Analysis',
+      'Schema.org JSON-LD Structured Data Implementation',
+      'Monthly Executive Organic Revenue & Keyword Tracking Dashboard'
     ],
-    startingPrice: '$750',
-    bgImageUrl: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&w=800&q=80'
+    startingPrice: '$1,850 / mo',
+    bgImageUrl: 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
+    problemsSolved: [
+      'Stagnant organic rankings while competitors capture high-intent search volume',
+      'Algorithmic penalties or loss of traffic from technical crawling errors',
+      'Wasted investment on generic blog posts that generate zero paying clients',
+      'Lack of visibility in next-generation AI search engines and answer boxes'
+    ],
+    approach:
+      'We do not engage in superficial keyword stuffing or low-grade guest posts. We engineer authoritative search footprints that search engines perceive as definitive industry resources through technical precision, structured data, and high-value digital PR.',
+    benefits: [
+      'Predictable, high-intent organic traffic that converts without ad spend',
+      'Top 3 search positioning for high-margin commercial intent terms',
+      'Perpetual compounding ROI that grows in equity month after month',
+      'Resilience against major Google core algorithmic updates'
+    ],
+    processSteps: [
+      { step: '01', title: 'Technical Architecture Audit', description: 'Resolving crawl budget waste, indexation bottlenecks, and schema markup deficits.' },
+      { step: '02', title: 'Topical Authority Blueprint', description: 'Mapping semantic content clusters that establish undeniable subject-matter authority.' },
+      { step: '03', title: 'On-Page Optimization', description: 'Rewriting key conversion pages, title tags, internal linking, and content hierarchy.' },
+      { step: '04', title: 'High-Tier Link Acquisition', description: 'Securing contextual placements on authoritative publications and industry journals.' }
+    ],
+    faqs: [
+      {
+        question: 'How long does it take for SEO efforts to reflect in Google rankings?',
+        answer: 'Technical fixes often produce ranking improvements within 3 to 6 weeks. Competitive head-terms and domain authority growth generally compound significantly over 3 to 6 months.'
+      },
+      {
+        question: 'Do you follow Google Search Essentials guidelines?',
+        answer: 'Yes, 100%. We employ strictly white-hat, guidelines-compliant search engineering methods focused on user intent, high page speed, and authentic editorial value.'
+      }
+    ]
   },
   {
-    id: 'srv-3',
-    title: 'Logo & Branding',
-    shortDescription: 'Build a strong brand identity that lasts.',
+    id: 'srv-web-dev',
+    title: 'Web Development',
+    shortDescription: 'Sub-second web architectures & custom platforms built to convert.',
     fullDescription:
-      'Distinguish your business with a memorable visual identity. From custom monograms and logomarks to cohesive typography palettes, style guides, and brand strategy books.',
-    iconName: 'Crown',
+      'Bespoke web applications, corporate digital headquarters, and high-performance web platforms engineered with modern TypeScript, React, and serverless infrastructures. Designed with sub-second page latency, WCAG AA accessibility, and rock-solid conversion paths.',
+    iconName: 'Code',
     enabled: true,
     order: 3,
     features: [
-      'Bespoke monogram & logomark design',
-      'Comprehensive brand guideline book & typography system',
-      'Color science & psychology palette definition',
-      'Stationery, business cards, and social media branding'
+      'Custom React 19, Next.js, and TypeScript architectures',
+      'Sub-second Core Web Vitals (95+ score on Google PageSpeed)',
+      'Responsive design across mobile, tablet, and ultra-wide screens',
+      'Secure Headless CMS integration & custom API architectures'
     ],
     deliverables: [
-      'Vector primary, secondary, and sub-mark files',
-      'Brand Style Playbook (PDF & Figma)',
-      'Social media starter kit and avatar suites',
-      'Full commercial copyright transfer'
+      'Production-Ready Source Code with Full Commercial Ownership',
+      'Responsive Web Platform with Zero Layout Shift (CLS < 0.05)',
+      'Complete Technical SEO & Schema Markup Integration',
+      '30-Day Post-Launch Code Warranty & Cloud Deployment'
     ],
-    startingPrice: '$1,200',
-    bgImageUrl: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=800&q=80'
+    startingPrice: '$2,950',
+    bgImageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
+    problemsSolved: [
+      'Slow, bloated legacy websites shedding 40%+ of mobile visitors',
+      'Clunky user journeys causing visitor dropoff before inquiry or checkout',
+      'Rigid templates that fail to convey international brand legitimacy',
+      'Security vulnerabilities and high maintenance overhead'
+    ],
+    approach:
+      'We write clean, modular, production-grade code designed from the ground up for conversion psychology, instant load times, and fluid responsiveness. No bloated page builders or generic WordPress themes.',
+    benefits: [
+      'Sub-second page loading speeds that directly boost conversion rates by 20%+',
+      '100% bespoke design crafted to position you as the definitive market leader',
+      'Clean maintainable codebase that scales gracefully with your business',
+      'Flawless cross-browser compatibility and mobile responsiveness'
+    ],
+    processSteps: [
+      { step: '01', title: 'Architecture & Wireframing', description: 'Information architecture, user flow mapping, and low-fidelity structural blueprints.' },
+      { step: '02', title: 'High-Fidelity Prototyping', description: 'Crafting pixel-perfect design systems, micro-interactions, and responsive views.' },
+      { step: '03', title: 'TypeScript/React Engineering', description: 'Clean modular code development with rigorous accessibility and speed optimization.' },
+      { step: '04', title: 'Deployment & Quality Assurance', description: 'Cross-browser stress-testing, Core Web Vitals validation, and staging migration.' }
+    ],
+    faqs: [
+      {
+        question: 'Do we own the full source code after launch?',
+        answer: 'Yes, 100%. Upon final project delivery, all code repositories, assets, and design files are transferred to your organization with full commercial rights.'
+      },
+      {
+        question: 'What tech stack do you recommend?',
+        answer: 'We build primarily with modern TypeScript, React, Next.js, and Tailwind CSS, backed by robust serverless databases like Google Cloud SQL and Firebase.'
+      }
+    ]
   },
   {
-    id: 'srv-4',
-    title: 'SEO',
-    shortDescription: 'Rank higher, get more traffic, grow faster.',
+    id: 'srv-ui-ux',
+    title: 'UI/UX Design',
+    shortDescription: 'User experiences that turn complex journeys into effortless conversions.',
     fullDescription:
-      'Technical on-page, off-page, and content SEO architectures designed to capture buyer intent keywords, drive high-intent organic traffic, and secure authority in your niche.',
-    iconName: 'TrendingUp',
+      'Conversion-focused UI/UX design for web platforms, SaaS dashboards, and digital products. We blend cognitive psychology, typographic hierarchy, and intuitive interaction design to build interfaces that feel effortless to navigate and drive high retention.',
+    iconName: 'Layout',
     enabled: true,
     order: 4,
     features: [
-      'Comprehensive keyword research & competitor gap analysis',
-      'Technical site audits (Core Web Vitals, schema markup, crawlability)',
-      'Content cluster strategy & high-authority link building',
-      'Local SEO & Google Business Profile optimization'
+      'Comprehensive user research & friction-point mapping',
+      'Atomic Design Systems in Figma with complete component tokens',
+      'High-fidelity interactive prototypes & micro-interactions',
+      'Conversion Rate Optimization (CRO) UX audits & checkout flows'
     ],
     deliverables: [
-      'Keyword strategy blueprint & target tracking',
-      'On-page metadata and schema implementation',
-      'Monthly executive ranking & analytics report',
-      'Backlink acquisition roadmap'
+      'Complete Figma Design System with Light/Dark Theme Specs',
+      'Interactive Clickable Prototypes for Stakeholder Review',
+      'Developer-Ready Design Specs & Asset Exports',
+      'User Journey & Friction Analysis Documentation'
     ],
-    startingPrice: '$950 / mo',
-    bgImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80'
+    startingPrice: '$1,950',
+    bgImageUrl: 'https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?auto=format&fit=crop&w=800&q=80',
+    problemsSolved: [
+      'High bounce rates due to confusing user flows and visual clutter',
+      'Inconsistent visual branding between marketing site and product platform',
+      'Expensive developer rework caused by designing directly in code without prototypes',
+      'Friction points at critical conversion milestones (forms, signup, checkout)'
+    ],
+    approach:
+      'We combine aesthetic luxury with conversion science. By adhering to the Universal Design Constitution—zero-pill discipline, optical rhythm, and strict typographic hierarchy—we make complex interfaces clear, credible, and intuitive.',
+    benefits: [
+      'Measurable reduction in user dropoff across critical funnel stages',
+      'Elevated visual prestige that immediately wins enterprise client trust',
+      'Accelerated engineering velocity through standardized Figma design systems',
+      'Complete WCAG AA accessibility compliance'
+    ],
+    processSteps: [
+      { step: '01', title: 'Discovery & User Mapping', description: 'Deconstructing core user tasks, personas, and existing usability roadblocks.' },
+      { step: '02', title: 'Wireframes & Information Hierarchy', description: 'Rapid structural exploration to validate information architecture and navigation.' },
+      { step: '03', title: 'High-Fidelity Visual Craft', description: 'Polishing typography, color science, iconography, and spatial math in Figma.' },
+      { step: '04', title: 'Design System & Handoff', description: 'Organizing tokens, interactive states, and specs for clean developer implementation.' }
+    ],
+    faqs: [
+      {
+        question: 'Do you deliver fully organized Figma files?',
+        answer: 'Yes. Every project includes structured components, auto-layout frames, semantic variable tokens, and organized light/dark variants ready for engineering.'
+      },
+      {
+        question: 'Can you redesign our existing software platform or app?',
+        answer: 'Absolutely. We regularly audit existing platforms, preserve core business logic, and overhaul the user experience to maximize engagement and clarity.'
+      }
+    ]
   },
   {
-    id: 'srv-5',
-    title: 'Social Media Marketing',
-    shortDescription: 'Engage, grow and build your audience.',
+    id: 'srv-branding',
+    title: 'Branding',
+    shortDescription: 'Memorable brand identities that command premium pricing and category leadership.',
     fullDescription:
-      'Omnichannel social growth strategies that turn followers into devoted brand advocates. We handle creative content production, copy, community management, and trend execution.',
-    iconName: 'Share2',
+      'Comprehensive brand architecture for companies looking to establish undeniable market authority. We create timeless brand identities—from monograms and bespoke typography to messaging frameworks, verbal identity playbooks, and complete visual guidelines.',
+    iconName: 'Crown',
     enabled: true,
     order: 5,
     features: [
-      'Custom content calendar & daily publishing pipeline',
-      'Short-form video concepts (Reels, TikTok, Shorts)',
-      'Proactive community engagement & DM automation',
-      'Influencer partnership sourcing and campaign direction'
+      'Bespoke monogram, wordmark, and emblem design',
+      'Comprehensive Brand Identity Guidelines & typography systems',
+      'Strategic brand positioning, voice, and narrative frameworks',
+      'Collateral design (Stationery, pitch decks, social media toolkits)'
     ],
     deliverables: [
-      '30 monthly curated posts & high-production reels',
-      'Engaging copywriting & verified hashtag strategies',
-      'Bi-weekly performance & reach KPI dashboards',
-      'Dedicated account strategist support'
+      'Complete Vector Logomark Suite (SVG, EPS, PNG, PDF)',
+      '60+ Page Brand Bible & Visual Identity Guidelines',
+      'Typography Hierarchy & Color Psychology Specifications',
+      'Full Commercial Copyright & Intellectual Property Transfer'
     ],
-    startingPrice: '$1,100 / mo',
-    bgImageUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80'
+    startingPrice: '$1,650',
+    bgImageUrl: 'https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&w=800&q=80',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
+    problemsSolved: [
+      'Amateurish branding that fails to convey corporate legitimacy to enterprise clients',
+      'Inconsistent visual presentation across digital, pitch, and print touchpoints',
+      'Difficulty justifying premium pricing in competitive vendor bids',
+      'Brand messaging that blends into the background of competitors'
+    ],
+    approach:
+      'A great brand is not just a logo; it is a strategic asset that commands respect. We distill your core competitive differentiation into an iconic, cohesive visual language that inspires immediate trust.',
+    benefits: [
+      'Direct pricing power—charge 3x to 5x higher rates with premium positioning',
+      'Instant credibility with international investors, partners, and enterprise buyers',
+      'Total visual consistency across every marketing and sales channel',
+      'Future-proof design that stands the test of time without looking dated'
+    ],
+    processSteps: [
+      { step: '01', title: 'Brand Strategy & Archetype', description: 'Defining your brand essence, market positioning, target audience, and verbal tone.' },
+      { step: '02', title: 'Concept Exploration', description: 'Developing 3 distinct creative directions with moodboards, monograms, and typography.' },
+      { step: '03', title: 'Identity Refinement', description: 'Refining the chosen identity across all digital, print, and architectural applications.' },
+      { step: '04', title: 'Brand Bible Publication', description: 'Delivering the comprehensive guideline book with vector assets and usage rules.' }
+    ],
+    faqs: [
+      {
+        question: 'Do we receive full copyright ownership of the brand identity?',
+        answer: 'Yes. All created logos, mark files, color formulations, and graphic assets are 100% assigned to your company upon final delivery.'
+      },
+      {
+        question: 'How many design concepts do you present?',
+        answer: 'We present 3 thoroughly developed, strategically distinct brand directions, followed by collaborative revision rounds on the selected direction.'
+      }
+    ]
   },
   {
-    id: 'srv-6',
-    title: 'Meta Ads',
-    shortDescription: 'Targeted ads for better reach and higher sales.',
+    id: 'srv-social-media',
+    title: 'Social Media Marketing',
+    shortDescription: 'High-impact organic social strategies that build engaged communities.',
     fullDescription:
-      'High-return Facebook and Instagram paid ad campaigns. We combine psychological copywriting, dynamic creative testing, and meticulous pixel tracking for sustained ROAS.',
-    iconName: 'Target',
+      'Omnichannel social growth strategies that turn passive audiences into loyal brand advocates. We handle high-production short-form video, thought leadership content for executives, community management, and trend-driven distribution across LinkedIn, X/Twitter, Instagram, and YouTube.',
+    iconName: 'Share2',
     enabled: true,
     order: 6,
     features: [
-      'Precision audience targeting & lookalike models',
-      'Creative A/B multivariate testing (hooks, copy, angles)',
-      'Advanced Conversions API (CAPI) & pixel tracking',
-      'Retargeting funnels to re-engage warm prospects'
+      'Omnichannel content strategy & editorial publishing schedule',
+      'High-CTR short-form video creation (Reels, Shorts, TikTok)',
+      'Executive thought leadership & personal branding for founders',
+      'Community management, outbound engagement, and DM funnels'
     ],
     deliverables: [
-      'Full campaign architecture & setup in Ads Manager',
-      'Ad creative graphics and video cutdowns',
-      'Daily budget optimization and bid scaling',
-      'Live ROAS & CAC attribution dashboard'
+      '30 Monthly High-Production Posts & Custom Visual Creatives',
+      'Bi-Weekly Strategic Content Calendar for Client Review',
+      'Dedicated Community Strategist & Engagement Management',
+      'Monthly Audience Reach, Engagement, and Growth Analytics'
     ],
-    startingPrice: '$1,450 / mo',
-    bgImageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80'
+    startingPrice: '$1,350 / mo',
+    bgImageUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=800&q=80',
+    problemsSolved: [
+      'Inconsistent posting schedules that kill algorithmic reach',
+      'Generic social content that generates zero inquiries or pipeline',
+      'Internal team lack of time to produce high-production video assets',
+      'Disconnect between executive personal brands and corporate goals'
+    ],
+    approach:
+      'We focus on high-signal content: hook-driven storytelling, proprietary industry data, visual breakdowns, and authentic brand viewpoints that earn attention and respect.',
+    benefits: [
+      'Compounding inbound inbound referral network through established authority',
+      'Consistent daily brand presence across your primary industry channels',
+      'Direct conversation pipeline with decision-makers via social DMs',
+      'Higher client closing rates due to social proof and active social credibility'
+    ],
+    processSteps: [
+      { step: '01', title: 'Content Pillar Blueprint', description: 'Defining high-engagement themes, target audience pains, and format distribution.' },
+      { step: '02', title: 'Creative Production Pipeline', description: 'Scripting, graphic design, and video editing for a full month of content in advance.' },
+      { step: '03', title: 'Publishing & Engagement', description: 'Scheduled deployment at peak engagement hours with active comment management.' },
+      { step: '04', title: 'Performance Retrospective', description: 'Reviewing metrics to identify high-performing content formats and double down.' }
+    ],
+    faqs: [
+      {
+        question: 'Do we have to review and approve posts before they go live?',
+        answer: 'Yes. All posts, captions, and creative assets are uploaded to a collaborative review dashboard for your approval before publication.'
+      },
+      {
+        question: 'Do you manage founder profiles on LinkedIn and X?',
+        answer: 'Yes, we specialize in ghostwriting executive thought leadership content that establishes founders as respected voices in their market.'
+      }
+    ]
+  },
+  {
+    id: 'srv-ecommerce',
+    title: 'E-commerce Solutions',
+    shortDescription: 'High-converting online stores engineered for maximum average order value and scale.',
+    fullDescription:
+      'Full-stack e-commerce platforms engineered for maximum conversion velocity and seamless checkout. From custom headless Shopify and WooCommerce implementations to custom subscription builders, inventory synchronization, and post-purchase upsell funnels.',
+    iconName: 'ShoppingBag',
+    enabled: true,
+    order: 7,
+    features: [
+      'Headless Shopify & custom React storefront engineering',
+      'Sub-500ms catalog search & dynamic product filtering',
+      'Custom subscription builders and recurring revenue architectures',
+      'One-click checkout optimization & dynamic upsell funnels'
+    ],
+    deliverables: [
+      'Turnkey E-commerce Storefront with Stripe/Shopify Pay Integration',
+      'Mobile-Optimized Shopping Cart with Abandonment Mitigation',
+      'ERP/Inventory & Logistics API Integration',
+      'Core Web Vitals Speed Score 90+ on Product Pages'
+    ],
+    startingPrice: '$3,450',
+    bgImageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
+    problemsSolved: [
+      'High shopping cart abandonment rates caused by slow or friction-heavy checkouts',
+      'Slow mobile load speeds costing 30%+ of potential retail sales',
+      'Inability to implement complex recurring subscriptions or bundle builders',
+      'Disorganized inventory tracking across multiple sales channels'
+    ],
+    approach:
+      'We treat every millimeter of the e-commerce journey as a conversion lever: instant product filtration, sensory photography presentation, friction-free checkout, and strategic post-purchase upsells that maximize average order value (AOV).',
+    benefits: [
+      'Measurable 25% to 45% uplift in overall store checkout conversion rates',
+      'Higher Average Order Value (AOV) through intelligent bundling and upsells',
+      'Instantaneous page-to-page navigation that keeps customers shopping longer',
+      'Seamless multi-currency and international tax compliance configuration'
+    ],
+    processSteps: [
+      { step: '01', title: 'Catalog & Funnel Architecture', description: 'Mapping customer buying journeys, product taxonomy, and subscription models.' },
+      { step: '02', title: 'High-Converting UI/UX Design', description: 'Designing high-impact product detail pages, instant cart drawers, and mobile flows.' },
+      { step: '03', title: 'Storefront Engineering', description: 'Building the fast storefront with custom APIs, checkout gateways, and CRM hooks.' },
+      { step: '04', title: 'Checkout Testing & Launch', description: 'Simulating transaction loads, testing fraud rules, and launching live tracking.' }
+    ],
+    faqs: [
+      {
+        question: 'Which e-commerce platforms do you build on?',
+        answer: 'We build primarily on Shopify (standard and headless via Shopify Storefront API), custom React/Next.js e-commerce platforms, and advanced WooCommerce architectures.'
+      },
+      {
+        question: 'Can you migrate our products and customer data from our old store?',
+        answer: 'Yes. We handle end-to-end data migration including customer accounts, order history, catalog taxonomies, and 301 SEO redirect maps to protect your search rankings.'
+      }
+    ]
   }
 ];
 
@@ -263,11 +506,12 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     id: 'port-1',
     title: 'Aura Maison Luxury Flagship',
     category: 'E-Commerce',
+    industry: 'Luxury Retail & E-Commerce',
     shortDescription: 'Headless luxury e-commerce experience with sub-second product filtering and checkout.',
     fullDescription:
       'A responsive e-commerce experience designed for a modern luxury retail brand. Engineered with seamless micro-interactions, responsive mobile grid layouts, real-time inventory synchronization, and Stripe checkout integration.',
     imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://auramaison.vercel.app',
     status: 'Live Project',
     featured: true,
@@ -277,6 +521,8 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     timeline: '3 Months',
     browserUrl: 'https://auramaison.com',
     tags: ['E-Commerce', 'Next.js', 'Stripe', 'Tailwind CSS', 'High Conversion'],
+    challenges: 'A sluggish legacy Shopify store suffered from 4.8s mobile load times, high bounce rates, and 68% cart abandonment during checkout.',
+    solution: 'Re-engineered the platform as a headless React 19 architecture with sub-500ms client-side product filtering, predictive search, and one-click Stripe payment flows.',
     results: '+164% Conversion Lift, 3.8x Speed Increase',
     milestones: [
       { label: 'Screens Designed', value: '42' },
@@ -297,11 +543,12 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     id: 'port-2',
     title: 'Sterling & Co. Institutional Portal',
     category: 'Websites',
+    industry: 'Financial Advisory & Wealth Management',
     shortDescription: 'High-performance corporate platform with bilingual localization and encrypted client room.',
     fullDescription:
       'Enterprise web architecture built for an international advisory firm. Features real browser navigation, responsive desktop and mobile breakpoints, secure contact gateways, and technical SEO hierarchy.',
     imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://sterling-advisory.vercel.app',
     status: 'Live Project',
     featured: true,
@@ -311,6 +558,8 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     timeline: '2.5 Months',
     browserUrl: 'https://sterlingadvisory.com',
     tags: ['Web Development', 'Corporate Architecture', 'Security', 'Fast Load'],
+    challenges: 'An outdated corporate website lacked mobile responsiveness, international credibility, and secure client onboarding gateways.',
+    solution: 'Designed and engineered an institutional-grade corporate platform with bilingual English/Arabic localization, sub-second responses, and SOC2-aligned contact forms.',
     results: '99.99% Uptime, 240+ Qualified Monthly Inquiries',
     milestones: [
       { label: 'Screens Designed', value: '36' },
@@ -330,11 +579,12 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     id: 'port-3',
     title: 'Apex Capital Brand Identity & System',
     category: 'Branding',
+    industry: 'Private Equity & Venture Capital',
     shortDescription: 'Bespoke monogram, metallic brand bible, and corporate identity system.',
     fullDescription:
       'Comprehensive brand identity system engineered for a global investment group. Includes custom typography, monogram vectors, metallic gold foil print specifications, business stationery, and brand guidelines.',
     imageUrl: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-abstract-gold-lines-flowing-in-dark-background-30043-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://apexcapital.global',
     status: 'Live Project',
     featured: true,
@@ -344,6 +594,8 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     timeline: '6 Weeks',
     browserUrl: 'https://apexcapital.global',
     tags: ['Branding', 'Monogram Design', 'Brand Bible', 'Gold Foil'],
+    challenges: 'The firm possessed an outdated, generic visual identity that failed to inspire confidence among sovereign wealth funds and institutional LP investors.',
+    solution: 'Designed an authoritative visual identity system featuring a bespoke geometric monogram, luxury typography pairing, metallic color standards, and institutional pitch decks.',
     results: 'Comprehensive Brand Guide & Multi-Channel Asset Kit',
     milestones: [
       { label: 'Brand Assets', value: '48+' },
@@ -363,11 +615,12 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     id: 'port-4',
     title: 'CyberSummit Multi-Screen Banner Suite',
     category: 'Graphic Design',
+    industry: 'Enterprise Technology & Cybersecurity',
     shortDescription: '36 dynamic digital banner formats and high-CTR advertising collateral.',
     fullDescription:
       'High-impact vector graphic design and multi-ratio promotional banners for an international tech exhibition. Created digital out-of-home displays, social ad banners, and print exhibition collateral.',
     imageUrl: 'https://images.unsplash.com/photo-1542744094-3a31f272c490?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-creative-team-working-in-modern-office-43406-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://cybersummit.tech',
     status: 'Live Project',
     featured: false,
@@ -377,7 +630,9 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     timeline: '4 Weeks',
     browserUrl: 'https://cybersummit.tech',
     tags: ['Graphic Design', 'Display Banners', 'Ad Creatives', 'Print Collateral'],
-    results: 'Multi-Ratio Asset Delivery Across 36 Formats',
+    challenges: 'Campaign assets were required across 36 digital and print aspect ratios within tight conference ticketing launch deadlines.',
+    solution: 'Engineered a modular Figma vector component system allowing rapid programmatic rendering of 120+ ad variants with 100% brand consistency.',
+    results: 'Multi-Ratio Asset Delivery Across 36 Formats, 4.8% CTR',
     milestones: [
       { label: 'Banners Produced', value: '36' },
       { label: 'Display Renders', value: '120+' },
@@ -396,11 +651,12 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     id: 'port-5',
     title: 'Glow Organics Viral Social Campaign',
     category: 'Social Media',
+    industry: 'Consumer Goods & Clean Cosmetics',
     shortDescription: 'Omnichannel social media creatives, Instagram reels, and brand storytelling.',
     fullDescription:
       'Strategic social media campaign design featuring carousel layouts, short-form motion reels, story templates, and high-engagement brand consistency across Instagram and TikTok.',
     imageUrl: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-charts-and-data-31912-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://gloworganics.co',
     status: 'Live Project',
     featured: true,
@@ -410,7 +666,9 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     timeline: 'Ongoing / 4 Months',
     browserUrl: 'https://gloworganics.co',
     tags: ['Social Media', 'Reels Design', 'Content Strategy', 'Brand Consistency'],
-    results: '30+ Custom Monthly Creatives & Cohesive Social Brand Grid',
+    challenges: 'Inconsistent visual presentation across social platforms resulted in stagnant engagement and lack of social proof for new product drops.',
+    solution: 'Implemented a 30-post monthly production pipeline combining educational carousel graphics, aesthetic lifestyle photography, and punchy hook-driven motion reels.',
+    results: '30+ Custom Monthly Creatives & +320% Engagement Lift',
     milestones: [
       { label: 'Campaign Reach', value: '2.4M+' },
       { label: 'Reels Produced', value: '24' },
@@ -430,11 +688,12 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     id: 'port-6',
     title: 'BioHealth Diagnostic SEO Architecture',
     category: 'SEO',
+    industry: 'Healthcare, Biotech & Diagnostics',
     shortDescription: 'Technical site audit, schema markup engineering, and search intent keyword clusters.',
     fullDescription:
       'Complete SEO process deployment: in-depth technical site crawl, Core Web Vitals optimization, on-page schema JSON-LD structuring, and high-authority search content architecture.',
     imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-charts-and-data-31912-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://biohealthlabs.io',
     status: 'Live Project',
     featured: false,
@@ -444,7 +703,9 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     timeline: '8 Weeks',
     browserUrl: 'https://biohealthlabs.io',
     tags: ['Technical SEO', 'Keyword Strategy', 'Core Web Vitals', 'Structured Data'],
-    results: 'Full Technical SEO Blueprint & Keyword Cluster Map',
+    challenges: 'The diagnostic provider was invisible for commercial medical testing search queries due to severe indexation issues and missing structured metadata.',
+    solution: 'Executed an 80-point technical SEO overhaul, implemented MedicalWebPage schema markup, and built 12 topical medical content clusters.',
+    results: '+280% Organic Traffic Lift, 1,450+ Keywords Ranked',
     milestones: [
       { label: 'Keywords Ranked', value: '1,450+' },
       { label: 'Organic Traffic Lift', value: '+280%' },
@@ -462,11 +723,12 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     id: 'port-7',
     title: 'Zenith Velocity Meta Ads Growth Funnel',
     category: 'Meta Ads',
+    industry: 'Performance Gear & D2C Apparel',
     shortDescription: 'Audience testing matrices, dynamic creative variations, and conversion API tracking.',
     fullDescription:
       'High-converting Facebook and Instagram ad campaign setup. Includes modular hook testing, high-CTR static and motion ad creatives, copy angles, and retargeting funnel structuring.',
     imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://zenithvelocity.agency',
     status: 'Live Project',
     featured: true,
@@ -476,7 +738,9 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     timeline: '6 Weeks',
     browserUrl: 'https://zenithvelocity.agency',
     tags: ['Meta Ads', 'Paid Social', 'ROAS Optimization', 'Creative Testing'],
-    results: 'Full-Funnel Campaign Architecture with 12 Creative Variations',
+    challenges: 'Struggled with an unsustainable 1.4x ROAS, high customer acquisition costs, and poor attribution after iOS tracking changes.',
+    solution: 'Architected a multi-angle creative testing system with 18 video cutdowns, Meta Conversions API (CAPI) server-side integration, and dynamic retargeting.',
+    results: '5.6x ROAS, -42% CPA Reduction across 4.2M Reach',
     milestones: [
       { label: 'Campaign Reach', value: '4.2M' },
       { label: 'Ad Variations', value: '18 Sets' },
@@ -499,7 +763,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'Modern direct-to-consumer e-commerce storefront for specialty coffee roasters. Features custom grind selection, subscription cadence logic, and responsive shopping cart UX.',
     imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://artisanroast.store',
     status: 'Live Project',
     featured: false,
@@ -532,7 +796,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'A bespoke, premium engineering agency portal built to show premium UK-based custom software architectures, cloud services, and interactive components with smooth typography and layout fluidity.',
     imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://takweendigital.co.uk',
     status: 'Live Project',
     featured: true,
@@ -561,7 +825,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'A tailored, premium job portal designed for secure, premium recruiting processes and seamless candidate tracking with clean user dashboard experiences and mobile responsiveness.',
     imageUrl: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://undercoverjobs.co.uk',
     status: 'Live Project',
     featured: true,
@@ -590,7 +854,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'A pristine premium real estate application built to show property catalogs, filter specifications, fast image load pipelines, and robust lead capture systems.',
     imageUrl: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://usersproperties.com',
     status: 'Live Project',
     featured: true,
@@ -619,7 +883,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'A premium and highly trustworthy web platform for booking corporate and public legal consultations, uploading case documentation, and coordinating calendars with elite legal experts.',
     imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-creative-team-working-in-modern-office-43406-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://lawyerspublicservices.com',
     status: 'Live Project',
     featured: true,
@@ -648,7 +912,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'A high-fidelity mental wellness and appointment application built for a top UK therapy provider. Secure booking dashboards and therapeutic visual schemes optimized for comfort and trust.',
     imageUrl: 'https://images.unsplash.com/photo-1527689368864-3a821dbccc34?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://takweentherapy.co.uk',
     status: 'Live Project',
     featured: true,
@@ -677,7 +941,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'A dynamic literature shopping and discovery experience tailored for book enthusiasts, featuring responsive list grids, categorization metrics, and high-CTR product templates.',
     imageUrl: 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://bookish.pk',
     status: 'Live Project',
     featured: true,
@@ -706,7 +970,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'A bespoke visual catalog platform and online store designed to support search capabilities, historical and cultural literature collections, and fast delivery order processing.',
     imageUrl: 'https://images.unsplash.com/photo-1513001900722-370f803f498d?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://farooqkitabghar.com',
     status: 'Live Project',
     featured: true,
@@ -735,7 +999,7 @@ export const DEFAULT_PORTFOLIO: PortfolioProject[] = [
     fullDescription:
       'A beautiful, colorful, yet enterprise-grade kids apparel shopping platform featuring visual category bubbles, product grids, custom size guides, and high-conversion checkouts.',
     imageUrl: 'https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=1200&q=85',
-    videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-hands-of-a-man-working-on-a-computer-41486-large.mp4',
+    videoUrl: '/videos/marketing_tycoons_brand_film.mp4',
     projectUrl: 'https://littlekidsstore.pk',
     status: 'Live Project',
     featured: true,
@@ -1073,7 +1337,7 @@ export const DEFAULT_CMS_USERS: CMSUser[] = [
   {
     id: 'user-2',
     name: 'Farooq Ahmad (Editor)',
-    email: 'farooq.editor@marketingtycoons.tech',
+    email: 'farooq.editor@marketingtycoons.org',
     role: 'Editor',
     status: 'Active',
     createdAt: '2026-03-12T11:45:00Z',
@@ -1082,10 +1346,149 @@ export const DEFAULT_CMS_USERS: CMSUser[] = [
   {
     id: 'user-3',
     name: 'Sarah Jenkins (Manager)',
-    email: 'sarah.manager@marketingtycoons.tech',
+    email: 'sarah.manager@marketingtycoons.org',
     role: 'Manager',
     status: 'Active',
     createdAt: '2026-05-20T09:30:00Z',
     lastActive: '2026-09-25T01:15:00Z'
   }
 ];
+
+export const DEFAULT_TEAM_MEMBERS: TeamMember[] = [
+  {
+    id: 'team-1',
+    name: 'Ayaan Khan',
+    role: 'Founder & Managing Director',
+    experience: '8+ Years Scaling Digital Ventures',
+    bio: 'Pioneering growth architect specializing in international expansion, corporate brand positioning, and cross-border client scaling.',
+    achievements: [
+      'Scaled 120+ international client accounts across US, UK & Middle East',
+      'Engineered $45M+ in verified client pipeline and ecommerce revenue',
+      'Keynote speaker on digital brand equity and algorithmic SEO'
+    ],
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=85',
+    linkedin: 'https://linkedin.com/company/marketingtycoons',
+    twitter: 'https://x.com/marketingtycoons',
+    skills: [
+      { name: 'International Brand Positioning', level: 98, category: 'Strategy' },
+      { name: 'Revenue Funnel Architecture', level: 96, category: 'Growth' },
+      { name: 'E-Commerce Unit Economics', level: 94, category: 'Finance' },
+      { name: 'Algorithmic Media Economics', level: 92, category: 'Analytics' }
+    ]
+  },
+  {
+    id: 'team-2',
+    name: 'Marcus Vance',
+    role: 'Head of Web & Cloud Architecture',
+    experience: '10+ Years Full-Stack Engineering',
+    bio: 'Ex-Fintech software architect with expertise in high-concurrency cloud systems, sub-second React platforms, and enterprise security compliance.',
+    achievements: [
+      'Architected platforms sustaining 2M+ monthly active transactions',
+      'Achieved 100/100 Core Web Vitals on 45+ enterprise portals',
+      'AWS & Google Cloud Certified Solutions Architect Professional'
+    ],
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=85',
+    linkedin: 'https://linkedin.com/company/marketingtycoons',
+    github: 'https://github.com/marketingtycoons',
+    skills: [
+      { name: 'React 19 / Next.js / TypeScript', level: 99, category: 'Frontend' },
+      { name: 'Cloud Architecture (AWS / GCP)', level: 97, category: 'DevOps' },
+      { name: 'Core Web Vitals (<420ms Latency)', level: 98, category: 'Performance' },
+      { name: 'Headless CMS & API Contracts', level: 95, category: 'Backend' }
+    ]
+  },
+  {
+    id: 'team-3',
+    name: 'Elena Rostova',
+    role: 'Creative Director & Brand Strategist',
+    experience: '7+ Years Luxury Brand Design',
+    bio: 'Award-winning UI/UX designer and typographer crafting iconic visual identities and digital flagship experiences for luxury and tech innovators.',
+    achievements: [
+      'Awwwards & FWA featured digital design system architect',
+      'Led rebranding initiatives for 8 international corporate conglomerates',
+      'Pioneer of zero-friction checkout and sensory ecommerce UX'
+    ],
+    avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=85',
+    linkedin: 'https://linkedin.com/company/marketingtycoons',
+    twitter: 'https://x.com/marketingtycoons',
+    skills: [
+      { name: 'Design Systems (Figma Tokens)', level: 99, category: 'Systems' },
+      { name: 'UI/UX & Cognitive Conversion', level: 97, category: 'UX' },
+      { name: 'Typography Science & Art Direction', level: 96, category: 'Brand' },
+      { name: 'Motion Physics & Micro-Interactions', level: 93, category: 'Motion' }
+    ]
+  },
+  {
+    id: 'team-4',
+    name: 'Hamza Malik',
+    role: 'Head of Search & Performance Marketing',
+    experience: '8+ Years Algorithmic Growth',
+    bio: 'Quantitative media buyer and technical search engine specialist managing seven-figure advertising budgets with rigorous ROAS attribution.',
+    achievements: [
+      'Managed $12M+ in high-performing paid media across Meta and Google',
+      'Consistently generated 4.8x+ average ROAS on D2C scaling campaigns',
+      'Meta Certified Media Buying Professional & Google Search Master'
+    ],
+    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=85',
+    linkedin: 'https://linkedin.com/company/marketingtycoons',
+    twitter: 'https://x.com/marketingtycoons',
+    skills: [
+      { name: 'Server-Side CAPI & Meta Ads', level: 98, category: 'Paid Media' },
+      { name: 'Google Performance Max & Search', level: 96, category: 'Search' },
+      { name: 'Technical SEO & JSON-LD Schemas', level: 95, category: 'SEO' },
+      { name: 'Attribution Modeling & CAC Tuning', level: 94, category: 'Analytics' }
+    ]
+  }
+];
+
+export const DEFAULT_INDUSTRIES: IndustryItem[] = [
+  {
+    id: 'ind-fintech',
+    name: 'Fintech & Financial Services',
+    description: 'High-security, compliant portals and trust-centered digital customer acquisition funnels.',
+    iconName: 'Shield',
+    metrics: '99.99% Uptime · SOC2 Standard',
+    caseCount: '24+ Portals Launched'
+  },
+  {
+    id: 'ind-ecommerce',
+    name: 'High-Growth E-Commerce & D2C',
+    description: 'Headless storefronts, custom subscription builders, and frictionless one-click checkouts.',
+    iconName: 'ShoppingBag',
+    metrics: '+164% Conversion Lift',
+    caseCount: '38+ Storefronts'
+  },
+  {
+    id: 'ind-saas',
+    name: 'B2B SaaS & Enterprise Tech',
+    description: 'Product-led growth architecture, interactive feature sandboxes, and pipeline generation.',
+    iconName: 'Code',
+    metrics: '3.4x Demo Request Rate',
+    caseCount: '31+ SaaS Brands'
+  },
+  {
+    id: 'ind-health',
+    name: 'Healthcare, Biotech & Wellness',
+    description: 'Patient acquisition, HIPAA-conscious digital infrastructures, and authoritative medical branding.',
+    iconName: 'Activity',
+    metrics: '100% Privacy Compliant',
+    caseCount: '19+ Projects'
+  },
+  {
+    id: 'ind-realestate',
+    name: 'Real Estate & Spatial Architecture',
+    description: 'High-resolution property showcases, investor pitch suites, and interactive lead capture.',
+    iconName: 'Building',
+    metrics: 'Sub-400ms High-Res Media',
+    caseCount: '22+ Developments'
+  },
+  {
+    id: 'ind-luxury',
+    name: 'Luxury & Lifestyle Brands',
+    description: 'Sensory visual storytelling, restrained minimalist typography, and high-touch VIP journeys.',
+    iconName: 'Crown',
+    metrics: 'Premium Category Moat',
+    caseCount: '27+ Brand Bibles'
+  }
+];
+

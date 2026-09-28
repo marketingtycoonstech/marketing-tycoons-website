@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 @layer base {
   :root {
     --font-primary: 'Manrope', system-ui, -apple-system, sans-serif;
@@ -181,6 +183,45 @@
   100% {
     transform: translateX(-33.3333%);
   }
+}
+
+@keyframes goldGlitterShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-gold-glitter-border {
+  position: relative;
+}
+
+.hero-gold-glitter-border::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: linear-gradient(
+    115deg,
+    #D4AF37 0%,
+    #FFF4B8 22%,
+    #AA771C 48%,
+    #FFE88A 72%,
+    #D4AF37 100%
+  );
+  background-size: 250% 250%;
+  animation: goldGlitterShift 4s ease infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 20;
 }
 
 .animate-marquee {

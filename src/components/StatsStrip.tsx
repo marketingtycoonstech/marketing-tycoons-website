@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
+import { motion } from 'framer-motion';
 
 interface AnimatedCounterProps {
   valueString: string;
@@ -64,19 +65,50 @@ const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ valueString }) => {
   );
 };
 
+const statsContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const statItemVariants = {
+  hidden: { opacity: 0, y: 28, scale: 0.96 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.7,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  }
+};
+
 export const StatsStrip: React.FC = () => {
   const { stats } = useApp();
 
   return (
     <section
       id="stats-strip"
-      className="relative z-20 py-10 border-y border-black/10 dark:border-[#2A3441] bg-[#FFFFFF] dark:bg-[#0B0F14] text-[#111111] dark:text-[#D1D5DB] transition-colors duration-300 shadow-sm dark:shadow-2xl"
+      className="relative z-20 py-10 border-y border-black/10 dark:border-[#2A3441] bg-[#FFFFFF] dark:bg-[#0B0F14] text-[#111111] dark:text-[#D1D5DB] transition-colors duration-300 shadow-sm dark:shadow-2xl overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 divide-y-0 md:divide-x divide-black/10 dark:divide-[#2A3441]">
+        <motion.div
+          variants={statsContainerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.25 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-0 divide-y-0 md:divide-x divide-black/10 dark:divide-[#2A3441]"
+        >
           {stats.map((stat, idx) => (
-            <div
+            <motion.div
               key={stat.id || idx}
+              variants={statItemVariants}
               className="flex flex-col items-center justify-center text-center px-4 py-2 group cursor-default"
             >
               <div className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#B88932] dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-white dark:via-[#F6C453] dark:to-[#D4AF37] tracking-tight group-hover:scale-105 transition-transform duration-300">
@@ -85,9 +117,9 @@ export const StatsStrip: React.FC = () => {
               <span className="mt-2 text-xs sm:text-sm font-semibold uppercase tracking-wider text-gray-600 dark:text-[#9CA3AF] group-hover:text-[#B88932] dark:group-hover:text-[#F6C453] transition-colors">
                 {stat.label}
               </span>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

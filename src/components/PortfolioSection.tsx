@@ -8,10 +8,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProjectCardProps {
   project: PortfolioProject;
+  index: number;
   onSelect: (p: PortfolioProject) => void;
 }
 
-const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect }) => {
+const cardVariants = {
+  hidden: { opacity: 0, y: 42, scale: 0.96 },
+  visible: (idx: number) => ({
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.7,
+      delay: (idx % 3) * 0.1,
+      ease: [0.16, 1, 0.3, 1]
+    }
+  })
+};
+
+const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, onSelect }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const highlightStat = useMemo(() => {
@@ -23,16 +38,22 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onSelect }) => {
 
   return (
     <motion.div
+      custom={index}
+      variants={cardVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.12 }}
       onClick={() => onSelect(project)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       whileHover={{
         scale: 1.025,
-        y: -4,
+        y: -5,
         borderColor: 'rgba(212, 175, 55, 0.8)',
-        boxShadow: '0 12px 30px -5px rgba(212, 175, 55, 0.25), 0 0 15px rgba(212, 175, 55, 0.2)'
+        boxShadow: '0 16px 36px -6px rgba(212, 175, 55, 0.25), 0 0 20px rgba(212, 175, 55, 0.15)'
       }}
-      transition={{ duration: 0.22, ease: 'easeOut' }}
+      whileTap={{ scale: 0.99 }}
+      transition={{ duration: 0.25, ease: 'easeOut' }}
       className="group relative flex flex-col justify-between bg-white dark:bg-[#0A0A0A] border border-black/10 dark:border-[#222222] rounded-2xl p-4 cursor-pointer transition-colors duration-200"
     >
       {/* Visual Preview Frame */}
@@ -214,6 +235,7 @@ export const PortfolioSection: React.FC = () => {
               >
                 <ProjectCard
                   project={project}
+                  index={idx}
                   onSelect={setActiveProjectModal}
                 />
               </motion.div>

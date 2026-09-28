@@ -1,5 +1,16 @@
 export type ThemeMode = 'dark' | 'light';
 
+export interface ServiceProcessStep {
+  step: string;
+  title: string;
+  description: string;
+}
+
+export interface ServiceFaq {
+  question: string;
+  answer: string;
+}
+
 export interface ServiceItem {
   id: string;
   title: string;
@@ -13,6 +24,12 @@ export interface ServiceItem {
   startingPrice?: string;
   bgImageUrl?: string;
   videoUrl?: string;
+  // Deep service fields for international agency structure
+  problemsSolved?: string[];
+  approach?: string;
+  benefits?: string[];
+  processSteps?: ServiceProcessStep[];
+  faqs?: ServiceFaq[];
 }
 
 export type ProjectCategory =
@@ -50,14 +67,46 @@ export interface PortfolioProject {
   featured: boolean;
   order: number;
   clientName?: string;
+  industry?: string;
   completionDate?: string;
   timeline?: string;
   tags: string[];
+  challenges?: string;
+  solution?: string;
   results?: string | string[];
   milestones?: ProjectMilestone[];
   socialLinks?: ProjectSocialLink[];
   technologies?: string[];
   browserUrl?: string;
+}
+
+export interface TeamSkill {
+  name: string;
+  level: number; // 0 to 100 percentage
+  category?: string;
+}
+
+export interface TeamMember {
+  id: string;
+  name: string;
+  role: string;
+  experience: string;
+  bio: string;
+  achievements: string[];
+  avatarUrl: string;
+  linkedin?: string;
+  twitter?: string;
+  github?: string;
+  skills?: TeamSkill[];
+}
+
+export interface IndustryItem {
+  id: string;
+  name: string;
+  description: string;
+  iconName: string;
+  metrics: string;
+  caseCount: string;
 }
 
 export interface TestimonialItem {

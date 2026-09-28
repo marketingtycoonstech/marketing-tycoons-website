@@ -5,6 +5,7 @@ import { setServiceMeta, resetDefaultMeta } from '../../utils/seo';
 import {
   X,
   CheckCircle2,
+  AlertCircle,
   ArrowRight,
   Share2,
   Check,
@@ -12,12 +13,20 @@ import {
   Linkedin,
   Facebook,
   MessageCircle,
-  Copy
+  Copy,
+  ChevronDown,
+  ChevronUp,
+  Sparkles,
+  Layers,
+  HelpCircle,
+  Compass,
+  Zap
 } from 'lucide-react';
 
 export const ServiceDetailModal: React.FC = () => {
-  const { activeServiceModal, setActiveServiceModal } = useApp();
+  const { activeServiceModal, setActiveServiceModal, setIsConsultationModalOpen } = useApp();
   const [copied, setCopied] = useState(false);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   useEffect(() => {
     if (activeServiceModal) {
@@ -32,7 +41,7 @@ export const ServiceDetailModal: React.FC = () => {
 
   if (!activeServiceModal) return null;
 
-  const currentUrl = `https://marketingtycoons.tech/#services?service=${activeServiceModal.id}`;
+  const currentUrl = `https://marketingtycoons.org/#services?service=${activeServiceModal.id}`;
   const shareText = `Discover ${activeServiceModal.title} solutions engineered by Marketing Tycoons!`;
 
   const handleCopyLink = () => {
@@ -41,180 +50,235 @@ export const ServiceDetailModal: React.FC = () => {
     setTimeout(() => setCopied(false), 2500);
   };
 
-  const shareToTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(currentUrl)}&via=MktgTycoons`,
-      '_blank'
-    );
+  const handleBookConsultation = () => {
+    setActiveServiceModal(null);
+    setIsConsultationModalOpen(true);
   };
 
-  const shareToLinkedIn = () => {
-    window.open(
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
-      '_blank'
-    );
-  };
-
-  const shareToFacebook = () => {
-    window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`,
-      '_blank'
-    );
-  };
-
-  const shareToWhatsApp = () => {
-    window.open(
-      `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + currentUrl)}`,
-      '_blank'
-    );
+  const toggleFaq = (idx: number) => {
+    setOpenFaqIndex(openFaqIndex === idx ? null : idx);
   };
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 dark:bg-black/90 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
       onClick={() => setActiveServiceModal(null)}
     >
       <div
-        className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#F8F7F3] dark:bg-[#0B0D0F] border border-black/10 dark:border-white/10 shadow-2xl p-6 sm:p-8 text-left text-[#111111] dark:text-[#F5F2EA]"
-        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-3xl bg-[#FFFFFF] dark:bg-[#0B0F16] border border-black/10 dark:border-[#222E3F] shadow-2xl p-6 sm:p-10 text-left text-[#111111] dark:text-[#FFFFFF]"
+        onClick={e => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={() => setActiveServiceModal(null)}
-          className="absolute top-5 right-5 p-2 rounded-full bg-black/5 dark:bg-white/5 hover:bg-[#B88932] hover:text-white dark:hover:bg-[#C79A45] dark:hover:text-black border border-black/10 dark:border-white/10 text-gray-700 dark:text-gray-300 transition-colors cursor-pointer"
+          className="absolute top-5 right-5 p-2 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors cursor-pointer z-20"
+          aria-label="Close modal"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-6 pr-10">
-          <div className="w-14 h-14 rounded-2xl bg-[#B88932]/10 dark:bg-[#C79A45]/20 border border-[#B88932]/30 dark:border-[#C79A45]/40 flex items-center justify-center text-[#B88932] dark:text-[#E0B866]">
+        {/* 1. Header & Service Overview */}
+        <div className="flex items-start gap-4 mb-6 pr-8">
+          <div className="w-14 h-14 rounded-2xl bg-black/5 dark:bg-[#151D28] border border-black/10 dark:border-[#222E3F] flex items-center justify-center text-[#D4AF37] shrink-0">
             <DynamicIcon name={activeServiceModal.iconName} className="w-7 h-7" />
           </div>
           <div>
-            <span className="text-xs uppercase tracking-widest text-[#B88932] dark:text-[#E0B866] font-bold">
-              Specialized Service
-            </span>
-            <h3 className="font-display text-2xl font-extrabold text-[#111111] dark:text-white">
+            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#D4AF37] mb-1">
+              Dedicated Service Domain · Marketing Tycoons
+            </div>
+            <h2 className="font-display text-2xl sm:text-3xl font-extrabold uppercase text-[#111111] dark:text-white leading-tight">
               {activeServiceModal.title}
+            </h2>
+          </div>
+        </div>
+
+        {/* Full Overview */}
+        <div className="mb-8">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-[#9CA3AF] leading-relaxed font-light">
+            {activeServiceModal.fullDescription || activeServiceModal.shortDescription}
+          </p>
+        </div>
+
+        {/* 2. Problems We Solve */}
+        {activeServiceModal.problemsSolved && activeServiceModal.problemsSolved.length > 0 && (
+          <div className="mb-8 p-5 sm:p-6 rounded-2xl bg-rose-500/5 dark:bg-rose-500/5 border border-rose-500/20">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 mb-3.5">
+              <AlertCircle className="w-4 h-4" />
+              <span>Critical Roadblocks We Solve</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {activeServiceModal.problemsSolved.map((problem, idx) => (
+                <div key={idx} className="flex items-start gap-2.5 text-xs text-gray-700 dark:text-gray-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0 mt-1.5" />
+                  <span className="leading-relaxed">{problem}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 3. Our Strategic Approach */}
+        {activeServiceModal.approach && (
+          <div className="mb-8 p-5 sm:p-6 rounded-2xl bg-[#F8F7F3] dark:bg-[#0E131C] border border-black/10 dark:border-[#1E2530]">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#D4AF37] mb-2.5">
+              <Compass className="w-4 h-4" />
+              <span>Our Strategic Approach</span>
+            </div>
+            <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-light">
+              {activeServiceModal.approach}
+            </p>
+          </div>
+        )}
+
+        {/* 4. Concrete Benefits & ROI Multipliers */}
+        {activeServiceModal.benefits && activeServiceModal.benefits.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3.5">
+              Measurable Business Impact & ROI
             </h3>
-          </div>
-        </div>
-
-        {/* Full Description */}
-        <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-6 font-normal">
-          {activeServiceModal.fullDescription || activeServiceModal.shortDescription}
-        </p>
-
-        {/* Social Share Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-[#FFFFFF] dark:bg-[#111417] border border-black/10 dark:border-white/10 mb-6">
-          <div className="flex items-center gap-2 text-xs font-semibold text-gray-700 dark:text-gray-300">
-            <Share2 className="w-3.5 h-3.5 text-[#B88932] dark:text-[#C79A45]" />
-            <span>Share Service:</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={shareToTwitter}
-              title="Share on X"
-              className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-[#B88932] hover:text-white dark:hover:bg-[#C79A45] dark:hover:text-black transition-colors"
-            >
-              <Twitter className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={shareToLinkedIn}
-              title="Share on LinkedIn"
-              className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-[#B88932] hover:text-white dark:hover:bg-[#C79A45] dark:hover:text-black transition-colors"
-            >
-              <Linkedin className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={shareToFacebook}
-              title="Share on Facebook"
-              className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-[#B88932] hover:text-white dark:hover:bg-[#C79A45] dark:hover:text-black transition-colors"
-            >
-              <Facebook className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={shareToWhatsApp}
-              title="Share on WhatsApp"
-              className="p-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-[#B88932] hover:text-white dark:hover:bg-[#C79A45] dark:hover:text-black transition-colors"
-            >
-              <MessageCircle className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={handleCopyLink}
-              title="Copy Link"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-black/5 dark:bg-white/5 hover:bg-[#B88932] hover:text-white dark:hover:bg-[#C79A45] dark:hover:text-black transition-colors text-xs font-semibold"
-            >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copied ? 'Copied' : 'Copy'}</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Key Features */}
-        {activeServiceModal.features && activeServiceModal.features.length > 0 && (
-          <div className="mb-6">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-3">
-              Core Scope & Capabilities
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              {activeServiceModal.features.map((feat, idx) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {activeServiceModal.benefits.map((benefit, idx) => (
                 <div
                   key={idx}
-                  className="flex items-start gap-2.5 p-3 rounded-xl bg-[#FFFFFF] dark:bg-[#111417] border border-black/10 dark:border-white/10"
+                  className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-[#F8F7F3] dark:bg-[#0E131C] border border-black/10 dark:border-[#1E2530]"
                 >
-                  <CheckCircle2 className="w-4 h-4 text-[#B88932] dark:text-[#E0B866] shrink-0 mt-0.5" />
-                  <span className="text-xs text-gray-800 dark:text-gray-200 font-medium">{feat}</span>
+                  <Zap className="w-4 h-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                  <span className="text-xs font-medium text-gray-800 dark:text-gray-200 leading-relaxed">
+                    {benefit}
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Deliverables */}
-        {activeServiceModal.deliverables && activeServiceModal.deliverables.length > 0 && (
+        {/* 5. Delivery Process Sprints */}
+        {activeServiceModal.processSteps && activeServiceModal.processSteps.length > 0 && (
           <div className="mb-8">
-            <h4 className="text-xs font-bold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-3">
-              Expected Deliverables
-            </h4>
-            <div className="space-y-2">
-              {activeServiceModal.deliverables.map((del, idx) => (
-                <div key={idx} className="flex items-center gap-2 text-xs text-gray-700 dark:text-gray-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#B88932] dark:bg-[#C79A45]" />
-                  <span>{del}</span>
+            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3.5">
+              Milestone & Sprint Methodology
+            </h3>
+            <div className="space-y-3">
+              {activeServiceModal.processSteps.map((st, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-2xl bg-black/5 dark:bg-[#0E131C] border border-black/10 dark:border-[#1E2530] flex items-start gap-4"
+                >
+                  <div className="text-base font-black font-display text-[#D4AF37] shrink-0 mt-0.5">
+                    {st.step}
+                  </div>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-[#111111] dark:text-white mb-1">
+                      {st.title}
+                    </h4>
+                    <p className="text-xs text-gray-600 dark:text-gray-400 font-light leading-relaxed">
+                      {st.description}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* Footer Actions */}
-        <div className="pt-6 border-t border-black/10 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Features & Deliverables Checklist */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 pt-4 border-t border-black/10 dark:border-[#1E2530]">
+          {activeServiceModal.features && activeServiceModal.features.length > 0 && (
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+                Core Capabilities Included
+              </h4>
+              <ul className="space-y-2">
+                {activeServiceModal.features.map((feat, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-gray-700 dark:text-gray-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-[#D4AF37] shrink-0 mt-0.5" />
+                    <span>{feat}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {activeServiceModal.deliverables && activeServiceModal.deliverables.length > 0 && (
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">
+                Final Tangible Deliverables
+              </h4>
+              <ul className="space-y-2">
+                {activeServiceModal.deliverables.map((deliv, i) => (
+                  <li key={i} className="flex items-start gap-2 text-xs text-gray-700 dark:text-gray-300">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] shrink-0 mt-1.5" />
+                    <span>{deliv}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* 6. Service Specific FAQs */}
+        {activeServiceModal.faqs && activeServiceModal.faqs.length > 0 && (
+          <div className="mb-8 pt-4 border-t border-black/10 dark:border-[#1E2530]">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3.5">
+              <HelpCircle className="w-4 h-4 text-[#D4AF37]" />
+              <span>Frequently Asked Questions</span>
+            </div>
+            <div className="space-y-2.5">
+              {activeServiceModal.faqs.map((faq, i) => {
+                const isOpen = openFaqIndex === i;
+                return (
+                  <div
+                    key={i}
+                    className="rounded-2xl border border-black/10 dark:border-[#1E2530] bg-[#F8F7F3] dark:bg-[#0E131C] overflow-hidden"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(i)}
+                      className="w-full p-4 flex items-center justify-between text-left text-xs font-bold text-gray-900 dark:text-gray-100 hover:text-[#D4AF37] transition-colors cursor-pointer"
+                    >
+                      <span>{faq.question}</span>
+                      {isOpen ? <ChevronUp className="w-4 h-4 text-[#D4AF37]" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                    </button>
+                    {isOpen && (
+                      <div className="px-4 pb-4 text-xs text-gray-600 dark:text-gray-300 font-light leading-relaxed border-t border-black/5 dark:border-white/5 pt-2">
+                        {faq.answer}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* 7. Strong Conversion CTA Bar & Price */}
+        <div className="pt-6 border-t border-black/10 dark:border-[#1E2530] flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="text-xs text-gray-500 dark:text-gray-400">Estimated Investment</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 block">
+              Transparent Milestone Pricing
+            </span>
             <div className="text-lg font-display font-extrabold text-[#111111] dark:text-white">
-              {activeServiceModal.startingPrice ? `Starting at ${activeServiceModal.startingPrice}` : 'Custom Scope'}
+              {activeServiceModal.startingPrice ? `Starting at ${activeServiceModal.startingPrice}` : 'Bespoke Enterprise Scope'}
             </div>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
               onClick={() => setActiveServiceModal(null)}
-              className="w-1/2 sm:w-auto px-5 py-3 rounded-xl border border-black/20 dark:border-white/20 text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white text-xs font-semibold cursor-pointer"
+              className="w-1/2 sm:w-auto px-5 py-3 rounded-full border border-black/15 dark:border-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-all cursor-pointer"
             >
               Close
             </button>
-            <a
-              href="#contact"
-              onClick={() => setActiveServiceModal(null)}
-              className="w-1/2 sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#B88932] via-[#C79A45] to-[#8A641F] dark:from-[#C79A45] dark:via-[#E0B866] dark:to-[#8A641F] text-white dark:text-black font-extrabold text-xs tracking-wider uppercase hover:shadow-lg transition-all"
+            <button
+              onClick={handleBookConsultation}
+              className="w-1/2 sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#F6C453] text-black font-bold text-xs uppercase tracking-wider hover:scale-103 active:scale-97 transition-all shadow-md cursor-pointer"
             >
-              <span>Book Service</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+              <span>Book Free Consultation</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
+
       </div>
     </div>
   );

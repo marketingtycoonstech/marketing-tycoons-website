@@ -20,6 +20,11 @@ export const CinematicVideoPlayer: React.FC<CinematicVideoPlayerProps> = ({
   isHovered,
   isTouchDevice = false
 }) => {
+  const safeVideoUrl =
+    videoUrl && !videoUrl.includes('mixkit') && !videoUrl.includes('gtv-videos-bucket')
+      ? videoUrl
+      : '/videos/marketing_tycoons_brand_film.mp4';
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -205,10 +210,10 @@ export const CinematicVideoPlayer: React.FC<CinematicVideoPlayerProps> = ({
       />
 
       {/* HTML5 Video Element with High-Performance Cinematic Loop */}
-      {videoUrl && (
+      {safeVideoUrl && (
         <video
           ref={videoRef}
-          src={videoUrl}
+          src={safeVideoUrl}
           poster={posterUrl}
           muted={isMuted}
           playsInline

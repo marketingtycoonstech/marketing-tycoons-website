@@ -8,15 +8,15 @@ export const StorytellingSection: React.FC = () => {
   const [videoMuted, setVideoMuted] = useState(false); // Default to unmuted so the voiceover plays
   const [videoDuration, setVideoDuration] = useState(0);
   const [videoCurrentTime, setVideoCurrentTime] = useState(0);
-  const [videoSrc, setVideoSrc] = useState('https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4');
+  const [videoSrc, setVideoSrc] = useState('/marketing_tycoons_brand_film.mp4');
   const [isSlowConnection, setIsSlowConnection] = useState(false);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
   const sectionRef = useRef<HTMLDivElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // High-quality online fallback URL (100% reliable Google GCS stream)
-  const fallbackVideoUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4';
+  // High-quality local video URL
+  const fallbackVideoUrl = '/videos/marketing_tycoons_brand_film.mp4';
   const fallbackPosterUrl = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85';
 
   // Detect connection speed and reduced motion preferences
@@ -68,9 +68,17 @@ export const StorytellingSection: React.FC = () => {
     video.muted = videoMuted;
 
     if (isPlaying) {
-      video.play().catch(() => {
-        setIsPlaying(false);
-      });
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('Playback prevented by browser audio policy, switching to muted:', err);
+          video.muted = true;
+          setVideoMuted(true);
+          video.play().catch(() => {
+            setIsPlaying(false);
+          });
+        });
+      }
     } else {
       video.pause();
     }
@@ -189,16 +197,21 @@ export const StorytellingSection: React.FC = () => {
             {/* Video Element */}
             <video
               ref={videoRef}
-              src={videoSrc}
               poster={fallbackPosterUrl}
               loop
               muted={videoMuted}
               playsInline
+              preload="auto"
               onTimeUpdate={handleTimeUpdate}
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
               onError={handleVideoError}
               className="w-full h-full object-cover cursor-pointer"
               onClick={() => setIsPlaying(!isPlaying)}
-            />
+            >
+              <source src={videoSrc} type="video/mp4" />
+              <source src={fallbackVideoUrl} type="video/mp4" />
+            </video>
 
             {/* Cinema Bars gradient cover */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none z-10" />

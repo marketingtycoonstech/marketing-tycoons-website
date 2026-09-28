@@ -12,13 +12,16 @@ export const VideoStoryModal: React.FC = () => {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
-  // High-quality corporate team showreel video URL (100% reliable Google GCS CDN stream)
-  const brandFilmUrl = 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4';
+  // High-quality local brand film video URL (instant 100% reliable local stream)
+  const brandFilmUrl = '/marketing_tycoons_brand_film.mp4';
   const posterUrl = 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=85';
 
   // Synchronize playing and muted states to HTML5 video element
   useEffect(() => {
-    if (!isVideoStoryModalOpen) return;
+    if (!isVideoStoryModalOpen) {
+      setIsPlaying(false);
+      return;
+    }
 
     const video = videoRef.current;
     if (!video) return;
@@ -26,9 +29,17 @@ export const VideoStoryModal: React.FC = () => {
     video.muted = videoMuted;
 
     if (isPlaying) {
-      video.play().catch(() => {
-        setIsPlaying(false);
-      });
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((err) => {
+          console.warn('Playback prevented by browser audio policy, falling back to muted autoplay:', err);
+          video.muted = true;
+          setVideoMuted(true);
+          video.play().catch(() => {
+            setIsPlaying(false);
+          });
+        });
+      }
     } else {
       video.pause();
     }
@@ -138,18 +149,23 @@ export const VideoStoryModal: React.FC = () => {
             </button>
           )}
 
-          {/* HTML5 Native Video Tag */}
+          {/* HTML5 Native Video Tag with multiple fallback sources */}
           <video
             ref={videoRef}
-            src={brandFilmUrl}
             poster={posterUrl}
             loop
             muted={videoMuted}
             playsInline
+            preload="auto"
             onTimeUpdate={handleTimeUpdate}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
             className="w-full h-full object-cover cursor-pointer"
             onClick={() => setIsPlaying(!isPlaying)}
-          />
+          >
+            <source src={brandFilmUrl} type="video/mp4" />
+            <source src="/videos/marketing_tycoons_brand_film.mp4" type="video/mp4" />
+          </video>
 
           {/* Film Control HUD Overlay (Fades on hover) */}
           <div className="absolute inset-x-4 bottom-4 z-30 flex flex-col gap-2 bg-black/90 border border-white/10 p-3 rounded-xl backdrop-blur-md transition-all duration-300 opacity-0 group-hover:opacity-100">

@@ -15,7 +15,9 @@ import {
   DEFAULT_SUBMISSIONS,
   DEFAULT_MEDIA,
   DEFAULT_MENUS,
-  DEFAULT_CMS_USERS
+  DEFAULT_CMS_USERS,
+  DEFAULT_TEAM_MEMBERS,
+  DEFAULT_INDUSTRIES
 } from '../data/defaultData';
 import {
   AdminUser,
@@ -38,7 +40,9 @@ import {
   FormSubmission,
   MediaAsset,
   NavigationMenuItem,
-  CMSUser
+  CMSUser,
+  TeamMember,
+  IndustryItem
 } from '../types';
 import {
   auth,
@@ -199,10 +203,20 @@ interface AppContextType {
   setIsPrivacyModalOpen: (open: boolean) => void;
   isTermsModalOpen: boolean;
   setIsTermsModalOpen: (open: boolean) => void;
+  isRefundModalOpen: boolean;
+  setIsRefundModalOpen: (open: boolean) => void;
+  isCookieModalOpen: boolean;
+  setIsCookieModalOpen: (open: boolean) => void;
+  isConsultationModalOpen: boolean;
+  setIsConsultationModalOpen: (open: boolean) => void;
   isWeChatModalOpen: boolean;
   setIsWeChatModalOpen: (open: boolean) => void;
   isLoginModalOpen: boolean;
   setIsLoginModalOpen: (open: boolean) => void;
+
+  // Team & Industries
+  teamMembers: TeamMember[];
+  industries: IndustryItem[];
 
   // Reset to default helper
   resetToFactoryDefaults: () => void;
@@ -271,6 +285,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         }
         if (!parsed.phone || parsed.phone.includes('555') || parsed.phone.includes('892-4400')) {
           parsed.phone = '+92 342 6793428';
+        }
+        if (!parsed.primaryEmail || parsed.primaryEmail === 'marketingtycoons@gmail.com') {
+          parsed.primaryEmail = 'marketingtycoons.tech@gmail.com';
         }
         return { ...DEFAULT_WEBSITE_SETTINGS, ...parsed };
       } catch {
@@ -1338,8 +1355,13 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isVideoStoryModalOpen, setIsVideoStoryModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+  const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
+  const [isCookieModalOpen, setIsCookieModalOpen] = useState(false);
+  const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
   const [isWeChatModalOpen, setIsWeChatModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [teamMembers] = useState<TeamMember[]>(DEFAULT_TEAM_MEMBERS);
+  const [industries] = useState<IndustryItem[]>(DEFAULT_INDUSTRIES);
 
   const resetToFactoryDefaults = () => {
     localStorage.removeItem('mt_settings');
@@ -1482,10 +1504,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsPrivacyModalOpen,
         isTermsModalOpen,
         setIsTermsModalOpen,
+        isRefundModalOpen,
+        setIsRefundModalOpen,
+        isCookieModalOpen,
+        setIsCookieModalOpen,
+        isConsultationModalOpen,
+        setIsConsultationModalOpen,
         isWeChatModalOpen,
         setIsWeChatModalOpen,
         isLoginModalOpen,
         setIsLoginModalOpen,
+        teamMembers,
+        industries,
         resetToFactoryDefaults
       }}
     >

@@ -285,14 +285,32 @@ export const ContactSection: React.FC = () => {
 
             </div>
 
-            {/* Headquarters Card */}
-            <div className="p-5 rounded-2xl bg-white dark:bg-[#0E0E12] border border-black/10 dark:border-[rgba(223,171,64,0.22)] shadow-xs">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-[#A0A0A0] mb-1">
-                Global Operations
-              </h4>
-              <p className="text-sm text-gray-800 dark:text-[#FFFFFF]">
-                {settings.address}
-              </p>
+            {/* Business Hours & Regional Hubs Card */}
+            <div className="p-5 rounded-2xl bg-white dark:bg-[#0E0E12] border border-black/10 dark:border-[rgba(223,171,64,0.22)] shadow-xs space-y-4 text-left">
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-[#A0A0A0] mb-1">
+                  Global Headquarters & Hubs
+                </h4>
+                <p className="text-sm font-semibold text-gray-800 dark:text-[#FFFFFF]">
+                  {settings.address}
+                </p>
+                <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                  <div>· UK Desk: 100 Bishopsgate, London EC2N 4AG</div>
+                  <div>· APAC Desk: Marina Bay Financial Centre, Singapore</div>
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-black/10 dark:border-white/10">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-[#A0A0A0] mb-1">
+                  Official Business Hours
+                </h4>
+                <p className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                  Monday – Friday: 9:00 AM – 6:00 PM EST
+                </p>
+                <span className="text-[11px] text-[#DFAB40] block mt-0.5">
+                  24/7 Priority SLA response for managed retainer clients
+                </span>
+              </div>
             </div>
 
           </div>

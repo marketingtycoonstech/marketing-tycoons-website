@@ -14,6 +14,10 @@ import { CinematicCtaSection } from './components/CinematicCtaSection';
 import { ContactSection } from './components/ContactSection';
 import { Footer } from './components/Footer';
 import { GlobalReach } from './components/GlobalReach';
+import { WhyChooseUsSection } from './components/WhyChooseUsSection';
+import { ProcessSection } from './components/ProcessSection';
+import { TeamSection } from './components/TeamSection';
+import { IndustriesSection } from './components/IndustriesSection';
 
 // Cinematic Experience Enhancements
 import { ScrollProgress } from './components/common/ScrollProgress';
@@ -29,6 +33,7 @@ import { GoogleOAuthModal } from './components/modals/GoogleOAuthModal';
 import { VideoStoryModal } from './components/modals/VideoStoryModal';
 import { AdminLoginModal } from './components/modals/AdminLoginModal';
 import { LegalModals } from './components/modals/LegalModals';
+import { ConsultationModal } from './components/modals/ConsultationModal';
 
 // Admin View
 import { AdminDashboard } from './components/admin/AdminDashboard';
@@ -37,7 +42,19 @@ const MainAppContent: React.FC = () => {
   const { currentView, setCurrentView, isAdminLoggedIn, setIsLoginModalOpen, pages } = useApp();
 
   const homePage = pages.find(p => p.id === 'page-home');
-  const sectionsOrder = homePage?.sectionsOrder || ['hero', 'ticker', 'stats', 'services', 'about', 'story', 'portfolio', 'testimonials', 'reach', 'faq', 'cta', 'contact'];
+  const sectionsOrder = homePage?.sectionsOrder || [
+    'hero',
+    'ticker',
+    'services',
+    'whyChooseUs',
+    'process',
+    'portfolio',
+    'testimonials',
+    'team',
+    'industries',
+    'faq',
+    'contact'
+  ];
 
   // Listen to browser path or hash changes (e.g. /admin or #admin) and keyboard stealth shortcut
   useEffect(() => {
@@ -107,6 +124,10 @@ const MainAppContent: React.FC = () => {
               return <StatsStrip key="stats" />;
             case 'services':
               return <ServicesSection key="services" />;
+            case 'whyChooseUs':
+              return <WhyChooseUsSection key="whyChooseUs" />;
+            case 'process':
+              return <ProcessSection key="process" />;
             case 'about':
               return <AboutSection key="about" />;
             case 'story':
@@ -115,6 +136,10 @@ const MainAppContent: React.FC = () => {
               return <PortfolioSection key="portfolio" />;
             case 'testimonials':
               return <TestimonialsSection key="testimonials" />;
+            case 'team':
+              return <TeamSection key="team" />;
+            case 'industries':
+              return <IndustriesSection key="industries" />;
             case 'reach':
               return <GlobalReach key="globalReach" />;
             case 'faq':
@@ -143,6 +168,7 @@ const MainAppContent: React.FC = () => {
       <VideoStoryModal />
       <AdminLoginModal />
       <LegalModals />
+      <ConsultationModal />
     </div>
   );
 };

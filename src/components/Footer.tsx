@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrandLogo } from './common/BrandLogo';
 import { useApp } from '../context/AppContext';
+import { NewsletterSection } from './NewsletterSection';
 import {
   ArrowUp,
   Shield,
@@ -21,8 +22,12 @@ export const Footer: React.FC = () => {
   const {
     settings,
     socialLinks,
+    services,
+    setActiveServiceModal,
     setIsPrivacyModalOpen,
-    setIsTermsModalOpen
+    setIsTermsModalOpen,
+    setIsRefundModalOpen,
+    setIsCookieModalOpen
   } = useApp();
 
   const scrollToTop = () => {
@@ -291,13 +296,16 @@ export const Footer: React.FC = () => {
           </a>
         </div>
 
-        {/* Bottom Bar: Copyright & Policies */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs dark:text-[#9CA3AF] text-gray-600">
+        {/* High-Conversion Executive Newsletter Section */}
+        <NewsletterSection />
+
+        {/* Bottom Bar: Copyright & 4 Policies */}
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs dark:text-[#9CA3AF] text-gray-600">
           <div>
-            <span>© 2026 Marketing Tycoons. All rights reserved.</span>
+            <span>© 2026 Marketing Tycoons. All rights reserved. Registered International Digital Agency.</span>
           </div>
 
-          <div className="flex items-center gap-4 sm:gap-6">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-5">
             <button
               onClick={() => setIsPrivacyModalOpen(true)}
               className="inline-flex items-center gap-1 hover:text-[#F6C453] transition-colors cursor-pointer"
@@ -312,9 +320,21 @@ export const Footer: React.FC = () => {
               Terms & Conditions
             </button>
             <button
+              onClick={() => setIsRefundModalOpen(true)}
+              className="hover:text-[#F6C453] transition-colors cursor-pointer"
+            >
+              Refund Policy
+            </button>
+            <button
+              onClick={() => setIsCookieModalOpen(true)}
+              className="hover:text-[#F6C453] transition-colors cursor-pointer"
+            >
+              Cookie Policy
+            </button>
+            <button
               onClick={scrollToTop}
               title="Return to Top"
-              className="p-2 rounded-full dark:bg-[#111820] bg-white border dark:border-[#2A3441] border-gray-300 hover:border-[#D4AF37] dark:text-[#D1D5DB] text-gray-700 hover:text-[#F6C453] dark:hover:text-[#F6C453] transition-all ml-2 shadow-xs"
+              className="p-2 rounded-full dark:bg-[#111820] bg-white border dark:border-[#2A3441] border-gray-300 hover:border-[#D4AF37] dark:text-[#D1D5DB] text-gray-700 hover:text-[#F6C453] dark:hover:text-[#F6C453] transition-all ml-1 shadow-xs cursor-pointer"
             >
               <ArrowUp className="w-4 h-4" />
             </button>

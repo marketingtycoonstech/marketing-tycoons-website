@@ -12,6 +12,7 @@ export const Navbar: React.FC = () => {
     setCurrentView,
     isAdminLoggedIn,
     setIsLoginModalOpen,
+    setIsConsultationModalOpen,
     socialLinks,
     settings
   } = useApp();
@@ -124,23 +125,53 @@ export const Navbar: React.FC = () => {
                 </a>
               );
             })}
+          </div>
 
-            {/* In-Nav Theme Toggle Pill Switch */}
-            <div className="ml-2 pl-2 border-l border-black/10 dark:border-[#2A3441]">
-              <button
-                id="theme-toggle-btn"
-                onClick={toggleTheme}
-                aria-label="Toggle visual theme"
-                title={theme === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
-                className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-gray-100 dark:bg-[#111820] border border-black/10 dark:border-[#2A3441] text-[#111111] dark:text-[#F6C453] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-xs"
-              >
-                {theme === 'dark' ? (
-                  <Sun className="w-3.5 h-3.5 text-[#F6C453] fill-[#F6C453]/20" />
-                ) : (
-                  <Moon className="w-3.5 h-3.5 text-[#111111] fill-current" />
-                )}
-              </button>
-            </div>
+          {/* Desktop Right CTA: Interactive Theme Toggle Switch + Book Consultation */}
+          <div className="hidden lg:flex items-center gap-3">
+            {/* Interactive Theme Switcher Toggle Pill */}
+            <button
+              id="theme-toggle-btn"
+              onClick={toggleTheme}
+              type="button"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className="group relative flex items-center p-1 rounded-full bg-white/90 dark:bg-[#111820] border border-black/10 dark:border-[#2A3441] hover:border-[#D4AF37] dark:hover:border-[#D4AF37] transition-all duration-300 cursor-pointer shadow-sm"
+            >
+              <div className="flex items-center gap-1 text-[11px] font-bold">
+                {/* Light Option Pill */}
+                <div
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full transition-all duration-300 ${
+                    theme === 'light'
+                      ? 'bg-amber-500 text-black shadow-xs font-extrabold'
+                      : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
+                  }`}
+                >
+                  <Sun className={`w-3.5 h-3.5 ${theme === 'light' ? 'text-black fill-black' : 'text-gray-400'}`} />
+                  <span className={theme === 'light' ? 'inline' : 'hidden xl:inline'}>Light</span>
+                </div>
+
+                {/* Dark Option Pill */}
+                <div
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full transition-all duration-300 ${
+                    theme === 'dark'
+                      ? 'bg-[#000000] text-[#F6C453] border border-[#D4AF37]/50 shadow-[0_0_12px_rgba(212,175,55,0.25)] font-extrabold'
+                      : 'text-gray-500 hover:text-gray-900 dark:text-gray-400'
+                  }`}
+                >
+                  <Moon className={`w-3.5 h-3.5 ${theme === 'dark' ? 'text-[#F6C453] fill-[#F6C453]/20' : 'text-gray-400'}`} />
+                  <span className={theme === 'dark' ? 'inline' : 'hidden xl:inline'}>Dark</span>
+                </div>
+              </div>
+            </button>
+
+            {/* Book Consultation Button */}
+            <button
+              onClick={() => setIsConsultationModalOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#D4AF37] to-[#F6C453] text-black font-bold text-xs uppercase tracking-wider shadow-sm hover:scale-103 active:scale-97 transition-all cursor-pointer"
+            >
+              <span>Book Consultation</span>
+            </button>
           </div>
 
           {/* Mobile Right Controls: Theme + Hamburger */}
@@ -148,17 +179,22 @@ export const Navbar: React.FC = () => {
             <button
               id="mobile-theme-toggle"
               onClick={toggleTheme}
-              aria-label="Toggle Theme"
-              className="p-2 rounded-full border border-black/10 dark:border-[#2A3441] text-[#111111] dark:text-[#F6C453] bg-black/5 dark:bg-[#111820]"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              className="p-2.5 rounded-full border border-black/10 dark:border-[#2A3441] text-[#111111] dark:text-[#F6C453] bg-white/90 dark:bg-[#111820] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-xs"
             >
-              {theme === 'dark' ? <Sun className="w-4 h-4 text-[#F6C453]" /> : <Moon className="w-4 h-4 text-[#111111]" />}
+              {theme === 'dark' ? (
+                <Sun className="w-4 h-4 text-[#F6C453] fill-[#F6C453]/20" />
+              ) : (
+                <Moon className="w-4 h-4 text-[#111111] fill-current" />
+              )}
             </button>
 
             <button
               id="mobile-menu-toggle-btn"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle Menu"
-              className="p-2 rounded-full border border-black/10 dark:border-[#2A3441] text-[#111111] dark:text-[#D1D5DB] bg-black/5 dark:bg-[#111820]"
+              className="p-2.5 rounded-full border border-black/10 dark:border-[#2A3441] text-[#111111] dark:text-[#D1D5DB] bg-white/90 dark:bg-[#111820] hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-xs"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -247,6 +283,34 @@ export const Navbar: React.FC = () => {
                     </a>
                   )}
                 </div>
+              </div>
+
+              {/* Mobile Drawer Theme Switcher */}
+              <div className="flex items-center justify-between p-3.5 rounded-2xl bg-black/5 dark:bg-[#111820] border border-black/10 dark:border-[#2A3441]">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white dark:bg-[#050505] border border-black/10 dark:border-[#2A3441] shadow-xs">
+                    {theme === 'dark' ? (
+                      <Moon className="w-4 h-4 text-[#F6C453]" />
+                    ) : (
+                      <Sun className="w-4 h-4 text-amber-500 fill-amber-500/20" />
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <span className="text-xs font-bold text-[#111111] dark:text-white block">
+                      {theme === 'dark' ? 'Dark Theme' : 'Light Theme'}
+                    </span>
+                    <span className="text-[10px] text-gray-500 dark:text-[#9CA3AF] block">
+                      Tap to switch interface theme
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white dark:bg-[#000000] text-[#111111] dark:text-[#F6C453] border border-black/10 dark:border-[#D4AF37]/50 shadow-xs cursor-pointer hover:scale-103 active:scale-97 transition-all"
+                >
+                  Switch to {theme === 'dark' ? 'Light' : 'Dark'}
+                </button>
               </div>
 
               {/* Direct Call & WhatsApp Quick Buttons */}

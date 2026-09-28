@@ -39,8 +39,10 @@ import {
   Globe,
   ArrowUp,
   ArrowDown,
-  Download
+  Download,
+  TrendingUp
 } from 'lucide-react';
+import { SeoAnalyticsPanel } from './SeoAnalyticsPanel';
 import {
   PortfolioProject,
   ReviewStatus,
@@ -148,6 +150,7 @@ export const AdminDashboard: React.FC = () => {
 
   const navItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
+    { id: 'seo-analytics', label: 'SEO & Performance Analytics', icon: TrendingUp, badge: 'Live' },
     { id: 'settings', label: 'Website Settings', icon: Settings },
     { id: 'pages', label: 'Website Pages CMS', icon: Sliders, badge: pages.length },
     { id: 'blogs', label: 'Blog Articles CMS', icon: FileText, badge: blogs.length },
@@ -379,6 +382,36 @@ export const AdminDashboard: React.FC = () => {
                     <div className="text-2xl font-bold text-white mt-1">{totalMessages}</div>
                     <span className="text-[10px] text-emerald-400">{newMessagesCount} New inquiries</span>
                   </div>
+                </div>
+
+                {/* Live SEO & Search Performance Analytics Highlight Banner */}
+                <div className="p-5 rounded-2xl bg-gradient-to-r from-[#111820] via-[#161D26] to-[#111820] border border-[#D4AF37]/40 shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#D4AF37] to-[#F6C453] text-black flex items-center justify-center shadow-md shrink-0">
+                      <TrendingUp className="w-6 h-6 stroke-[2.5]" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-base font-bold text-white font-display">
+                          Live SEO & Search Traffic Analytics
+                        </span>
+                        <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                          +24.8% MoM
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-0.5">
+                        49.8k Organic Clicks • 432k Impressions • 99/100 Core Web Vitals • Average Rank #3.5
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setActiveAdminTab('seo-analytics')}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#D4AF37] hover:bg-[#F6C453] text-black font-bold text-xs uppercase tracking-wider shadow-sm transition-all cursor-pointer shrink-0 self-start md:self-auto"
+                  >
+                    <span>View Analytics Charts</span>
+                    <ArrowUpRight className="w-4 h-4" />
+                  </button>
                 </div>
 
                 {/* Recent Messages & Quick Review Actions */}
@@ -1942,6 +1975,13 @@ export const AdminDashboard: React.FC = () => {
             )}
 
             {/* ======================================================================= */}
+            {/* SECTION: SEO & SITE PERFORMANCE ANALYTICS (RECHARTS VISUALIZATION) */}
+            {/* ======================================================================= */}
+            {activeAdminTab === 'seo-analytics' && (
+              <SeoAnalyticsPanel />
+            )}
+
+            {/* ======================================================================= */}
             {/* NEW SECTION: ADVANCED SEO AUDIT & METADATA CHECKS */}
             {/* ======================================================================= */}
             {activeAdminTab === 'seo' && (
@@ -2151,7 +2191,7 @@ export const AdminDashboard: React.FC = () => {
                           shortDescription: 'High performance enterprise solution engineered for high conversion.',
                           fullDescription: 'Custom architecture, responsive design system, and analytics integration.',
                           imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=80',
-                          videoUrl: 'https://assets.mixkit.co/videos/preview/mixkit-software-developer-working-on-code-screen-close-up-1728-large.mp4',
+                          videoUrl: '/videos/code_screen.mp4',
                           status: 'Live Project',
                           featured: true,
                           clientName: 'Enterprise Client',

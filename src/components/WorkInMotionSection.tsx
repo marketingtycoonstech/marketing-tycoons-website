@@ -221,7 +221,11 @@ const MotionCarouselCard: React.FC<MotionCarouselCardProps> = ({ project, onSele
         {project.videoUrl ? (
           <video
             ref={videoRef}
-            src={project.videoUrl}
+            src={
+              project.videoUrl && !project.videoUrl.includes('mixkit')
+                ? project.videoUrl
+                : '/videos/marketing_tycoons_brand_film.mp4'
+            }
             poster={project.imageUrl}
             muted
             loop

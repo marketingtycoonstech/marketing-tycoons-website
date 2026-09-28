@@ -125,6 +125,245 @@
         "createdAt": { "type": "string" }
       },
       "required": ["id", "name", "email", "service"]
+    },
+    "testimonials": {
+      "title": "Client Testimonials",
+      "description": "Showcased quotes and endorsements from high-profile partners",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string" },
+        "company": { "type": "string" },
+        "content": { "type": "string" },
+        "avatar": { "type": "string" },
+        "rating": { "type": "number" },
+        "featured": { "type": "boolean" },
+        "order": { "type": "number" }
+      },
+      "required": ["id", "name", "content"]
+    },
+    "stats": {
+      "title": "Key Agency Stats",
+      "description": "High-impact counters displayed across the website",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "number": { "type": "string" },
+        "label": { "type": "string" },
+        "order": { "type": "number" }
+      },
+      "required": ["id", "number", "label"]
+    },
+    "social_links": {
+      "title": "Social Links",
+      "description": "Agency social channels and WhatsApp numbers",
+      "type": "object",
+      "properties": {
+        "whatsapp": { "type": "string" },
+        "linkedin": { "type": "string" },
+        "instagram": { "type": "string" },
+        "facebook": { "type": "string" },
+        "youtube": { "type": "string" },
+        "twitter": { "type": "string" },
+        "github": { "type": "string" }
+      }
+    },
+    "blogs": {
+      "title": "Blog Articles",
+      "description": "CMS published blog articles and insights",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "category": { "type": "string" },
+        "excerpt": { "type": "string" },
+        "content": { "type": "string" },
+        "coverImage": { "type": "string" },
+        "author": { "type": "string" },
+        "status": { "type": "string", "enum": ["Draft", "Published"] },
+        "publishedAt": { "type": "string" }
+      },
+      "required": ["id", "title"]
+    },
+    "products": {
+      "title": "Digital Products",
+      "description": "CMS offerings and e-commerce digital products",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "name"]
+    },
+    "pages": {
+      "title": "CMS Custom Pages",
+      "description": "Custom marketing landing pages",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "content": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "title", "slug"]
+    },
+    "forms": {
+      "title": "Form Builders",
+      "description": "Dynamic lead capture forms",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "submissionsCount": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "title"]
+    },
+    "submissions": {
+      "title": "Form Submissions",
+      "description": "Form response entries from website visitors",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "formId": { "type": "string" },
+        "data": { "type": "object" },
+        "submittedAt": { "type": "string" }
+      },
+      "required": ["id", "formId"]
+    },
+    "media": {
+      "title": "Media Assets",
+      "description": "Uploaded media library items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "url": { "type": "string" },
+        "type": { "type": "string" },
+        "size": { "type": "number" }
+      },
+      "required": ["id", "name", "url"]
+    },
+    "menus": {
+      "title": "Navigation Menus",
+      "description": "Custom header and footer menu configs",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "items": { "type": "array" }
+      },
+      "required": ["id", "name"]
+    },
+    "cms_users": {
+      "title": "CMS Team Members",
+      "description": "Team collaborators and permissions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "name", "email"]
+    },
+    "test": {
+      "title": "Connection Test",
+      "description": "Health check document for connection verification",
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profiles and credentials"
+    },
+    "/legal_documents/{docId}": {
+      "schema": "legal_documents",
+      "description": "Legal policies and terms"
+    },
+    "/settings/{docId}": {
+      "schema": "settings",
+      "description": "Global website configuration"
+    },
+    "/services/{serviceId}": {
+      "schema": "services",
+      "description": "Offered agency services"
+    },
+    "/portfolio/{projectId}": {
+      "schema": "portfolio",
+      "description": "Portfolio and case studies"
+    },
+    "/testimonials/{testimonialId}": {
+      "schema": "testimonials",
+      "description": "Client reviews and quotes"
+    },
+    "/stats/{statId}": {
+      "schema": "stats",
+      "description": "Key milestone numbers"
+    },
+    "/social_links/{docId}": {
+      "schema": "social_links",
+      "description": "Social media links"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "reviews",
+      "description": "Verified user reviews"
+    },
+    "/messages/{messageId}": {
+      "schema": "messages",
+      "description": "Inbound contact messages"
+    },
+    "/discoveries/{discoveryId}": {
+      "schema": "discoveries",
+      "description": "Client project requirement submissions"
+    },
+    "/blogs/{blogId}": {
+      "schema": "blogs",
+      "description": "CMS published blog articles"
+    },
+    "/products/{productId}": {
+      "schema": "products",
+      "description": "CMS products"
+    },
+    "/pages/{pageId}": {
+      "schema": "pages",
+      "description": "Custom marketing pages"
+    },
+    "/forms/{formId}": {
+      "schema": "forms",
+      "description": "Dynamic form definitions"
+    },
+    "/submissions/{subId}": {
+      "schema": "submissions",
+      "description": "Captured form entries"
+    },
+    "/media/{mediaId}": {
+      "schema": "media",
+      "description": "Uploaded media records"
+    },
+    "/menus/{menuId}": {
+      "schema": "menus",
+      "description": "Navigation menu configurations"
+    },
+    "/cms_users/{cmsUserId}": {
+      "schema": "cms_users",
+      "description": "CMS administrative users"
+    },
+    "/test/{docId}": {
+      "schema": "test",
+      "description": "Connection test probe"
     }
   }
 }

@@ -10,8 +10,9 @@ export const FullWidthVideoSection: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
 
   const videoUrl =
-    settings.fullWidthVideoUrl ||
-    'https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-charts-and-data-31912-large.mp4';
+    settings.fullWidthVideoUrl && !settings.fullWidthVideoUrl.includes('mixkit')
+      ? settings.fullWidthVideoUrl
+      : '/videos/code_screen.mp4';
   const posterUrl =
     settings.fullWidthVideoPoster ||
     'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1800&q=85';

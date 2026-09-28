@@ -10,10 +10,10 @@ export interface DynamicMetaOptions {
 }
 
 const DEFAULT_META: DynamicMetaOptions = {
-  title: 'Marketing Tycoons — Digital Marketing & Web Agency',
-  description: 'Elite digital marketing, custom web engineering, bespoke graphic design, brand strategy, and high-impact social media management for ambitious businesses worldwide.',
-  url: 'https://marketingtycoons.tech',
-  image: 'https://marketingtycoons.tech/logo.png',
+  title: 'Marketing Tycoons | Premier Digital Marketing Agency, SEO & Web Development',
+  description: 'Marketing Tycoons is a premier full-service digital marketing and web development agency operating across Pakistan (Lahore, Karachi, Islamabad), the United States, United Kingdom, UAE, and globally. We engineer category-defining brand identities, ultra-fast web architectures, high-ROAS Meta and Google ad funnels, and technical SEO strategies that maximize revenue growth.',
+  url: 'https://marketingtycoons.org',
+  image: 'https://marketingtycoons.org/logo.png',
   type: 'website'
 };
 

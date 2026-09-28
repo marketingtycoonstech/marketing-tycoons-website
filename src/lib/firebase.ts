@@ -9,14 +9,13 @@ import {
   Auth
 } from 'firebase/auth';
 import {
-  initializeFirestore,
   getFirestore,
+  initializeFirestore,
   Firestore,
   collection,
   doc,
   getDoc,
   getDocs,
-  getDocFromServer,
   setDoc,
   updateDoc,
   deleteDoc,
@@ -24,47 +23,27 @@ import {
   query,
   orderBy,
   where,
-  serverTimestamp,
-  enableIndexedDbPersistence
+  serverTimestamp
 } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 // Initialize Firebase App singleton
-let app: FirebaseApp;
-if (!getApps().length) {
-  app = initializeApp(firebaseConfig);
-} else {
-  app = getApp();
-}
+export const app: FirebaseApp = !getApps().length
+  ? initializeApp(firebaseConfig)
+  : getApp();
 
-// Initialize Firestore with forced long-polling to prevent WebSocket / proxy timeout blocks in sandbox preview iframes
+// Initialize Firestore with autoDetectLongPolling for seamless reliability in web/iframe sandbox environments
 let firestoreInstance: Firestore;
 try {
-  firestoreInstance = initializeFirestore(
-    app,
-    {
-      experimentalForceLongPolling: true
-    },
-    firebaseConfig.firestoreDatabaseId || '(default)'
-  );
+  firestoreInstance = initializeFirestore(app, {
+    experimentalAutoDetectLongPolling: true,
+  }, firebaseConfig.firestoreDatabaseId);
 } catch {
   // If already initialized, retrieve existing instance
-  firestoreInstance = getFirestore(
-    app,
-    firebaseConfig.firestoreDatabaseId || '(default)'
-  );
+  firestoreInstance = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 }
-
-// Enable local offline persistence for instantaneous local cache reads to prevent boot timeouts
-try {
-  enableIndexedDbPersistence(firestoreInstance).catch((err) => {
-    console.info("Firestore offline persistence operating in memory mode:", err.message);
-  });
-} catch (e) {
-  // Ignore fallback
-}
-
 export const db: Firestore = firestoreInstance;
+
 export const auth: Auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({
@@ -73,8 +52,7 @@ googleProvider.setCustomParameters({
 
 // Authorized Super Admin Emails (Primary agency owner)
 export const AUTHORIZED_ADMIN_EMAILS = [
-  'marketingtycoons.tech@gmail.com',
-  'marketingtycoons@gmail.com'
+  'marketingtycoons.tech@gmail.com'
 ];
 
 export enum OperationType {
@@ -104,8 +82,25 @@ export interface FirestoreErrorInfo {
 }
 
 export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errMsg = error instanceof Error ? error.message : String(error);
+  const errCode = (error as { code?: string })?.code;
+
+  // Handle transient offline / unavailable states gracefully as Firestore operates in offline mode
+  if (errCode === 'unavailable' || errMsg.includes('offline') || errMsg.includes('Could not reach Cloud Firestore')) {
+    console.info(`[Firestore Status] Backend in offline cache mode for '${path}'. Updates will sync automatically when connected.`);
+    return {
+      error: 'Backend operating in offline mode. Local cache active.',
+      operationType,
+      path,
+      authInfo: {
+        userId: auth.currentUser?.uid || null,
+        email: auth.currentUser?.email || null,
+      }
+    };
+  }
+
   const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
+    error: errMsg,
     authInfo: {
       userId: auth.currentUser?.uid || null,
       email: auth.currentUser?.email || null,
@@ -124,13 +119,14 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
   return errInfo;
 }
 
-// Initial non-blocking connectivity test
+// Initial non-blocking connectivity check with graceful offline support
 async function testFirestoreConnection() {
   try {
-    await getDocFromServer(doc(db, 'settings', 'global_settings'));
+    await getDoc(doc(db, 'test', 'connection'));
   } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.info("Firestore client operating in resilient offline/cache mode.");
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg.includes('offline') || (error as { code?: string })?.code === 'unavailable') {
+      console.info("[Firestore Status] Initialized in offline-tolerant mode.");
     }
   }
 }

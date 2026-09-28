@@ -9,8 +9,7 @@ service cloud.firestore {
 
     function isSuperAdmin() {
       return isAuthenticated() && (
-        request.auth.token.email == 'marketingtycoons.tech@gmail.com' ||
-        request.auth.token.email == 'marketingtycoons@gmail.com'
+        request.auth.token.email == 'marketingtycoons.tech@gmail.com'
       );
     }
 
@@ -20,7 +19,12 @@ service cloud.firestore {
       allow write: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin());
     }
 
-    // Legal Documents & Policies (Public can read; Super Admin can modify)
+    // Health / connection test
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // Legal Documents & Policies (Public can read; Super Admin or local guest can modify)
     match /legal_documents/{docId} {
       allow read: if true;
       allow write: if isSuperAdmin() || !isAuthenticated();
@@ -74,6 +78,47 @@ service cloud.firestore {
     match /discoveries/{discoveryId} {
       allow create: if true;
       allow read, update, delete: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    // CMS & Website Management sub-systems
+    match /blogs/{blogId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /pages/{pageId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /forms/{formId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /submissions/{subId} {
+      allow create: if true;
+      allow read, update, delete: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /media/{mediaId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /menus/{menuId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
+    }
+
+    match /cms_users/{cmsUserId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || !isAuthenticated();
     }
   }
 }

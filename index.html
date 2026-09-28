@@ -5,33 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     
     <!-- Primary SEO Page Title & Meta Description -->
-    <title>Marketing Tycoons | Premier Digital Marketing, Web Development & Brand Architecture</title>
-    <meta name="description" content="Marketing Tycoons builds powerful brands, stunning designs, and high-converting digital solutions to scale businesses globally. Bespoke web development, SEO, and Meta Ads." />
-    <meta name="keywords" content="Marketing Tycoons, digital agency, web development, luxury branding, SEO optimization, Meta ads, corporate digital marketing, UI/UX design" />
+    <title>Marketing Tycoons | Premier Digital Marketing Agency, SEO & Web Development</title>
+    <meta name="description" content="Marketing Tycoons is a premier digital marketing & web development agency in Pakistan (Lahore, Karachi, Islamabad) serving global brands across the US, UK & UAE with ROI-driven SEO, custom React/Next.js development, and Meta ads." />
+    <meta name="keywords" content="Digital Marketing Agency Pakistan, SEO Services Lahore, Web Development Agency Islamabad, Digital Marketing Karachi, SEO Company Pakistan, Best Digital Marketing Agency in Lahore, Meta Ads Agency Pakistan, SEO Agency USA, Digital Marketing Agency Dubai UAE, Web Development Agency UK, Global Performance Marketing, Brand Architecture, UI/UX Design Pakistan, Headless E-commerce Development, Marketing Tycoons" />
     <meta name="author" content="Marketing Tycoons" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <link rel="canonical" href="https://marketingtycoons.tech" />
+    <meta name="geo.region" content="PK-PB" />
+    <meta name="geo.placename" content="Lahore, Pakistan" />
+    <meta name="geo.position" content="31.5204;74.3587" />
+    <meta name="ICBM" content="31.5204, 74.3587" />
+    <link rel="canonical" href="https://marketingtycoons.org" />
 
     <!-- OpenGraph Social Cards (Facebook, LinkedIn, Discord, Slack) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Marketing Tycoons" />
-    <meta property="og:title" content="Marketing Tycoons | Premier Digital Marketing & Web Agency" />
-    <meta property="og:description" content="We build powerful brands, stunning designs, and high-converting digital solutions that help businesses grow online." />
-    <meta property="og:url" content="https://marketingtycoons.tech" />
-    <meta property="og:image" content="https://marketingtycoons.tech/logo.png" />
+    <meta property="og:title" content="Marketing Tycoons | Premier Digital Marketing Agency, SEO & Web Development" />
+    <meta property="og:description" content="Marketing Tycoons is a premier full-service digital marketing and web development agency operating across Pakistan (Lahore, Karachi, Islamabad), the United States, United Kingdom, UAE, and globally. We engineer category-defining brand identities, ultra-fast web architectures, high-ROAS Meta and Google ad funnels, and technical SEO strategies that maximize revenue growth. Explore our award-winning client case studies or schedule a free consultation with our senior strategy team today." />
+    <meta property="og:url" content="https://marketingtycoons.org" />
+    <meta property="og:image" content="https://marketingtycoons.org/logo.png" />
+    <meta property="og:image:secure_url" content="https://marketingtycoons.org/logo.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="Marketing Tycoons Brand Emblem" />
+    <meta property="og:image:alt" content="Marketing Tycoons - Premier Digital Marketing, SEO & Web Development Agency" />
     <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ur_PK" />
+    <meta property="og:locale:alternate" content="en_GB" />
 
     <!-- Twitter / X Social Cards -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@MktgTycoons" />
-    <meta name="twitter:creator" content="@MktgTycoons" />
-    <meta name="twitter:title" content="Marketing Tycoons | Premier Digital Marketing & Web Agency" />
-    <meta name="twitter:description" content="We build powerful brands, stunning designs, and high-converting digital solutions that help businesses grow online." />
-    <meta name="twitter:image" content="https://marketingtycoons.tech/logo.png" />
-    <meta name="twitter:image:alt" content="Marketing Tycoons Brand Emblem" />
+    <meta name="twitter:site" content="@marketingtycoons" />
+    <meta name="twitter:creator" content="@marketingtycoons" />
+    <meta name="twitter:title" content="Marketing Tycoons | Premier Digital Marketing Agency, SEO & Web Development" />
+    <meta name="twitter:description" content="Marketing Tycoons is a premier full-service digital marketing and web development agency operating across Pakistan (Lahore, Karachi, Islamabad), the United States, United Kingdom, UAE, and globally. We engineer category-defining brand identities, ultra-fast web architectures, high-ROAS Meta and Google ad funnels, and technical SEO strategies that maximize revenue growth. Explore our award-winning client case studies or schedule a free consultation with our senior strategy team today." />
+    <meta name="twitter:image" content="https://marketingtycoons.org/logo.png" />
+    <meta name="twitter:image:alt" content="Marketing Tycoons - Premier Digital Marketing, SEO & Web Development Agency" />
 
     <!-- Web App Manifest & Mobile PWA -->
     <link rel="manifest" href="/manifest.json" />
@@ -43,6 +51,22 @@
     <!-- Favicons -->
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png" />
+
+    <!-- Immediate theme restore to avoid flash of theme -->
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('mt_theme');
+          if (saved === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          }
+        } catch (e) {}
+      })();
+    </script>
 
     <!-- Google Fonts: Manrope (Primary Brand Font) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,47 +80,52 @@
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://marketingtycoons.tech/#organization",
+          "@id": "https://marketingtycoons.org/#organization",
           "name": "Marketing Tycoons",
-          "url": "https://marketingtycoons.tech",
+          "url": "https://marketingtycoons.org",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://marketingtycoons.tech/logo.png",
+            "url": "https://marketingtycoons.org/logo.png",
             "caption": "Marketing Tycoons Official Logo"
           },
           "email": "marketingtycoons.tech@gmail.com",
-          "telephone": "+92 320 7306282",
+          "telephone": "+92 342 6793428",
           "sameAs": [
             "https://www.linkedin.com/company/marketingtycoons",
-            "https://twitter.com/MktgTycoons",
+            "https://twitter.com/marketingtycoons",
             "https://www.facebook.com/marketingtycoons",
             "https://www.youtube.com/@MarketingTycoons",
-            "https://www.tiktok.com/@marketingtycoons.tech"
+            "https://github.com/marketingtycoons"
           ]
         },
         {
           "@type": "ProfessionalService",
-          "@id": "https://marketingtycoons.tech/#service",
-          "name": "Marketing Tycoons",
-          "url": "https://marketingtycoons.tech",
-          "image": "https://marketingtycoons.tech/logo.png",
-          "description": "Marketing Tycoons builds high-converting digital solutions, bespoke web development, ROI-driven brand architectures, SEO optimization, and Meta Ads.",
+          "@id": "https://marketingtycoons.org/#service",
+          "name": "Marketing Tycoons Digital Agency",
+          "url": "https://marketingtycoons.org",
+          "image": "https://marketingtycoons.org/logo.png",
+          "description": "Marketing Tycoons is a premier international digital marketing agency offering full-funnel digital marketing, technical SEO services, bespoke web development, UI/UX design, branding, and e-commerce solutions.",
           "priceRange": "$$$$",
           "parentOrganization": {
-            "@id": "https://marketingtycoons.tech/#organization"
+            "@id": "https://marketingtycoons.org/#organization"
           },
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Tycoons Executive Tower, Blue Area",
-            "addressLocality": "Islamabad",
-            "addressRegion": "ICT",
+            "streetAddress": "Suite 4200, Tech Financial Plaza",
+            "addressLocality": "Lahore",
+            "addressRegion": "Punjab",
+            "postalCode": "54000",
             "addressCountry": "PK"
           },
-          "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": 33.7182,
-            "longitude": 73.0605
-          },
+          "areaServed": [
+            { "@type": "Country", "name": "Pakistan" },
+            { "@type": "Country", "name": "United States" },
+            { "@type": "Country", "name": "United Kingdom" },
+            { "@type": "Country", "name": "United Arab Emirates" },
+            { "@type": "City", "name": "Lahore" },
+            { "@type": "City", "name": "Karachi" },
+            { "@type": "City", "name": "Islamabad" }
+          ],
           "openingHoursSpecification": {
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": [
@@ -104,46 +133,69 @@
               "Tuesday",
               "Wednesday",
               "Thursday",
-              "Friday",
-              "Saturday"
+              "Friday"
             ],
             "opens": "09:00",
-            "closes": "20:00"
+            "closes": "18:00"
           },
           "hasOfferCatalog": {
             "@type": "OfferCatalog",
-            "name": "Digital Marketing & Agency Services",
+            "name": "Agency Services Catalog",
             "itemListElement": [
               {
                 "@type": "Offer",
                 "itemOffered": {
                   "@type": "Service",
-                  "name": "Custom Website & App Development",
-                  "description": "High-performance bespoke React and Next.js applications engineered for maximum conversion."
+                  "name": "Digital Marketing",
+                  "description": "Multi-channel acquisition strategies that scale revenue predictably across search, social, and programmatic media."
                 }
               },
               {
                 "@type": "Offer",
                 "itemOffered": {
                   "@type": "Service",
-                  "name": "Elite Logo & Brand Architecture",
-                  "description": "Luxury identity systems, typography, color theory, and comprehensive brand books."
+                  "name": "SEO Services",
+                  "description": "Technical search engineering, Core Web Vitals optimization, and authoritative keyword clustering to capture buyer intent."
                 }
               },
               {
                 "@type": "Offer",
                 "itemOffered": {
                   "@type": "Service",
-                  "name": "Performance Marketing & Meta Ads",
-                  "description": "High-ROI paid advertising campaigns scaling e-commerce and enterprise B2B sales."
+                  "name": "Web Development Agency Services",
+                  "description": "Sub-second bespoke React, TypeScript, and Next.js web applications engineered for speed, security, and conversion."
                 }
               },
               {
                 "@type": "Offer",
                 "itemOffered": {
                   "@type": "Service",
-                  "name": "Search Engine Optimization (SEO)",
-                  "description": "Enterprise technical SEO, semantic content structuring, and organic authority building."
+                  "name": "UI/UX Design",
+                  "description": "Conversion-focused user interface and experience design with Figma design systems and accessible architectures."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Branding Agency Services",
+                  "description": "Comprehensive brand architecture, monograms, brand books, and positioning frameworks for category leadership."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Social Media Marketing",
+                  "description": "Omnichannel organic social growth, executive personal branding, and high-production short-form video creation."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "E-commerce Development",
+                  "description": "Headless storefronts, custom subscription builders, and frictionless checkouts engineered for maximum AOV."
                 }
               }
             ]
@@ -151,11 +203,11 @@
         },
         {
           "@type": "WebSite",
-          "@id": "https://marketingtycoons.tech/#website",
-          "url": "https://marketingtycoons.tech",
+          "@id": "https://marketingtycoons.org/#website",
+          "url": "https://marketingtycoons.org",
           "name": "Marketing Tycoons",
           "publisher": {
-            "@id": "https://marketingtycoons.tech/#organization"
+            "@id": "https://marketingtycoons.org/#organization"
           },
           "inLanguage": "en-US"
         }
