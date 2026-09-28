@@ -24,101 +24,101 @@ service cloud.firestore {
       allow read, write: if true;
     }
 
-    // Legal Documents & Policies (Public can read; Super Admin or local guest can modify)
+    // Legal Documents & Policies (Public can read; Authenticated can modify)
     match /legal_documents/{docId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     // Public website settings & content
     match /settings/{docId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /services/{serviceId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /portfolio/{projectId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /testimonials/{testimonialId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /stats/{statId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /social_links/{docId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
-    // Client Reviews (Public can submit reviews; public can read approved reviews)
+    // Client Reviews (Public can submit reviews; public can read approved reviews; Admins manage)
     match /reviews/{reviewId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if isSuperAdmin() || !isAuthenticated();
+      allow update, delete: if isAuthenticated();
     }
 
     // Inbound Contact Messages / Leads (Public can create; admins manage)
     match /messages/{messageId} {
       allow create: if true;
-      allow read, update, delete: if isSuperAdmin() || !isAuthenticated();
+      allow read, update, delete: if isAuthenticated();
     }
 
     // Inbound Project Discoveries / Requirements (Public can create; admins manage)
     match /discoveries/{discoveryId} {
       allow create: if true;
-      allow read, update, delete: if isSuperAdmin() || !isAuthenticated();
+      allow read, update, delete: if isAuthenticated();
     }
 
     // CMS & Website Management sub-systems
     match /blogs/{blogId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /products/{productId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /pages/{pageId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /forms/{formId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /submissions/{subId} {
       allow create: if true;
-      allow read, update, delete: if isSuperAdmin() || !isAuthenticated();
+      allow read, update, delete: if isAuthenticated();
     }
 
     match /media/{mediaId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /menus/{menuId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
 
     match /cms_users/{cmsUserId} {
       allow read: if true;
-      allow write: if isSuperAdmin() || !isAuthenticated();
+      allow write: if isAuthenticated();
     }
   }
 }

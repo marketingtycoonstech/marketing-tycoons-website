@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { DashboardChart } from './DashboardChart';
 import { BrandLogo } from '../common/BrandLogo';
 import { DynamicIcon } from '../common/DynamicIcon';
 import { db } from '../../lib/firebase';
@@ -223,7 +224,7 @@ export const AdminDashboard: React.FC = () => {
   const [notifications, setNotifications] = useState<string[]>([]);
   useEffect(() => {
     // Basic real-time check using snapshot listener for inquiries
-    const unsubscribe = onSnapshot(collection(db, 'inquiries'), (snapshot) => {
+    const unsubscribe = onSnapshot(collection(db, 'messages'), (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
           const msg = change.doc.data() as ContactMessage;
@@ -417,6 +418,8 @@ export const AdminDashboard: React.FC = () => {
                     <span className="text-[10px] text-emerald-400">{newMessagesCount} New inquiries</span>
                   </div>
                 </div>
+
+                <DashboardChart />
 
                 {/* Live SEO & Search Performance Analytics Highlight Banner */}
                 <div className="p-5 rounded-2xl bg-gradient-to-r from-[#111820] via-[#161D26] to-[#111820] border border-[#D4AF37]/40 shadow-xl flex flex-col md:flex-row md:items-center md:justify-between gap-4">
