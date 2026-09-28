@@ -40,54 +40,25 @@ export const PageLoader: React.FC = () => {
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#060709] text-white transition-opacity duration-500 ease-out select-none ${
+      className={`fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#060709] transition-opacity duration-1000 ease-in-out select-none ${
         isDone ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      {/* Background ambient gold gradient glow */}
-      <div className="absolute w-96 h-96 rounded-full bg-[#d4af37]/10 blur-[120px] pointer-events-none" />
-
-      {/* Brand Monogram Crest */}
-      <div className="relative mb-6">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-black via-[#14151a] to-black border border-[#d4af37]/60 flex items-center justify-center shadow-[0_0_30px_rgba(212,175,55,0.35)] overflow-hidden">
-          <img
+      {/* Brand Monogram - Minimal Pulse */}
+      <div className="relative">
+        <div className="w-20 h-20 flex items-center justify-center animate-pulse">
+           <img
             src="/logo.png"
             alt="Marketing Tycoons"
-            className="w-12 h-12 object-cover rounded-xl"
-            onError={e => {
-              // Fallback text monogram if image is delayed
-              e.currentTarget.style.display = 'none';
-              const fallback = e.currentTarget.parentElement?.querySelector('.loader-fallback');
-              if (fallback) (fallback as HTMLElement).style.display = 'block';
-            }}
+            className="w-16 h-16 object-contain"
           />
-          <span className="loader-fallback hidden font-serif font-black text-xl tracking-wider text-[#d4af37]">
-            MT
-          </span>
         </div>
-        <div className="absolute -inset-1 rounded-2xl border border-[#d4af37]/30 blur-xs animate-pulse pointer-events-none" />
       </div>
-
-      {/* Brand Typography */}
-      <h2 className="font-display text-lg sm:text-xl font-bold tracking-[0.25em] text-white uppercase mb-1">
+      
+      {/* Subtle Brand Text */}
+      <h2 className="font-display text-sm font-light tracking-[0.4em] text-gray-500 uppercase mt-6 animate-pulse">
         Marketing Tycoons
       </h2>
-      <p className="text-[10px] tracking-[0.35em] text-[#d4af37] uppercase font-semibold mb-6">
-        Premier Digital & Tech Agency
-      </p>
-
-      {/* Thin Gold Loading Track */}
-      <div className="w-48 h-[2px] bg-white/10 rounded-full overflow-hidden relative">
-        <div
-          className="h-full bg-gradient-to-r from-[#b38f28] via-[#e5c158] to-[#ffd700] transition-all duration-75 ease-out shadow-[0_0_8px_#d4af37]"
-          style={{ width: `${Math.round(progress)}%` }}
-        />
-      </div>
-
-      {/* Numerical percentage indicator */}
-      <span className="text-[10px] tracking-widest text-gray-500 font-mono mt-3">
-        {Math.round(progress)}%
-      </span>
     </div>
   );
 };

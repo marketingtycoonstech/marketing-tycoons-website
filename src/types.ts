@@ -219,6 +219,14 @@ export interface WebsiteSettings {
   ctaVideoEnabled?: boolean;
   ctaHeadline?: string;
   ctaSubheading?: string;
+  
+  // Theme Customization
+  primaryColor?: string;
+  accentColor?: string;
+
+  // Hero Images
+  heroImageUrlDark?: string;
+  heroImageUrlLight?: string;
 }
 
 export interface AdminUser {

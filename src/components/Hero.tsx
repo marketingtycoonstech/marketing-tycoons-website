@@ -3,7 +3,7 @@ import { useApp } from '../context/AppContext';
 import { Play, Share2, Check, Maximize2, X, Download } from 'lucide-react';
 
 export const Hero: React.FC = () => {
-  const { setIsVideoStoryModalOpen, setIsConsultationModalOpen, theme } = useApp();
+  const { setIsVideoStoryModalOpen, setIsConsultationModalOpen, theme, settings } = useApp();
   const [copied, setCopied] = useState(false);
   const [showFullLogoModal, setShowFullLogoModal] = useState(false);
 
@@ -160,9 +160,9 @@ export const Hero: React.FC = () => {
                   className="relative w-full flex-1 flex items-center justify-center cursor-pointer group-hover:scale-105 transition-transform duration-700"
                 >
                   <img
-                    src="/logo.png"
+                    src={settings.heroImageUrlLight || "/logo.png"}
                     alt="Marketing Tycoons Full Size Logo"
-                    className="w-full h-full max-h-[350px] object-contain drop-shadow-[0_10px_25px_rgba(212,175,55,0.25)]"
+                    className="w-full h-full max-h-[350px] object-contain"
                     referrerPolicy="no-referrer"
                   />
                 </div>
@@ -186,61 +186,21 @@ export const Hero: React.FC = () => {
 
               </div>
             ) : (
-              /* DARK MODE: Seamless Brand Showcase with Ambient Aura */
+              /* DARK MODE: Seamless Brand Showcase without background or borders */
               <div className="relative w-full max-w-[460px] aspect-square flex flex-col items-center justify-center p-4 sm:p-6 group select-none">
                 
-                {/* Subtle golden ambient glow inside unified canvas */}
-                <div className="absolute inset-0 rounded-full bg-radial from-[#D4AF37]/18 via-[#AA771C]/8 to-transparent blur-3xl pointer-events-none" />
-
-                {/* Top Status Indicator */}
-                <div className="w-full flex justify-between items-center z-10 mb-2">
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#111820]/80 border border-[#D4AF37]/40 backdrop-blur-md">
-                    <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-ping" />
-                    <span className="text-[10px] font-bold text-[#F6C453] tracking-wider uppercase">
-                      Brand Emblem &amp; Identity
-                    </span>
-                  </div>
-
-                  <button
-                    onClick={() => setShowFullLogoModal(true)}
-                    className="p-1.5 rounded-full bg-[#111820]/80 border border-[#2A3441] hover:border-[#D4AF37] text-gray-400 hover:text-[#D4AF37] transition-all cursor-pointer"
-                    title="Inspect Full Resolution"
-                    aria-label="Inspect Full Resolution"
-                  >
-                    <Maximize2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
                 {/* Seamless Lion Emblem blended naturally with the pitch black canvas */}
                 <div 
                   onClick={() => setShowFullLogoModal(true)}
                   className="relative w-full flex-1 flex items-center justify-center cursor-pointer group-hover:scale-105 transition-transform duration-700"
                 >
                   <img
-                    src="/logo.png"
+                    src={settings.heroImageUrlDark || "/logo.png"}
                     alt="Marketing Tycoons Emblem"
-                    className="w-full h-full max-h-[350px] object-contain drop-shadow-[0_0_35px_rgba(212,175,55,0.45)]"
+                    className="w-full h-full max-h-[350px] object-contain"
                     referrerPolicy="no-referrer"
                   />
                 </div>
-
-                {/* Bottom Action HUD directly on the canvas */}
-                <div className="w-full flex items-center justify-between z-10 pt-2 border-t border-[#D4AF37]/20 mt-2">
-                  <button
-                    onClick={() => setIsVideoStoryModalOpen(true)}
-                    className="inline-flex items-center gap-2 py-1.5 px-3.5 rounded-full bg-[#111820]/90 hover:bg-[#161D26] text-white border border-[#D4AF37]/50 hover:border-[#D4AF37] transition-all cursor-pointer shadow-sm text-xs font-bold uppercase tracking-wider"
-                  >
-                    <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-black flex items-center justify-center">
-                      <Play className="w-3 h-3 fill-black ml-0.5" />
-                    </div>
-                    <span>Watch Story</span>
-                  </button>
-
-                  <span className="text-[10px] text-[#A0A0A0] font-mono tracking-widest">
-                    MT.STUDIO // 2026
-                  </span>
-                </div>
-
               </div>
             )}
 

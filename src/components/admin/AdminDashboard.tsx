@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { BrandLogo } from '../common/BrandLogo';
 import { DynamicIcon } from '../common/DynamicIcon';
+import { db } from '../../lib/firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
 import {
   LayoutDashboard,
   Settings,
@@ -43,6 +45,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { SeoAnalyticsPanel } from './SeoAnalyticsPanel';
+import { saveVideoToVault, getAllVaultVideos, deleteVideoFromVault, StoredVideoItem } from '../../utils/videoStorage';
 import {
   PortfolioProject,
   ReviewStatus,
@@ -156,7 +159,7 @@ export const AdminDashboard: React.FC = () => {
     { id: 'blogs', label: 'Blog Articles CMS', icon: FileText, badge: blogs.length },
     { id: 'products', label: 'Product Catalog CMS', icon: ShoppingBag, badge: products.length },
     { id: 'forms', label: 'Forms & Leads CMS', icon: FormInput, badge: customForms.length },
-    { id: 'media', label: 'Media Asset Library', icon: ImageIcon, badge: mediaLibrary.length },
+    { id: 'media', label: 'Media Library', icon: ImageIcon },
     { id: 'menus', label: 'Menu Navigation CMS', icon: Layers, badge: menus.length },
     { id: 'users', label: 'CMS Users & Roles', icon: Users, badge: cmsUsers.length },
     { id: 'seo', label: 'SEO Audit Control', icon: Globe },
@@ -206,9 +209,31 @@ export const AdminDashboard: React.FC = () => {
   // SEO tools local states
   const [localRobots, setLocalRobots] = useState('User-agent: *\nDisallow: /admin\nSitemap: https://marketingtycoons.tech/sitemap.xml');
   const [localSitemapUrl, setLocalSitemapUrl] = useState('https://marketingtycoons.tech/sitemap.xml');
+  
+  // Media Library state
+  const [vaultVideos, setVaultVideos] = useState<StoredVideoItem[]>([]);
+  useEffect(() => {
+    getAllVaultVideos().then(setVaultVideos);
+  }, []);
 
   // Contact Message Viewer
   const [activeMessageDetail, setActiveMessageDetail] = useState<ContactMessage | null>(null);
+  
+  // Real-time notifications
+  const [notifications, setNotifications] = useState<string[]>([]);
+  useEffect(() => {
+    // Basic real-time check using snapshot listener for inquiries
+    const unsubscribe = onSnapshot(collection(db, 'inquiries'), (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const msg = change.doc.data() as ContactMessage;
+          setNotifications(prev => [`New inquiry from ${msg.name}: ${msg.service}`, ...prev]);
+          setTimeout(() => setNotifications(prev => prev.filter(n => n !== `New inquiry from ${msg.name}: ${msg.service}`)), 10000);
+        }
+      });
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Settings form local buffer
   const [localSettings, setLocalSettings] = useState(settings);
@@ -235,6 +260,15 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3">
+          {notifications.length > 0 && (
+            <div className="flex flex-col gap-1 z-50">
+              {notifications.map((n, i) => (
+                <div key={i} className="px-3 py-1.5 rounded-lg bg-emerald-900/40 border border-emerald-500/30 text-emerald-300 text-[10px] font-semibold animate-in slide-in-from-right">
+                  {n}
+                </div>
+              ))}
+            </div>
+          )}
           {saveAlert && (
             <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#d4af37]/15 border border-[#d4af37]/40 text-[#d4af37] text-xs font-semibold animate-in fade-in">
               <Sparkles className="w-3.5 h-3.5" />
@@ -731,6 +765,30 @@ export const AdminDashboard: React.FC = () => {
                             type="text"
                             value={localSettings.heroVideoPoster || ''}
                             onChange={e => setLocalSettings({ ...localSettings, heroVideoPoster: e.target.value })}
+                            className="w-full px-3 py-2 rounded-lg bg-[#090a0d] border border-gray-700 text-xs text-white"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Hero Image Controls */}
+                      <div className="p-4 rounded-xl bg-black/60 border border-gray-800 space-y-3">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-white">Hero Section Images</h4>
+                        
+                        <div>
+                          <label className="block text-[11px] text-gray-400 mb-1">Dark Mode Hero Image URL</label>
+                          <input
+                            type="text"
+                            value={localSettings.heroImageUrlDark || ''}
+                            onChange={e => setLocalSettings({ ...localSettings, heroImageUrlDark: e.target.value })}
+                            className="w-full px-3 py-2 rounded-lg bg-[#090a0d] border border-gray-700 text-xs text-white"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] text-gray-400 mb-1">Light Mode Hero Image URL</label>
+                          <input
+                            type="text"
+                            value={localSettings.heroImageUrlLight || ''}
+                            onChange={e => setLocalSettings({ ...localSettings, heroImageUrlLight: e.target.value })}
                             className="w-full px-3 py-2 rounded-lg bg-[#090a0d] border border-gray-700 text-xs text-white"
                           />
                         </div>
@@ -2173,6 +2231,56 @@ export const AdminDashboard: React.FC = () => {
               </div>
             )}
 
+            {/* 3.5. SECTION: MEDIA LIBRARY */}
+            {activeAdminTab === 'media' && (
+              <div className="space-y-6 animate-in fade-in duration-200">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="font-display text-2xl font-bold text-white">Media Library</h2>
+                    <p className="text-xs text-gray-400">Upload and manage cinematic video assets. Max size ~30MB per file.</p>
+                  </div>
+                  <label className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa820a] text-black font-bold text-xs uppercase cursor-pointer">
+                    <Plus className="w-4 h-4" />
+                    <span>Upload Video</span>
+                    <input type="file" accept="video/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      if (file.size > 35 * 1024 * 1024) {
+                        alert('Video too large. Please keep under 35MB.');
+                        return;
+                      }
+                      const id = `vid-${Date.now()}`;
+                      await saveVideoToVault(id, file, 'general', file.name);
+                      const updated = await getAllVaultVideos();
+                      setVaultVideos(updated);
+                      showNotification('Video uploaded to local vault!');
+                    }} />
+                  </label>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {vaultVideos.map(vid => (
+                    <div key={vid.id} className="rounded-2xl bg-[#121319] border border-gray-800 p-4 space-y-3">
+                      <div className="aspect-video bg-black rounded-lg overflow-hidden flex items-center justify-center">
+                        {vid.posterDataUrl ? <img src={vid.posterDataUrl} alt={vid.name} className="w-full h-full object-cover" /> : <Film className="w-10 h-10 text-gray-600" />}
+                      </div>
+                      <div className="text-xs">
+                        <div className="font-bold text-white truncate">{vid.name}</div>
+                        <div className="text-gray-400 mt-1">{vid.sizeFormatted} • {vid.durationFormatted}</div>
+                        <div className="text-[#d4af37] font-mono mt-2 bg-black px-2 py-1 rounded truncate select-all">vault:{vid.id}</div>
+                      </div>
+                      <button onClick={async () => {
+                        await deleteVideoFromVault(vid.id);
+                        const updated = await getAllVaultVideos();
+                        setVaultVideos(updated);
+                        showNotification('Video deleted');
+                      }} className="w-full py-2 rounded-lg bg-red-950/40 text-red-300 text-xs font-bold hover:bg-red-900/60">Delete</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* 4. SECTION: PORTFOLIO MANAGEMENT */}
             {activeAdminTab === 'portfolio' && (
               <div className="space-y-6 animate-in fade-in duration-200">
@@ -2599,15 +2707,15 @@ export const AdminDashboard: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   <div className="p-5 rounded-2xl bg-[#090a0d] border border-[#d4af37]/40 space-y-2">
-                    <span className="text-xs uppercase text-[#d4af37] font-bold">Metallic Gold Accent</span>
-                    <div className="h-10 rounded-lg bg-gradient-to-r from-[#f7d57f] via-[#d4af37] to-[#aa820a]" />
-                    <div className="text-[11px] text-gray-400 font-mono">#D4AF37 / #C5A059</div>
+                    <label className="text-xs uppercase text-[#d4af37] font-bold block">Primary Color</label>
+                    <input type="color" value={settings.primaryColor || '#D4AF37'} onChange={e => updateSettings({ ...settings, primaryColor: e.target.value })} className="w-full h-10 rounded-lg cursor-pointer" />
+                    <div className="text-[11px] text-gray-400 font-mono">{settings.primaryColor || '#D4AF37'}</div>
                   </div>
 
                   <div className="p-5 rounded-2xl bg-[#121319] border border-gray-800 space-y-2">
-                    <span className="text-xs uppercase text-gray-300 font-bold">Primary Dark Canvas</span>
-                    <div className="h-10 rounded-lg bg-[#0b0c10] border border-gray-700" />
-                    <div className="text-[11px] text-gray-400 font-mono">#0B0C10 / #111217</div>
+                    <label className="text-xs uppercase text-gray-300 font-bold block">Accent Color</label>
+                    <input type="color" value={settings.accentColor || '#AA820A'} onChange={e => updateSettings({ ...settings, accentColor: e.target.value })} className="w-full h-10 rounded-lg cursor-pointer" />
+                    <div className="text-[11px] text-gray-400 font-mono">{settings.accentColor || '#AA820A'}</div>
                   </div>
 
                   <div className="p-5 rounded-2xl bg-[#121319] border border-gray-800 space-y-2">
