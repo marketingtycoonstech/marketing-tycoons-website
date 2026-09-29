@@ -343,3 +343,13 @@ export interface CMSUser {
   createdAt: string;
   lastActive: string;
 }
+
+export interface ActivityLog {
+  id: string;
+  adminId: string;
+  adminName: string;
+  action: string; // e.g., 'updated_blog', 'deleted_product', 'added_testimonial'
+  targetId?: string;
+  targetType: string;
+  timestamp: string;
+}

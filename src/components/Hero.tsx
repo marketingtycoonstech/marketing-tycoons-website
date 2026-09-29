@@ -245,7 +245,7 @@ export const Hero: React.FC = () => {
             <div className="py-6 flex items-center justify-center">
               <div className="relative w-72 sm:w-84 aspect-square flex items-center justify-center p-4 rounded-2xl bg-gradient-to-b from-[#111820] to-[#000000] border border-[#D4AF37]/50 shadow-2xl">
                 <img
-                  src="/logo.png"
+                  src={isDark ? (settings.heroImageUrlDark || "/logo.png") : (settings.heroImageUrlLight || "/logo.png")}
                   alt="Marketing Tycoons Full Size Logo"
                   className="w-full h-full object-contain filter drop-shadow-[0_0_25px_rgba(212,175,55,0.5)]"
                 />

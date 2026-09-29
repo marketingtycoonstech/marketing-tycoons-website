@@ -25,6 +25,7 @@ import {
   where,
   serverTimestamp
 } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 // Initialize Firebase App singleton
@@ -43,6 +44,9 @@ try {
   firestoreInstance = getFirestore(app, firebaseConfig.firestoreDatabaseId);
 }
 export const db: Firestore = firestoreInstance;
+
+// Initialize Storage
+export const storage: FirebaseStorage = getStorage(app);
 
 export const auth: Auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();

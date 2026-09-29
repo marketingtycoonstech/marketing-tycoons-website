@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { Download } from 'lucide-react';
 
 interface DataPoint {
   date: string;
@@ -26,9 +27,31 @@ const data: DataPoint[] = [
 ];
 
 export const DashboardChart: React.FC = () => {
+  const exportToCSV = () => {
+    const headers = ['Date', 'Inquiries', 'Traffic'];
+    const rows = data.map(item => [item.date, item.inquiries, item.traffic]);
+    const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `analytics_export_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="bg-[#0e0f14] p-6 rounded-xl border border-gray-800">
-      <h3 className="text-gray-200 font-semibold mb-4">Traffic & Inquiry Trends</h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-gray-200 font-semibold">Traffic & Inquiry Trends</h3>
+        <button
+          onClick={exportToCSV}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 text-xs font-semibold transition-colors cursor-pointer"
+        >
+          <Download className="w-3.5 h-3.5" />
+          Export CSV
+        </button>
+      </div>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>

@@ -42,7 +42,8 @@ import {
   NavigationMenuItem,
   CMSUser,
   TeamMember,
-  IndustryItem
+  IndustryItem,
+  ActivityLog
 } from '../types';
 import {
   auth,
@@ -187,6 +188,10 @@ interface AppContextType {
   updateUserRole: (id: string, role: CMSUser['role']) => void;
   updateUserStatus: (id: string, status: CMSUser['status']) => void;
   deleteUser: (id: string) => void;
+
+  // Activity Logs
+  activityLogs: ActivityLog[];
+  logActivity: (action: string, targetType: string, targetId?: string) => void;
 
   // Modals
   activeServiceModal: ServiceItem | null;
@@ -464,7 +469,28 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return DEFAULT_CMS_USERS;
   });
 
-  // Listen to Firebase Auth state
+  const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(() => {
+    const saved = localStorage.getItem('mt_activity_logs');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const logActivity = (action: string, targetType: string, targetId?: string) => {
+    const newLog: ActivityLog = {
+      id: Date.now().toString(),
+      adminId: adminUser?.email || 'unknown',
+      adminName: adminUser?.username || 'Unknown Admin',
+      action,
+      targetType,
+      targetId,
+      timestamp: new Date().toISOString()
+    };
+    setActivityLogs(prev => [newLog, ...prev].slice(0, 50)); // Keep last 50
+  };
+
+  // Expose Activity Logs in context value
+  useEffect(() => {
+    localStorage.setItem('mt_activity_logs', JSON.stringify(activityLogs));
+  }, [activityLogs]);
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser: FirebaseUser | null) => {
       if (firebaseUser) {
@@ -1489,6 +1515,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateUserRole,
         updateUserStatus,
         deleteUser,
+        activityLogs,
+        logActivity,
 
         activeServiceModal,
         setActiveServiceModal,

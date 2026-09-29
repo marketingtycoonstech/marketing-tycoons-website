@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
+import { VideoUploader } from './VideoUploader';
 import { DashboardChart } from './DashboardChart';
+import { ActivityLogWidget } from './ActivityLogWidget';
 import { BrandLogo } from '../common/BrandLogo';
 import { DynamicIcon } from '../common/DynamicIcon';
-import { db } from '../../lib/firebase';
+import { db, auth } from '../../lib/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 import {
   LayoutDashboard,
@@ -43,7 +45,12 @@ import {
   ArrowUp,
   ArrowDown,
   Download,
-  TrendingUp
+  TrendingUp,
+  Upload,
+  Sun,
+  Moon,
+  RefreshCw,
+  Film
 } from 'lucide-react';
 import { SeoAnalyticsPanel } from './SeoAnalyticsPanel';
 import { saveVideoToVault, getAllVaultVideos, deleteVideoFromVault, StoredVideoItem } from '../../utils/videoStorage';
@@ -133,7 +140,8 @@ export const AdminDashboard: React.FC = () => {
     cmsUsers,
     updateUserRole,
     updateUserStatus,
-    deleteUser
+    deleteUser,
+    logActivity
   } = useApp();
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -181,6 +189,10 @@ export const AdminDashboard: React.FC = () => {
 
   // Portfolio Edit State
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
+  const [showMediaUploader, setShowMediaUploader] = useState(false);
+  const [mediaTargetId, setMediaTargetId] = useState<string | null>(null);
+  const [mediaEntityType, setMediaEntityType] = useState<'project' | 'product' | 'testimonial' | 'heroDark' | 'heroLight'>('project');
+  const [modalInputUrl, setModalInputUrl] = useState('');
   const [projectFormData, setProjectFormData] = useState<Partial<PortfolioProject>>({});
 
   // Testimonial Edit State
@@ -218,12 +230,33 @@ export const AdminDashboard: React.FC = () => {
   }, []);
 
   // Contact Message Viewer
+  const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [activeMessageDetail, setActiveMessageDetail] = useState<ContactMessage | null>(null);
+  const [selectedTestimonials, setSelectedTestimonials] = useState<string[]>([]);
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    ids: string[];
+    type: string;
+    onConfirm: () => void;
+  }>({ isOpen: false, ids: [], type: '', onConfirm: () => {} });
+
+  const confirmDelete = (ids: string[], type: string, onConfirm?: () => void) => {
+    setDeleteConfirmation({ isOpen: true, ids, type, onConfirm: onConfirm || (() => {}) });
+  };
+
+  const performDelete = () => {
+    if (deleteConfirmation.onConfirm) {
+      deleteConfirmation.onConfirm();
+    }
+    showNotification(`${deleteConfirmation.type} deleted successfully.`);
+    setDeleteConfirmation({ isOpen: false, ids: [], type: '', onConfirm: () => {} });
+  };
   
   // Real-time notifications
   const [notifications, setNotifications] = useState<string[]>([]);
   useEffect(() => {
     // Basic real-time check using snapshot listener for inquiries
+    if (!auth.currentUser) return;
     const unsubscribe = onSnapshot(collection(db, 'messages'), (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === 'added') {
@@ -238,9 +271,187 @@ export const AdminDashboard: React.FC = () => {
 
   // Settings form local buffer
   const [localSettings, setLocalSettings] = useState(settings);
+  useEffect(() => {
+    setLocalSettings(settings);
+  }, [settings]);
 
   return (
     <div className="min-h-screen bg-[#090a0d] text-gray-200 flex flex-col antialiased">
+      {/* Global Delete Confirmation Modal */}
+      {deleteConfirmation.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+          <div className="bg-[#121319] border border-red-900/50 p-6 rounded-2xl w-full max-w-sm space-y-4">
+            <h3 className="text-white font-bold text-lg">Confirm Deletion</h3>
+            <p className="text-gray-400 text-sm">
+              Are you sure you want to permanently delete these items? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirmation({ isOpen: false, ids: [], type: '', onConfirm: () => {} })}
+                className="flex-1 px-4 py-2 rounded-lg bg-gray-800 text-white font-bold text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={performDelete}
+                className="flex-1 px-4 py-2 rounded-lg bg-red-600 text-white font-bold text-sm"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Global Replace Media Modal (Supports Hero Dark/Light, Portfolio, Products, Testimonials) */}
+      {showMediaUploader && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in">
+          <div className="bg-[#121319] border border-[#d4af37]/40 p-6 rounded-3xl w-full max-w-md space-y-5 shadow-2xl">
+            <div className="flex justify-between items-center pb-3 border-b border-gray-800">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-[#d4af37]/15 text-[#d4af37] flex items-center justify-center">
+                  <ImageIcon className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-sm">
+                    {mediaEntityType === 'heroDark' ? 'Upload Dark Mode Hero Photo (🌙 Dark Mode)' :
+                     mediaEntityType === 'heroLight' ? 'Upload Light Mode Hero Photo (☀️ Light Mode)' :
+                     mediaEntityType === 'project' ? 'Replace Project Media' :
+                     mediaEntityType === 'product' ? 'Replace Product Image' :
+                     mediaEntityType === 'testimonial' ? 'Replace Testimonial Avatar' : 'Replace Media'}
+                  </h3>
+                  <p className="text-[10px] text-gray-400">
+                    {mediaEntityType === 'heroDark' || mediaEntityType === 'heroLight'
+                      ? 'Select an image file from your PC or enter a photo URL. Strictly photo upload only (no video).'
+                      : 'Apply a photo from PC, paste a URL, or upload a video.'}
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowMediaUploader(false)}
+                className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Option 1: File Upload directly from computer */}
+              <div className="p-4 rounded-2xl bg-black/50 border border-gray-800 space-y-2.5">
+                <label className="flex items-center gap-2 text-xs font-bold text-white uppercase tracking-wider">
+                  <Upload className="w-3.5 h-3.5 text-[#d4af37]" />
+                  <span>Upload Photo from Device</span>
+                </label>
+                <p className="text-[11px] text-gray-400">
+                  Select any JPG, PNG, SVG or WebP photo directly from your device.
+                </p>
+                <label className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-dashed border-[#d4af37]/50 hover:border-[#d4af37] bg-[#d4af37]/5 hover:bg-[#d4af37]/10 text-xs font-semibold text-gray-200 cursor-pointer transition-all">
+                  <Upload className="w-4 h-4 text-[#d4af37]" />
+                  <span>Choose Photo File</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onload = (uploadEv) => {
+                        const dataUrl = uploadEv.target?.result as string;
+                        if (dataUrl) {
+                          if (mediaEntityType === 'heroDark') {
+                            setLocalSettings(prev => ({ ...prev, heroImageUrlDark: dataUrl }));
+                            updateSettings({ heroImageUrlDark: dataUrl });
+                            showNotification('Dark Mode Hero photo updated!');
+                          } else if (mediaEntityType === 'heroLight') {
+                            setLocalSettings(prev => ({ ...prev, heroImageUrlLight: dataUrl }));
+                            updateSettings({ heroImageUrlLight: dataUrl });
+                            showNotification('Light Mode Hero photo updated!');
+                          } else if (mediaEntityType === 'project' && mediaTargetId) {
+                            updateProject(mediaTargetId, { imageUrl: dataUrl });
+                            showNotification('Project image updated!');
+                          } else if (mediaEntityType === 'product' && mediaTargetId) {
+                            updateProduct(mediaTargetId, { imageUrl: dataUrl });
+                            showNotification('Product image updated!');
+                          } else if (mediaEntityType === 'testimonial' && mediaTargetId) {
+                            updateTestimonial(mediaTargetId, { avatarUrl: dataUrl });
+                            showNotification('Testimonial avatar updated!');
+                          }
+                          setShowMediaUploader(false);
+                        }
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                </label>
+              </div>
+
+              {/* Option 2: Image Web URL */}
+              <div className="p-4 rounded-2xl bg-black/50 border border-gray-800 space-y-2.5">
+                <label className="block text-xs font-bold text-white uppercase tracking-wider">
+                  Or Paste Photo Web URL
+                </label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="https://... image link" 
+                    value={modalInputUrl}
+                    onChange={(e) => setModalInputUrl(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-xl bg-[#090a0d] border border-gray-700 text-white text-xs focus:border-[#d4af37] focus:outline-none" 
+                  />
+                  <button
+                    onClick={() => {
+                      if (!modalInputUrl.trim()) return;
+                      const url = modalInputUrl.trim();
+                      if (mediaEntityType === 'heroDark') {
+                        setLocalSettings(prev => ({ ...prev, heroImageUrlDark: url }));
+                        updateSettings({ heroImageUrlDark: url });
+                        showNotification('Dark Mode Hero photo updated!');
+                      } else if (mediaEntityType === 'heroLight') {
+                        setLocalSettings(prev => ({ ...prev, heroImageUrlLight: url }));
+                        updateSettings({ heroImageUrlLight: url });
+                        showNotification('Light Mode Hero photo updated!');
+                      } else if (mediaEntityType === 'project' && mediaTargetId) {
+                        updateProject(mediaTargetId, { imageUrl: url });
+                        showNotification('Project image updated!');
+                      } else if (mediaEntityType === 'product' && mediaTargetId) {
+                        updateProduct(mediaTargetId, { imageUrl: url });
+                        showNotification('Product image updated!');
+                      } else if (mediaEntityType === 'testimonial' && mediaTargetId) {
+                        updateTestimonial(mediaTargetId, { avatarUrl: url });
+                        showNotification('Testimonial avatar updated!');
+                      }
+                      setShowMediaUploader(false);
+                    }}
+                    className="px-3.5 py-2 rounded-xl bg-[#d4af37] hover:bg-[#aa820a] text-black font-bold text-xs uppercase transition-colors cursor-pointer"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+
+              {/* Option 3: Video Upload (for projects only) */}
+              {mediaEntityType === 'project' && (
+                <div className="p-4 rounded-2xl bg-black/50 border border-gray-800 space-y-2.5">
+                  <label className="block text-xs font-bold text-white uppercase tracking-wider">
+                    Or Upload Video (.mp4 / webm)
+                  </label>
+                  <VideoUploader 
+                    onUploadSuccess={(url) => {
+                      if (mediaTargetId) {
+                        updateProject(mediaTargetId, { videoUrl: url });
+                        showNotification('Project video updated!');
+                      }
+                      setShowMediaUploader(false);
+                    }}
+                    onClose={() => setShowMediaUploader(false)}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Top Navbar */}
       <header className="h-16 border-b border-gray-800 bg-[#0e0f14] px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40">
@@ -258,6 +469,23 @@ export const AdminDashboard: React.FC = () => {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Admin Control Center</span>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2 mr-4">
+          <button
+            onClick={() => setActiveAdminTab('messages')}
+            className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#d4af37]/10 text-[#d4af37] text-xs font-semibold hover:bg-[#d4af37]/20 transition-colors"
+          >
+            <Mail className="w-3.5 h-3.5" />
+            New Inquiries
+          </button>
+          <button
+            onClick={() => alert('Exporting report...')}
+            className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-800 text-gray-300 text-xs font-semibold hover:bg-gray-700 transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Export
+          </button>
         </div>
 
         <div className="flex items-center gap-3">
@@ -453,6 +681,7 @@ export const AdminDashboard: React.FC = () => {
 
                 {/* Recent Messages & Quick Review Actions */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <ActivityLogWidget />
                   {/* Recent Contact Submissions */}
                   <div className="p-6 rounded-2xl bg-[#121319] border border-gray-800 space-y-4">
                     <div className="flex items-center justify-between">
@@ -739,61 +968,340 @@ export const AdminDashboard: React.FC = () => {
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {/* Hero Video Controls */}
-                      <div className="p-4 rounded-xl bg-black/60 border border-gray-800 space-y-3">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-xs font-bold uppercase tracking-wider text-white">Hero Section Video</h4>
-                          <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-300">
-                            <input
-                              type="checkbox"
-                              checked={localSettings.heroVideoEnabled !== false}
-                              onChange={e => setLocalSettings({ ...localSettings, heroVideoEnabled: e.target.checked })}
-                              className="rounded border-gray-700 text-[#d4af37] focus:ring-[#d4af37]"
-                            />
-                            <span>Enable Video</span>
-                          </label>
-                        </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1">Hero Video URL (.mp4 / stream)</label>
-                          <input
-                            type="text"
-                            value={localSettings.heroVideoUrl || ''}
-                            onChange={e => setLocalSettings({ ...localSettings, heroVideoUrl: e.target.value })}
-                            className="w-full px-3 py-2 rounded-lg bg-[#090a0d] border border-gray-700 text-xs text-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1">Hero Poster Image URL (pre-load fallback)</label>
-                          <input
-                            type="text"
-                            value={localSettings.heroVideoPoster || ''}
-                            onChange={e => setLocalSettings({ ...localSettings, heroVideoPoster: e.target.value })}
-                            className="w-full px-3 py-2 rounded-lg bg-[#090a0d] border border-gray-700 text-xs text-white"
-                          />
-                        </div>
-                      </div>
+                      {/* Hero Section Dual-Mode Photo Replacement Studio */}
+                      <div className="md:col-span-2 p-5 rounded-2xl bg-gradient-to-b from-[#121319] to-[#0d0e13] border-2 border-[#d4af37]/40 space-y-5 shadow-xl">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-gray-800/80 gap-3">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <Sparkles className="w-4 h-4 text-[#d4af37]" />
+                              <h4 className="text-sm font-bold uppercase tracking-wider text-white">
+                                Hero Section Photo Upload (Strictly Photo Only — Light &amp; Dark Mode)
+                              </h4>
+                              <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-[#d4af37]/20 text-[#d4af37] border border-[#d4af37]/30">
+                                Separate Photos Active
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-400 mt-1">
+                              Dono hero sections ma sirf photo upload hogi (no video). Dark mode k liye alag photo aur Light mode k liye alag photo upload karein.
+                            </p>
+                          </div>
 
-                      {/* Hero Image Controls */}
-                      <div className="p-4 rounded-xl bg-black/60 border border-gray-800 space-y-3">
-                        <h4 className="text-xs font-bold uppercase tracking-wider text-white">Hero Section Images</h4>
-                        
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1">Dark Mode Hero Image URL</label>
-                          <input
-                            type="text"
-                            value={localSettings.heroImageUrlDark || ''}
-                            onChange={e => setLocalSettings({ ...localSettings, heroImageUrlDark: e.target.value })}
-                            className="w-full px-3 py-2 rounded-lg bg-[#090a0d] border border-gray-700 text-xs text-white"
-                          />
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateSettings({
+                                  heroImageUrlDark: localSettings.heroImageUrlDark,
+                                  heroImageUrlLight: localSettings.heroImageUrlLight
+                                });
+                                showNotification('Dono hero section photos save ho gayi!');
+                              }}
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa820a] text-black font-bold text-xs uppercase shadow-sm cursor-pointer hover:brightness-110 transition-all"
+                            >
+                              <Save className="w-3.5 h-3.5" />
+                              <span>Save Photos</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setCurrentView('public')}
+                              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-gray-700 hover:border-[#d4af37] text-gray-300 hover:text-white text-xs font-semibold cursor-pointer transition-colors"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              <span>Preview Live</span>
+                            </button>
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-[11px] text-gray-400 mb-1">Light Mode Hero Image URL</label>
-                          <input
-                            type="text"
-                            value={localSettings.heroImageUrlLight || ''}
-                            onChange={e => setLocalSettings({ ...localSettings, heroImageUrlLight: e.target.value })}
-                            className="w-full px-3 py-2 rounded-lg bg-[#090a0d] border border-gray-700 text-xs text-white"
-                          />
+
+                        {/* Dual Mode Grid: Dark Mode Left, Light Mode Right */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                          
+                          {/* 1. DARK MODE HERO PHOTO CARD */}
+                          <div className="p-4 rounded-2xl bg-[#090a0d] border border-gray-800 flex flex-col justify-between space-y-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-lg bg-gray-900 border border-gray-700 flex items-center justify-center text-amber-400">
+                                  <Moon className="w-3.5 h-3.5" />
+                                </div>
+                                <span className="text-xs font-bold uppercase tracking-wider text-white">
+                                  🌙 Dark Mode Hero Photo
+                                </span>
+                              </div>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                                Dark Photo Active
+                              </span>
+                            </div>
+
+                            {/* Live Dark Mode Visual Preview Canvas */}
+                            <label className="relative aspect-video sm:aspect-[16/10] rounded-xl bg-black border-2 border-dashed border-gray-700 hover:border-[#d4af37] cursor-pointer overflow-hidden flex items-center justify-center p-3 shadow-inner group transition-colors">
+                              {/* Ambient golden glow just like public site */}
+                              <div className="absolute inset-0 bg-radial from-[#d4af37]/20 via-transparent to-transparent blur-xl pointer-events-none" />
+                              
+                              <img
+                                src={localSettings.heroImageUrlDark || '/logo.png'}
+                                alt="Dark Mode Hero Photo"
+                                className="relative z-10 w-full h-full max-h-[160px] object-contain transition-transform group-hover:scale-105 duration-300"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = '/logo.png';
+                                }}
+                              />
+
+                              <div className="absolute top-2 left-2 z-20 px-2 py-0.5 rounded bg-black/80 border border-gray-700 text-[10px] font-mono text-gray-300">
+                                Dark Canvas Photo
+                              </div>
+
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col items-center justify-center gap-1 text-white text-xs font-bold">
+                                <Upload className="w-5 h-5 text-[#d4af37]" />
+                                <span>Click to Upload New Dark Photo</span>
+                              </div>
+
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  const reader = new FileReader();
+                                  reader.onload = (ev) => {
+                                    const url = ev.target?.result as string;
+                                    if (url) {
+                                      setLocalSettings(prev => ({ ...prev, heroImageUrlDark: url }));
+                                      updateSettings({ heroImageUrlDark: url });
+                                      showNotification('Dark Mode Hero photo uploaded!');
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }}
+                              />
+                            </label>
+
+                            {/* Dark Mode Actions & Controls */}
+                            <div className="space-y-3 pt-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                {/* Upload from PC (Dark) */}
+                                <label className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#d4af37]/15 hover:bg-[#d4af37]/25 border border-[#d4af37]/40 text-[#d4af37] text-xs font-bold cursor-pointer transition-colors">
+                                  <Upload className="w-3.5 h-3.5" />
+                                  <span>Upload Dark Photo</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      const reader = new FileReader();
+                                      reader.onload = (ev) => {
+                                        const url = ev.target?.result as string;
+                                        if (url) {
+                                          setLocalSettings(prev => ({ ...prev, heroImageUrlDark: url }));
+                                          updateSettings({ heroImageUrlDark: url });
+                                          showNotification('Dark Mode Hero photo replaced!');
+                                        }
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }}
+                                  />
+                                </label>
+
+                                {/* Replace Photo (Modal) */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setMediaTargetId('heroDark');
+                                    setMediaEntityType('heroDark');
+                                    setModalInputUrl(localSettings.heroImageUrlDark || '');
+                                    setShowMediaUploader(true);
+                                  }}
+                                  className="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold cursor-pointer transition-colors"
+                                >
+                                  Replace Photo
+                                </button>
+
+                                {/* Reset to Default Logo */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setLocalSettings(prev => ({ ...prev, heroImageUrlDark: '/logo.png' }));
+                                    updateSettings({ heroImageUrlDark: '/logo.png' });
+                                    showNotification('Dark Mode Hero photo reset to /logo.png');
+                                  }}
+                                  className="p-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                  title="Reset to default logo emblem"
+                                >
+                                  <RotateCcw className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              {/* Direct URL input */}
+                              <div>
+                                <label className="block text-[11px] text-gray-400 mb-1">
+                                  Dark Mode Photo Web URL
+                                </label>
+                                <div className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    value={localSettings.heroImageUrlDark || ''}
+                                    placeholder="https://... or /logo.png"
+                                    onChange={e => setLocalSettings({ ...localSettings, heroImageUrlDark: e.target.value })}
+                                    className="flex-1 px-3 py-1.5 rounded-lg bg-black border border-gray-700 text-xs text-white focus:border-[#d4af37] focus:outline-none"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      updateSettings({ heroImageUrlDark: localSettings.heroImageUrlDark });
+                                      showNotification('Dark Mode Photo URL applied!');
+                                    }}
+                                    className="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-[#d4af37] hover:text-black text-xs font-bold text-gray-300 transition-colors cursor-pointer"
+                                  >
+                                    Apply
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 2. LIGHT MODE HERO PHOTO CARD */}
+                          <div className="p-4 rounded-2xl bg-[#121319] border border-gray-800 flex flex-col justify-between space-y-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-300">
+                                  <Sun className="w-3.5 h-3.5" />
+                                </div>
+                                <span className="text-xs font-bold uppercase tracking-wider text-white">
+                                  ☀️ Light Mode Hero Photo
+                                </span>
+                              </div>
+                              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-sky-500/10 text-sky-300 border border-sky-500/20">
+                                Light Photo Active
+                              </span>
+                            </div>
+
+                            {/* Live Light Mode Visual Preview Canvas */}
+                            <label className="relative aspect-video sm:aspect-[16/10] rounded-xl bg-[#F8F7F3] border-2 border-dashed border-gray-300 hover:border-[#d4af37] cursor-pointer overflow-hidden flex items-center justify-center p-3 shadow-inner group transition-colors">
+                              <img
+                                src={localSettings.heroImageUrlLight || '/logo.png'}
+                                alt="Light Mode Hero Photo"
+                                className="relative z-10 w-full h-full max-h-[160px] object-contain transition-transform group-hover:scale-105 duration-300"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = '/logo.png';
+                                }}
+                              />
+
+                              <div className="absolute top-2 left-2 z-20 px-2 py-0.5 rounded bg-white/90 border border-gray-300 text-[10px] font-mono text-gray-700 shadow-sm">
+                                Light Canvas Photo
+                              </div>
+
+                              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col items-center justify-center gap-1 text-white text-xs font-bold">
+                                <Upload className="w-5 h-5 text-[#d4af37]" />
+                                <span>Click to Upload New Light Photo</span>
+                              </div>
+
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  const reader = new FileReader();
+                                  reader.onload = (ev) => {
+                                    const url = ev.target?.result as string;
+                                    if (url) {
+                                      setLocalSettings(prev => ({ ...prev, heroImageUrlLight: url }));
+                                      updateSettings({ heroImageUrlLight: url });
+                                      showNotification('Light Mode Hero photo uploaded!');
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }}
+                              />
+                            </label>
+
+                            {/* Light Mode Actions & Controls */}
+                            <div className="space-y-3 pt-1">
+                              <div className="flex flex-wrap items-center gap-2">
+                                {/* Upload from PC (Light) */}
+                                <label className="flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-[#d4af37]/15 hover:bg-[#d4af37]/25 border border-[#d4af37]/40 text-[#d4af37] text-xs font-bold cursor-pointer transition-colors">
+                                  <Upload className="w-3.5 h-3.5" />
+                                  <span>Upload Light Photo</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      const reader = new FileReader();
+                                      reader.onload = (ev) => {
+                                        const url = ev.target?.result as string;
+                                        if (url) {
+                                          setLocalSettings(prev => ({ ...prev, heroImageUrlLight: url }));
+                                          updateSettings({ heroImageUrlLight: url });
+                                          showNotification('Light Mode Hero photo replaced!');
+                                        }
+                                      };
+                                      reader.readAsDataURL(file);
+                                    }}
+                                  />
+                                </label>
+
+                                {/* Replace Photo (Modal) */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setMediaTargetId('heroLight');
+                                    setMediaEntityType('heroLight');
+                                    setModalInputUrl(localSettings.heroImageUrlLight || '');
+                                    setShowMediaUploader(true);
+                                  }}
+                                  className="px-3 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold cursor-pointer transition-colors"
+                                >
+                                  Replace Photo
+                                </button>
+
+                                {/* Reset to Default Logo */}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setLocalSettings(prev => ({ ...prev, heroImageUrlLight: '/logo.png' }));
+                                    updateSettings({ heroImageUrlLight: '/logo.png' });
+                                    showNotification('Light Mode Hero photo reset to /logo.png');
+                                  }}
+                                  className="p-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                                  title="Reset to default logo emblem"
+                                >
+                                  <RotateCcw className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              {/* Direct URL input */}
+                              <div>
+                                <label className="block text-[11px] text-gray-400 mb-1">
+                                  Light Mode Photo Web URL
+                                </label>
+                                <div className="flex gap-2">
+                                  <input
+                                    type="text"
+                                    value={localSettings.heroImageUrlLight || ''}
+                                    placeholder="https://... or /logo.png"
+                                    onChange={e => setLocalSettings({ ...localSettings, heroImageUrlLight: e.target.value })}
+                                    className="flex-1 px-3 py-1.5 rounded-lg bg-black border border-gray-700 text-xs text-white focus:border-[#d4af37] focus:outline-none"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      updateSettings({ heroImageUrlLight: localSettings.heroImageUrlLight });
+                                      showNotification('Light Mode Photo URL applied!');
+                                    }}
+                                    className="px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-[#d4af37] hover:text-black text-xs font-bold text-gray-300 transition-colors cursor-pointer"
+                                  >
+                                    Apply
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
                         </div>
                       </div>
 
@@ -1248,9 +1756,11 @@ export const AdminDashboard: React.FC = () => {
                         onClick={() => {
                           if (editingBlogId === 'new') {
                             addBlog(blogFormData as any);
+                            logActivity('added_blog', 'BlogPost');
                             showNotification('Blog article published!');
                           } else {
                             updateBlog(editingBlogId, blogFormData);
+                            logActivity('updated_blog', 'BlogPost', editingBlogId);
                             showNotification('Blog article updated successfully!');
                           }
                           setEditingBlogId(null);
@@ -1496,6 +2006,16 @@ export const AdminDashboard: React.FC = () => {
                       </div>
 
                       <div className="flex flex-col gap-2 shrink-0">
+                        <button
+                          onClick={() => {
+                            setMediaTargetId(p.id);
+                            setMediaEntityType('product');
+                            setShowMediaUploader(true);
+                          }}
+                          className="text-xs px-2 py-1 rounded bg-[#d4af37]/20 hover:bg-[#d4af37]/30 text-[#d4af37] font-semibold"
+                        >
+                          Replace Media
+                        </button>
                         <button
                           onClick={() => {
                             setEditingProductId(p.id);
@@ -2345,6 +2865,18 @@ export const AdminDashboard: React.FC = () => {
                         </div>
 
                         <div className="pt-4 mt-4 border-t border-gray-800 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => {
+                                setMediaTargetId(proj.id);
+                                setMediaEntityType('project');
+                                setShowMediaUploader(true);
+                              }}
+                              className="text-xs px-2.5 py-1 rounded bg-[#d4af37]/20 hover:bg-[#d4af37]/30 text-[#d4af37] font-semibold"
+                            >
+                              Replace Media
+                            </button>
+                          </div>
                           <button
                             onClick={() => {
                               toggleProjectFeatured(proj.id);
@@ -2384,39 +2916,52 @@ export const AdminDashboard: React.FC = () => {
                     <h2 className="font-display text-2xl font-bold text-white">Client Testimonials</h2>
                     <p className="text-xs text-gray-400">Manage client feedback cards and spotlight quotes.</p>
                   </div>
-                  <button
-                    onClick={() => {
-                      const name = prompt('Client Name:');
-                      const company = prompt('Company Name:');
-                      const review = prompt('Review quote:');
-                      if (name && review) {
-                        addTestimonial({
-                          name,
-                          company: company || 'Corporate Client',
-                          avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-                          rating: 5,
-                          review,
-                          featured: true,
-                          approved: true,
-                          date: 'Current'
-                        });
-                        showNotification('Testimonial added!');
-                      }
-                    }}
-                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa820a] text-black font-bold text-xs uppercase"
-                  >
-                    <Plus className="w-4 h-4" />
-                    <span>Add Testimonial</span>
-                  </button>
+                  <div className="flex items-center gap-3">
+                    {selectedTestimonials.length > 0 && (
+                      <button onClick={() => confirmDelete(selectedTestimonials, 'testimonial')} className="px-3 py-1.5 rounded-lg bg-red-600 text-white font-bold text-xs">
+                        Delete Selected ({selectedTestimonials.length})
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        const name = prompt('Client Name:');
+                        const company = prompt('Company Name:');
+                        const review = prompt('Review quote:');
+                        if (name && review) {
+                          addTestimonial({
+                            name,
+                            company: company || 'Corporate Client',
+                            avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+                            rating: 5,
+                            review,
+                            featured: true,
+                            approved: true,
+                            date: 'Current'
+                          });
+                          showNotification('Testimonial added!');
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#d4af37] to-[#aa820a] text-black font-bold text-xs uppercase"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Add Testimonial</span>
+                    </button>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {testimonials.map(item => (
                     <div
                       key={item.id}
-                      className="p-5 rounded-2xl bg-[#121319] border border-gray-800 flex flex-col justify-between"
+                      className="p-5 rounded-2xl bg-[#121319] border border-gray-800 flex flex-col justify-between relative"
                     >
-                      <div>
+                      <input 
+                        type="checkbox"
+                        checked={selectedTestimonials.includes(item.id)}
+                        onChange={(e) => setSelectedTestimonials(prev => e.target.checked ? [...prev, item.id] : prev.filter(id => id !== item.id))}
+                        className="absolute top-4 left-4"
+                      />
+                      <div className="pl-6">
                         <div className="flex items-center justify-between mb-3">
                           <span className="text-[#d4af37] text-xs">{'★'.repeat(item.rating)}</span>
                           <span className={`text-[10px] px-2 py-0.5 rounded ${
@@ -2440,6 +2985,16 @@ export const AdminDashboard: React.FC = () => {
                         </div>
 
                         <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              setMediaTargetId(item.id);
+                              setMediaEntityType('testimonial');
+                              setShowMediaUploader(true);
+                            }}
+                            className="text-xs px-2.5 py-1 rounded bg-[#d4af37]/20 hover:bg-[#d4af37]/30 text-[#d4af37] font-semibold"
+                          >
+                            Replace Media
+                          </button>
                           <button
                             onClick={() => {
                               updateTestimonial(item.id, { approved: !item.approved });
@@ -2560,17 +3115,37 @@ export const AdminDashboard: React.FC = () => {
                     <table className="w-full text-left text-xs">
                       <thead className="bg-[#090a0d] border-b border-gray-800 text-gray-400 uppercase tracking-wider text-[10px]">
                         <tr>
+                          <th className="p-4">
+                            <input 
+                              type="checkbox" 
+                              onChange={(e) => setSelectedMessages(e.target.checked ? messages.map(m => m.id) : [])}
+                              checked={selectedMessages.length === messages.length && messages.length > 0}
+                            />
+                          </th>
                           <th className="p-4">Sender Name</th>
                           <th className="p-4">Email / Phone</th>
                           <th className="p-4">Service</th>
                           <th className="p-4">Date</th>
                           <th className="p-4">Status</th>
-                          <th className="p-4 text-right">Action</th>
+                          <th className="p-4 text-right">
+                            {selectedMessages.length > 0 && (
+                              <button onClick={() => confirmDelete(selectedMessages, 'message')} className="text-red-400 font-bold hover:underline">
+                                Delete Selected ({selectedMessages.length})
+                              </button>
+                            )}
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-800/60">
                         {messages.map(msg => (
                           <tr key={msg.id} className="hover:bg-white/5 transition-colors">
+                            <td className="p-4">
+                              <input 
+                                type="checkbox"
+                                checked={selectedMessages.includes(msg.id)}
+                                onChange={(e) => setSelectedMessages(prev => e.target.checked ? [...prev, msg.id] : prev.filter(id => id !== msg.id))}
+                              />
+                            </td>
                             <td className="p-4 font-bold text-white">{msg.name}</td>
                             <td className="p-4 text-gray-300">
                               <div>{msg.email}</div>
@@ -2631,7 +3206,7 @@ export const AdminDashboard: React.FC = () => {
 
                       <div className="flex items-center justify-between pt-3 border-t border-gray-800">
                         <div className="flex items-center gap-2">
-                          {(['New', 'Read', 'Replied', 'Archived'] as MessageStatus[]).map(st => (
+                          {(['New', 'Read', 'In Progress', 'Replied', 'Resolved', 'Archived'] as MessageStatus[]).map(st => (
                             <button
                               key={st}
                               onClick={() => {
