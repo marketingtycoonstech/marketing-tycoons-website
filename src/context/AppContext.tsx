@@ -43,8 +43,14 @@ import {
   CMSUser,
   TeamMember,
   IndustryItem,
-  ActivityLog
+  ActivityLog,
+  DynamicContentItem,
+  WebsiteSectionId,
+  DynamicContentType,
+  SiteThemeConfig
 } from '../types';
+import { DEFAULT_SITE_THEME } from '../utils/defaultTheme';
+import { applyThemeToDocument } from '../utils/themeInjector';
 import {
   auth,
   db,
@@ -60,7 +66,11 @@ import {
   onSnapshot,
   AUTHORIZED_ADMIN_EMAILS,
   handleFirestoreError,
-  OperationType
+  OperationType,
+  testConnection,
+  uploadMediaToStorage,
+  deleteMediaFromStorage,
+  signInAdminMasterKey
 } from '../lib/firebase';
 import { setProjectMeta, setServiceMeta, resetDefaultMeta } from '../utils/seo';
 
@@ -223,17 +233,49 @@ interface AppContextType {
   teamMembers: TeamMember[];
   industries: IndustryItem[];
 
+  // Dynamic Content Management System
+  dynamicContent: DynamicContentItem[];
+  isDynamicContentLoading: boolean;
+  addDynamicContentItem: (item: Omit<DynamicContentItem, 'id' | 'createdAt' | 'updatedAt'>) => Promise<DynamicContentItem>;
+  updateDynamicContentItem: (id: string, updates: Partial<DynamicContentItem>) => Promise<void>;
+  replaceDynamicContentMedia: (id: string, newFile: File, onProgress?: (pct: number) => void) => Promise<void>;
+  deleteDynamicContentItem: (id: string) => Promise<void>;
+  togglePublishContentItem: (id: string) => Promise<void>;
+  reorderContentItems: (sectionId: WebsiteSectionId, itemIds: string[]) => Promise<void>;
+  getSectionContent: (sectionId: WebsiteSectionId, filterPublished?: boolean) => DynamicContentItem[];
+  getSectionMedia: (sectionId: WebsiteSectionId, defaultUrl: string, type?: DynamicContentType) => string;
+
   // Reset to default helper
   resetToFactoryDefaults: () => void;
+
+  // Theme Customization System
+  siteTheme: SiteThemeConfig;
+  updateThemeDraft: (newTheme: SiteThemeConfig) => void;
+  publishTheme: (newTheme: SiteThemeConfig) => Promise<void>;
+  resetThemeToDefault: (targetMode?: 'dark' | 'light' | 'all' | 'default') => void;
+  showNotification: (text: string, type?: 'success' | 'error') => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Theme state
+  // Theme mode state (dark | light)
   const [theme, setTheme] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem('mt_theme');
     return saved === 'light' ? 'light' : 'dark';
+  });
+
+  // Site Theme Customization Config state
+  const [siteTheme, setSiteTheme] = useState<SiteThemeConfig>(() => {
+    const saved = localStorage.getItem('mt_site_theme');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return DEFAULT_SITE_THEME;
+      }
+    }
+    return DEFAULT_SITE_THEME;
   });
 
   useEffect(() => {
@@ -246,10 +288,56 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       root.classList.add('light');
     }
     localStorage.setItem('mt_theme', theme);
-  }, [theme]);
+    applyThemeToDocument(siteTheme, theme);
+  }, [theme, siteTheme]);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const updateThemeDraft = (newTheme: SiteThemeConfig) => {
+    setSiteTheme(newTheme);
+    localStorage.setItem('mt_site_theme', JSON.stringify(newTheme));
+    applyThemeToDocument(newTheme, theme);
+  };
+
+  const publishTheme = async (newTheme: SiteThemeConfig) => {
+    const published: SiteThemeConfig = {
+      ...newTheme,
+      version: (newTheme.version || 1) + 1,
+      updatedAt: new Date().toISOString(),
+      updatedBy: adminUser?.email || 'marketingtycoons.tech@gmail.com',
+      isPublished: true
+    };
+    setSiteTheme(published);
+    localStorage.setItem('mt_site_theme', JSON.stringify(published));
+    applyThemeToDocument(published, theme);
+
+    try {
+      await setDoc(doc(db, 'siteSettings', 'theme'), published, { merge: true });
+    } catch (err) {
+      console.error('Failed to publish theme to Firestore:', err);
+      throw err;
+    }
+  };
+
+  const resetThemeToDefault = (targetMode: 'dark' | 'light' | 'all' | 'default' = 'all') => {
+    let reset = JSON.parse(JSON.stringify(DEFAULT_SITE_THEME));
+    if (targetMode === 'dark') {
+      reset = { ...siteTheme, dark: DEFAULT_SITE_THEME.dark };
+    } else if (targetMode === 'light') {
+      reset = { ...siteTheme, light: DEFAULT_SITE_THEME.light };
+    }
+    setSiteTheme(reset);
+    localStorage.setItem('mt_site_theme', JSON.stringify(reset));
+    applyThemeToDocument(reset, theme);
+    setDoc(doc(db, 'siteSettings', 'theme'), reset, { merge: true }).catch(() => {});
+  };
+
+  const [globalNotification, setGlobalNotification] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const showNotification = (text: string, type: 'success' | 'error' = 'success') => {
+    setGlobalNotification({ text, type });
+    setTimeout(() => setGlobalNotification(null), 4000);
   };
 
   // View state
@@ -469,6 +557,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return DEFAULT_CMS_USERS;
   });
 
+  // Dynamic Content Management System state
+  const [dynamicContent, setDynamicContent] = useState<DynamicContentItem[]>(() => {
+    const saved = localStorage.getItem('mt_dynamic_content');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { return []; }
+    }
+    return [];
+  });
+  const [isDynamicContentLoading, setIsDynamicContentLoading] = useState<boolean>(true);
+
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>(() => {
     const saved = localStorage.getItem('mt_activity_logs');
     return saved ? JSON.parse(saved) : [];
@@ -523,11 +621,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     });
 
+    // If master key admin session was previously active, ensure Firebase Auth session is restored
+    if (localStorage.getItem('mt_admin_auth') === 'true') {
+      signInAdminMasterKey().catch(() => {});
+    }
+
     return () => unsubscribe();
   }, []);
 
   // Real-time Firestore Synchronizations
   useEffect(() => {
+    testConnection();
+
     // 1. Settings listener
     const settingsDoc = doc(db, 'settings', 'global_settings');
     const unsubSettings = onSnapshot(
@@ -684,6 +789,67 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       }
     );
 
+    // 7. Testimonials listener
+    const testimonialsColl = collection(db, 'testimonials');
+    const unsubTestimonials = onSnapshot(
+      testimonialsColl,
+      snapshot => {
+        if (!snapshot.empty) {
+          const list = snapshot.docs.map(d => d.data() as TestimonialItem);
+          setTestimonials(list);
+          localStorage.setItem('mt_testimonials', JSON.stringify(list));
+        }
+        setIsFirebaseLive(true);
+      },
+      error => {
+        handleFirestoreError(error, OperationType.LIST, 'testimonials');
+      }
+    );
+
+    // 8. Dynamic Content Items Listener (Dynamic Content System)
+    const contentColl = collection(db, 'content_items');
+    const unsubContent = onSnapshot(
+      contentColl,
+      snapshot => {
+        setIsDynamicContentLoading(false);
+        if (!snapshot.empty) {
+          const list = snapshot.docs.map(d => ({
+            id: d.id,
+            ...(d.data() as Omit<DynamicContentItem, 'id'>)
+          })).sort((a, b) => a.order - b.order);
+          setDynamicContent(list);
+          localStorage.setItem('mt_dynamic_content', JSON.stringify(list));
+        } else {
+          setDynamicContent([]);
+          localStorage.removeItem('mt_dynamic_content');
+        }
+        setIsFirebaseLive(true);
+      },
+      error => {
+        setIsDynamicContentLoading(false);
+        console.warn('[Firestore] Dynamic content listener notice:', error);
+      }
+    );
+
+    // Theme config listener
+    const themeDoc = doc(db, 'siteSettings', 'theme');
+    const unsubTheme = onSnapshot(
+      themeDoc,
+      snapshot => {
+        if (snapshot.exists()) {
+          const remote = snapshot.data() as SiteThemeConfig;
+          if (remote && remote.dark && remote.light) {
+            setSiteTheme(remote);
+            localStorage.setItem('mt_site_theme', JSON.stringify(remote));
+            applyThemeToDocument(remote, theme);
+          }
+        } else {
+          setDoc(themeDoc, DEFAULT_SITE_THEME, { merge: true }).catch(() => {});
+        }
+      },
+      () => {}
+    );
+
     return () => {
       unsubSettings();
       unsubSocial();
@@ -692,8 +858,214 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       unsubReviews();
       unsubMessages();
       unsubStats();
+      unsubTestimonials();
+      unsubContent();
+      unsubTheme();
     };
   }, []);
+
+  // ==========================================
+  // DYNAMIC FIREBASE CONTENT SYSTEM METHODS
+  // ==========================================
+
+  const addDynamicContentItem = async (
+    item: Omit<DynamicContentItem, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<DynamicContentItem> => {
+    const id = `item-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const now = new Date().toISOString();
+    const newItem: DynamicContentItem = {
+      ...item,
+      id,
+      createdAt: now,
+      updatedAt: now,
+      isPublished: item.isPublished !== undefined ? item.isPublished : true,
+      order: item.order !== undefined ? item.order : dynamicContent.filter(i => i.sectionId === item.sectionId).length + 1
+    };
+
+    const nextList = [newItem, ...dynamicContent];
+    setDynamicContent(nextList);
+    localStorage.setItem('mt_dynamic_content', JSON.stringify(nextList));
+
+    try {
+      const payload: Record<string, any> = {};
+      for (const [k, v] of Object.entries(newItem)) {
+        if (v !== undefined) payload[k] = v;
+      }
+      await setDoc(doc(db, 'content_items', id), payload);
+      logActivity(`Uploaded dynamic ${newItem.contentType}`, 'content_items', id);
+    } catch (e) {
+      console.error('Failed to create content item in Firestore:', e);
+      handleFirestoreError(e, OperationType.CREATE, `content_items/${id}`);
+    }
+
+    return newItem;
+  };
+
+  const updateDynamicContentItem = async (
+    id: string,
+    updates: Partial<DynamicContentItem>
+  ): Promise<void> => {
+    const target = dynamicContent.find(i => i.id === id);
+    if (!target) return;
+    const now = new Date().toISOString();
+    const updated = { ...target, ...updates, updatedAt: now };
+
+    const nextList = dynamicContent.map(i => (i.id === id ? updated : i));
+    setDynamicContent(nextList);
+    localStorage.setItem('mt_dynamic_content', JSON.stringify(nextList));
+
+    try {
+      const payload: Record<string, any> = {};
+      for (const [k, v] of Object.entries(updated)) {
+        if (v !== undefined) payload[k] = v;
+      }
+      await setDoc(doc(db, 'content_items', id), payload, { merge: true });
+      logActivity(`Updated ${updated.title || updated.contentType}`, 'content_items', id);
+    } catch (e) {
+      console.error('Failed to update content item in Firestore:', e);
+      handleFirestoreError(e, OperationType.UPDATE, `content_items/${id}`);
+    }
+  };
+
+  const replaceDynamicContentMedia = async (
+    id: string,
+    newFile: File,
+    onProgress?: (pct: number) => void
+  ): Promise<void> => {
+    const target = dynamicContent.find(i => i.id === id);
+    if (!target) throw new Error('Target content item not found');
+
+    const oldStoragePath = target.storagePath;
+
+    // 1. Upload new file to Firebase Storage first (Requirement 8)
+    const { downloadURL: newUrl, storagePath: newStoragePath } = await uploadMediaToStorage(
+      newFile,
+      target.sectionId,
+      onProgress
+    );
+
+    const now = new Date().toISOString();
+    const updated: DynamicContentItem = {
+      ...target,
+      downloadURL: newUrl,
+      storagePath: newStoragePath,
+      updatedAt: now,
+      metadata: {
+        fileSize: newFile.size,
+        fileType: newFile.type,
+        fileName: newFile.name
+      }
+    };
+
+    // 2. Update Firestore reference
+    try {
+      const payload: Record<string, any> = {};
+      for (const [k, v] of Object.entries(updated)) {
+        if (v !== undefined) payload[k] = v;
+      }
+      await setDoc(doc(db, 'content_items', id), payload, { merge: true });
+
+      // 3. Update local state
+      const nextList = dynamicContent.map(i => (i.id === id ? updated : i));
+      setDynamicContent(nextList);
+      localStorage.setItem('mt_dynamic_content', JSON.stringify(nextList));
+
+      // 4. Safely remove old storage file only after new reference is verified and stored
+      if (oldStoragePath && oldStoragePath !== newStoragePath) {
+        deleteMediaFromStorage(oldStoragePath).catch(() => {});
+      }
+
+      logActivity(`Replaced media for ${target.title}`, 'content_items', id);
+    } catch (err) {
+      console.error('Firestore update failed during replace:', err);
+      // Clean up newly uploaded file to prevent orphaned storage asset
+      deleteMediaFromStorage(newStoragePath).catch(() => {});
+      throw err;
+    }
+  };
+
+  const deleteDynamicContentItem = async (id: string): Promise<void> => {
+    const target = dynamicContent.find(i => i.id === id);
+    const storagePathToDelete = target?.storagePath;
+
+    // 1. Remove from local state immediately
+    const nextList = dynamicContent.filter(i => i.id !== id);
+    setDynamicContent(nextList);
+    localStorage.setItem('mt_dynamic_content', JSON.stringify(nextList));
+
+    // 2. Remove from Firestore
+    try {
+      await deleteDoc(doc(db, 'content_items', id));
+
+      // 3. Safely delete from Storage after Firestore document is removed
+      if (storagePathToDelete) {
+        deleteMediaFromStorage(storagePathToDelete).catch(() => {});
+      }
+
+      logActivity(`Deleted content ${target?.title || id}`, 'content_items', id);
+    } catch (e) {
+      console.error('Failed to delete content item from Firestore:', e);
+      handleFirestoreError(e, OperationType.DELETE, `content_items/${id}`);
+    }
+  };
+
+  const togglePublishContentItem = async (id: string): Promise<void> => {
+    const target = dynamicContent.find(i => i.id === id);
+    if (!target) return;
+    const newStatus = !target.isPublished;
+    await updateDynamicContentItem(id, { isPublished: newStatus });
+  };
+
+  const reorderContentItems = async (sectionId: WebsiteSectionId, itemIds: string[]): Promise<void> => {
+    const updatedList = dynamicContent.map(item => {
+      if (item.sectionId === sectionId) {
+        const newOrder = itemIds.indexOf(item.id);
+        if (newOrder !== -1) {
+          return { ...item, order: newOrder + 1 };
+        }
+      }
+      return item;
+    });
+
+    setDynamicContent(updatedList);
+    localStorage.setItem('mt_dynamic_content', JSON.stringify(updatedList));
+
+    try {
+      await Promise.all(
+        itemIds.map((itemId, idx) =>
+          updateDoc(doc(db, 'content_items', itemId), { order: idx + 1, updatedAt: new Date().toISOString() })
+        )
+      );
+    } catch (err) {
+      console.warn('Reorder Firestore sync notice:', err);
+    }
+  };
+
+  const getSectionContent = (sectionId: WebsiteSectionId, filterPublished = true): DynamicContentItem[] => {
+    return dynamicContent
+      .filter(item => item.sectionId === sectionId && (!filterPublished || item.isPublished))
+      .sort((a, b) => a.order - b.order);
+  };
+
+  const getSectionMedia = (
+    sectionId: WebsiteSectionId,
+    defaultUrl: string,
+    type?: DynamicContentType
+  ): string => {
+    const items = dynamicContent
+      .filter(
+        item =>
+          item.sectionId === sectionId &&
+          item.isPublished &&
+          (!type || item.contentType === type)
+      )
+      .sort((a, b) => a.order - b.order);
+
+    if (items.length > 0 && items[0].downloadURL) {
+      return items[0].downloadURL;
+    }
+    return defaultUrl;
+  };
 
   // Settings update
   const updateSettings = async (newSettings: Partial<WebsiteSettings>) => {
@@ -701,8 +1073,16 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setSettings(updated);
     localStorage.setItem('mt_settings', JSON.stringify(updated));
     try {
-      await setDoc(doc(db, 'settings', 'global_settings'), updated, { merge: true });
+      // Clean payload of any undefined values for Firestore
+      const payload: Record<string, any> = {};
+      for (const [key, val] of Object.entries(updated)) {
+        if (val !== undefined) {
+          payload[key] = val;
+        }
+      }
+      await setDoc(doc(db, 'settings', 'global_settings'), payload, { merge: true });
     } catch (e) {
+      console.error('Failed to sync settings with Firestore:', e);
       handleFirestoreError(e, OperationType.WRITE, 'settings/global_settings');
     }
   };
@@ -1544,7 +1924,26 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         setIsLoginModalOpen,
         teamMembers,
         industries,
-        resetToFactoryDefaults
+        resetToFactoryDefaults,
+
+        // Dynamic Content Management System
+        dynamicContent,
+        isDynamicContentLoading,
+        addDynamicContentItem,
+        updateDynamicContentItem,
+        replaceDynamicContentMedia,
+        deleteDynamicContentItem,
+        togglePublishContentItem,
+        reorderContentItems,
+        getSectionContent,
+        getSectionMedia,
+
+        // Theme Customization System
+        siteTheme,
+        updateThemeDraft,
+        publishTheme,
+        resetThemeToDefault,
+        showNotification
       }}
     >
       {children}

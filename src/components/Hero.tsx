@@ -3,11 +3,23 @@ import { useApp } from '../context/AppContext';
 import { Play, Share2, Check, Maximize2, X, Download } from 'lucide-react';
 
 export const Hero: React.FC = () => {
-  const { setIsVideoStoryModalOpen, setIsConsultationModalOpen, theme, settings } = useApp();
+  const {
+    setIsVideoStoryModalOpen,
+    setIsConsultationModalOpen,
+    theme,
+    settings,
+    getSectionContent
+  } = useApp();
   const [copied, setCopied] = useState(false);
   const [showFullLogoModal, setShowFullLogoModal] = useState(false);
 
   const isDark = theme === 'dark';
+
+  // Dynamic Content retrieval with seamless fallback
+  const heroDynamicItems = getSectionContent('home-hero', true);
+  const activeHeroItem = heroDynamicItems[0];
+  const heroMediaUrl = activeHeroItem?.downloadURL || (isDark ? (settings.heroImageUrlDark || "/logo.png") : (settings.heroImageUrlLight || "/logo.png"));
+  const isHeroVideo = activeHeroItem?.contentType === 'video';
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -154,17 +166,28 @@ export const Hero: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Full Size Logo - Pristine Display with No Background or Border */}
+                {/* Full Size Logo / Dynamic Media - Pristine Display with No Background or Border */}
                 <div 
                   onClick={() => setShowFullLogoModal(true)}
                   className="relative w-full flex-1 flex items-center justify-center cursor-pointer group-hover:scale-105 transition-transform duration-700"
                 >
-                  <img
-                    src={settings.heroImageUrlLight || "/logo.png"}
-                    alt="Marketing Tycoons Full Size Logo"
-                    className="w-full h-full max-h-[350px] object-contain"
-                    referrerPolicy="no-referrer"
-                  />
+                  {isHeroVideo ? (
+                    <video
+                      src={heroMediaUrl}
+                      className="w-full h-full max-h-[350px] object-contain rounded-2xl shadow-xl"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={heroMediaUrl}
+                      alt={activeHeroItem?.title || "Marketing Tycoons Full Size Logo"}
+                      className="w-full h-full max-h-[350px] object-contain"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
                 </div>
 
                 {/* Bottom Action HUD */}
@@ -189,17 +212,28 @@ export const Hero: React.FC = () => {
               /* DARK MODE: Seamless Brand Showcase without background or borders */
               <div className="relative w-full max-w-[460px] aspect-square flex flex-col items-center justify-center p-4 sm:p-6 group select-none">
                 
-                {/* Seamless Lion Emblem blended naturally with the pitch black canvas */}
+                {/* Seamless Lion Emblem / Dynamic Media blended naturally with the pitch black canvas */}
                 <div 
                   onClick={() => setShowFullLogoModal(true)}
                   className="relative w-full flex-1 flex items-center justify-center cursor-pointer group-hover:scale-105 transition-transform duration-700"
                 >
-                  <img
-                    src={settings.heroImageUrlDark || "/logo.png"}
-                    alt="Marketing Tycoons Emblem"
-                    className="w-full h-full max-h-[350px] object-contain"
-                    referrerPolicy="no-referrer"
-                  />
+                  {isHeroVideo ? (
+                    <video
+                      src={heroMediaUrl}
+                      className="w-full h-full max-h-[350px] object-contain rounded-2xl shadow-xl"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <img
+                      src={heroMediaUrl}
+                      alt={activeHeroItem?.title || "Marketing Tycoons Emblem"}
+                      className="w-full h-full max-h-[350px] object-contain"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
                 </div>
               </div>
             )}
@@ -241,14 +275,18 @@ export const Hero: React.FC = () => {
               </button>
             </div>
 
-            {/* High Definition Full Size Logo Display */}
+            {/* High Definition Full Size Media Display */}
             <div className="py-6 flex items-center justify-center">
               <div className="relative w-72 sm:w-84 aspect-square flex items-center justify-center p-4 rounded-2xl bg-gradient-to-b from-[#111820] to-[#000000] border border-[#D4AF37]/50 shadow-2xl">
-                <img
-                  src={isDark ? (settings.heroImageUrlDark || "/logo.png") : (settings.heroImageUrlLight || "/logo.png")}
-                  alt="Marketing Tycoons Full Size Logo"
-                  className="w-full h-full object-contain filter drop-shadow-[0_0_25px_rgba(212,175,55,0.5)]"
-                />
+                {isHeroVideo ? (
+                  <video src={heroMediaUrl} className="w-full h-full object-contain rounded-xl" controls autoPlay />
+                ) : (
+                  <img
+                    src={heroMediaUrl}
+                    alt={activeHeroItem?.title || "Marketing Tycoons Asset"}
+                    className="w-full h-full object-contain filter drop-shadow-[0_0_25px_rgba(212,175,55,0.5)]"
+                  />
+                )}
               </div>
             </div>
 

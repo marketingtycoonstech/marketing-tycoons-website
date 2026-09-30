@@ -5,16 +5,24 @@ import { ScrollReveal } from './common/ScrollReveal';
 import { Check, ArrowRight, Award, Users } from 'lucide-react';
 
 export const AboutSection: React.FC = () => {
-  const { settings } = useApp();
+  const { settings, getSectionContent } = useApp();
+  const isVideoEnabled = settings.aboutVideoEnabled !== false;
 
-  const aboutVideo =
+  const dynamicAboutItems = getSectionContent('home-about', true);
+  const activeAboutMedia = dynamicAboutItems[0];
+
+  const defaultVideo =
     settings.aboutVideoUrl && !settings.aboutVideoUrl.includes('mixkit')
       ? settings.aboutVideoUrl
       : '/videos/creative_office.mp4';
-  const aboutPoster =
+  const defaultPoster =
     settings.aboutVideoPoster ||
     'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=85';
-  const isVideoEnabled = settings.aboutVideoEnabled !== false;
+
+  const isVideo = activeAboutMedia ? activeAboutMedia.contentType === 'video' : (settings.aboutVideoEnabled !== false);
+  const mediaSrc = activeAboutMedia?.downloadURL || (isVideo ? defaultVideo : defaultPoster);
+  const captionText = activeAboutMedia?.caption || "Premier Agency Standards";
+  const headlineText = activeAboutMedia?.title || "Where Creative Craft Meets Relentless Technical Execution";
 
   return (
     <section
@@ -36,15 +44,15 @@ export const AboutSection: React.FC = () => {
                 <div className="relative rounded-3xl overflow-hidden border border-black/10 dark:border-[rgba(212,175,55,0.25)] shadow-xl dark:shadow-[0_25px_60px_rgba(0,0,0,0.95)] group h-[440px] sm:h-[500px] bg-black">
                   {isVideoEnabled ? (
                     <VideoBackground
-                      videoSrc={aboutVideo}
-                      poster={aboutPoster}
+                      videoSrc={defaultVideo}
+                      poster={defaultPoster}
                       overlay="bg-gradient-to-t from-black/90 via-black/30 to-black/60"
                       className="group-hover:scale-105 transition-transform duration-1000 ease-out"
                     />
                   ) : (
                     <div className="absolute inset-0">
                       <img
-                        src={aboutPoster}
+                        src={defaultPoster}
                         alt="Creative Studio Workspace"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-out"
                       />

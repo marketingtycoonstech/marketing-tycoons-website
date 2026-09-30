@@ -53,6 +53,8 @@ import {
   Film
 } from 'lucide-react';
 import { SeoAnalyticsPanel } from './SeoAnalyticsPanel';
+import { WebsiteContentManager } from './WebsiteContentManager';
+import { ThemeCustomizer } from './ThemeCustomizer';
 import { saveVideoToVault, getAllVaultVideos, deleteVideoFromVault, StoredVideoItem } from '../../utils/videoStorage';
 import {
   PortfolioProject,
@@ -141,7 +143,8 @@ export const AdminDashboard: React.FC = () => {
     updateUserRole,
     updateUserStatus,
     deleteUser,
-    logActivity
+    logActivity,
+    dynamicContent
   } = useApp();
 
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -162,6 +165,7 @@ export const AdminDashboard: React.FC = () => {
 
   const navItems = [
     { id: 'overview', label: 'Dashboard Overview', icon: LayoutDashboard },
+    { id: 'content-manager', label: 'Website Content Manager', icon: Sparkles, badge: dynamicContent.length },
     { id: 'seo-analytics', label: 'SEO & Performance Analytics', icon: TrendingUp, badge: 'Live' },
     { id: 'settings', label: 'Website Settings', icon: Settings },
     { id: 'pages', label: 'Website Pages CMS', icon: Sliders, badge: pages.length },
@@ -807,6 +811,11 @@ export const AdminDashboard: React.FC = () => {
               </div>
             )}
 
+            {/* DYNAMIC WEBSITE CONTENT MANAGER (Firebase Storage & Firestore CMS) */}
+            {activeAdminTab === 'content-manager' && (
+              <WebsiteContentManager />
+            )}
+
             {/* 2. SECTION: WEBSITE SETTINGS */}
             {activeAdminTab === 'settings' && (
               <div className="space-y-6 animate-in fade-in duration-200">
@@ -832,15 +841,119 @@ export const AdminDashboard: React.FC = () => {
                   <div className="p-6 rounded-2xl bg-[#121319] border border-gray-800 space-y-4">
                     <h3 className="text-sm font-bold uppercase tracking-wider text-[#d4af37]">Brand Details</h3>
                     
-                    {/* Official Company Logo Display */}
-                    <div className="p-4 rounded-xl bg-black/60 border border-gray-800 flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden border border-[#d4af37]/60 bg-black shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.3)]">
-                        <img src="/logo.png" alt="Company Logo" className="w-full h-full object-cover" />
+                    {/* Official Company Logo Studio */}
+                    <div className="p-4 rounded-xl bg-black/60 border border-gray-800 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-xs font-bold text-white flex items-center gap-2">
+                            <span>Official Website Logo</span>
+                            <span className="px-1.5 py-0.5 rounded text-[9px] bg-emerald-500/20 text-emerald-400 font-bold uppercase tracking-wider">
+                              Worldwide Live Sync
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-400">Header, footer aur poori website me jo official brand logo show hota hai.</p>
+                        </div>
+                        {localSettings.logoUrl && localSettings.logoUrl !== '/logo.png' && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLocalSettings(prev => ({ ...prev, logoUrl: '/logo.png' }));
+                              updateSettings({ logoUrl: '/logo.png' });
+                              showNotification('Logo reset to default /logo.png');
+                            }}
+                            className="text-[10px] text-gray-400 hover:text-white flex items-center gap-1 bg-gray-800 hover:bg-gray-700 px-2 py-1 rounded cursor-pointer transition-colors"
+                          >
+                            <RotateCcw className="w-3 h-3" />
+                            <span>Reset Logo</span>
+                          </button>
+                        )}
                       </div>
-                      <div>
-                        <div className="text-xs font-bold text-white">Official Brand Logo Emblem</div>
-                        <p className="text-[11px] text-gray-400">Metallic MT crest with wolf and lion heads.</p>
-                        <span className="text-[10px] text-[#d4af37] font-mono">/logo.png (Active)</span>
+
+                      <div className="flex flex-col sm:flex-row items-center gap-4">
+                        <label className="w-20 h-20 rounded-xl overflow-hidden border-2 border-dashed border-[#d4af37]/60 hover:border-[#d4af37] bg-black shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.3)] cursor-pointer group relative flex items-center justify-center transition-all">
+                          <img
+                            src={localSettings.logoUrl || '/logo.png'}
+                            alt="Company Logo"
+                            className="w-full h-full object-cover group-hover:opacity-70 transition-opacity"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/logo.png';
+                            }}
+                          />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center gap-1 transition-opacity text-white text-[10px] font-bold">
+                            <Upload className="w-4 h-4 text-[#d4af37]" />
+                            <span>Change</span>
+                          </div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              const reader = new FileReader();
+                              reader.onload = (ev) => {
+                                const url = ev.target?.result as string;
+                                if (url) {
+                                  setLocalSettings(prev => ({ ...prev, logoUrl: url }));
+                                  updateSettings({ logoUrl: url });
+                                  showNotification('New logo uploaded & synced worldwide!');
+                                }
+                              };
+                              reader.readAsDataURL(file);
+                            }}
+                          />
+                        </label>
+
+                        <div className="flex-1 w-full space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#d4af37]/15 hover:bg-[#d4af37]/25 border border-[#d4af37]/40 text-[#d4af37] text-xs font-bold cursor-pointer transition-colors">
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Upload New Logo (From PC)</span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (!file) return;
+                                  const reader = new FileReader();
+                                  reader.onload = (ev) => {
+                                    const url = ev.target?.result as string;
+                                    if (url) {
+                                      setLocalSettings(prev => ({ ...prev, logoUrl: url }));
+                                      updateSettings({ logoUrl: url });
+                                      showNotification('New logo uploaded & synced worldwide!');
+                                    }
+                                  };
+                                  reader.readAsDataURL(file);
+                                }}
+                              />
+                            </label>
+                            <span className="text-[10px] text-gray-500 font-mono">
+                              {localSettings.logoUrl && localSettings.logoUrl.startsWith('data:') ? 'Custom Image Active' : (localSettings.logoUrl || '/logo.png')}
+                            </span>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={localSettings.logoUrl || ''}
+                              placeholder="Or paste Logo Image URL (https://... or /logo.png)"
+                              onChange={e => setLocalSettings({ ...localSettings, logoUrl: e.target.value })}
+                              className="flex-1 px-3 py-1.5 rounded-lg bg-[#090a0d] border border-gray-700 text-xs text-white focus:border-[#d4af37] focus:outline-none"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                updateSettings({ logoUrl: localSettings.logoUrl });
+                                showNotification('Logo URL saved and synced to Firestore!');
+                              }}
+                              className="px-3.5 py-1.5 rounded-lg bg-gray-800 hover:bg-[#d4af37] hover:text-black text-xs font-bold text-gray-300 transition-colors cursor-pointer"
+                            >
+                              Apply
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -3275,36 +3388,9 @@ export const AdminDashboard: React.FC = () => {
               </div>
             )}
 
-            {/* 9. SECTION: THEME SETTINGS */}
+            {/* 9. SECTION: THEME CUSTOMIZER */}
             {activeAdminTab === 'theme' && (
-              <div className="space-y-6 animate-in fade-in duration-200">
-                <div>
-                  <h2 className="font-display text-2xl font-bold text-white">Theme & Visual Styling</h2>
-                  <p className="text-xs text-gray-400">Marketing Tycoons brand styling rules and color palette overview.</p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  <div className="p-5 rounded-2xl bg-[#090a0d] border border-[#d4af37]/40 space-y-2">
-                    <label className="text-xs uppercase text-[#d4af37] font-bold block">Primary Color</label>
-                    <input type="color" value={settings.primaryColor || '#D4AF37'} onChange={e => updateSettings({ ...settings, primaryColor: e.target.value })} className="w-full h-10 rounded-lg cursor-pointer" />
-                    <div className="text-[11px] text-gray-400 font-mono">{settings.primaryColor || '#D4AF37'}</div>
-                  </div>
-
-                  <div className="p-5 rounded-2xl bg-[#121319] border border-gray-800 space-y-2">
-                    <label className="text-xs uppercase text-gray-300 font-bold block">Accent Color</label>
-                    <input type="color" value={settings.accentColor || '#AA820A'} onChange={e => updateSettings({ ...settings, accentColor: e.target.value })} className="w-full h-10 rounded-lg cursor-pointer" />
-                    <div className="text-[11px] text-gray-400 font-mono">{settings.accentColor || '#AA820A'}</div>
-                  </div>
-
-                  <div className="p-5 rounded-2xl bg-[#121319] border border-gray-800 space-y-2">
-                    <span className="text-xs uppercase text-gray-300 font-bold">Typography System</span>
-                    <div className="h-10 rounded-lg bg-black/60 flex items-center px-3 text-xs font-display font-bold text-white">
-                      Syne + Plus Jakarta Sans
-                    </div>
-                    <div className="text-[11px] text-gray-400">High luxury editorial pairing</div>
-                  </div>
-                </div>
-              </div>
+              <ThemeCustomizer />
             )}
 
             {/* 10. SECTION: STATISTICS */}

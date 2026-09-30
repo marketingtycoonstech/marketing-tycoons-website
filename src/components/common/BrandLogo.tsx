@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useApp } from '../../context/AppContext';
 
 interface BrandLogoProps {
   size?: 'sm' | 'md' | 'lg' | 'xl';
@@ -6,6 +7,7 @@ interface BrandLogoProps {
   className?: string;
   title?: string;
   onClick?: () => void;
+  customLogoUrl?: string;
 }
 
 export const BrandLogo: React.FC<BrandLogoProps> = ({
@@ -13,9 +15,13 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
   showText = true,
   className = '',
   title,
-  onClick
+  onClick,
+  customLogoUrl
 }) => {
+  const { settings } = useApp();
   const [imageError, setImageError] = useState(false);
+
+  const activeLogo = customLogoUrl || settings.logoUrl || '/logo.png';
 
   const iconSizes = {
     sm: 'w-8 h-8',
@@ -36,8 +42,9 @@ export const BrandLogo: React.FC<BrandLogoProps> = ({
       >
         {!imageError ? (
           <img
-            src="/logo.png"
-            alt="Marketing Tycoons"
+            key={activeLogo}
+            src={activeLogo}
+            alt={settings.companyName || "Marketing Tycoons"}
             className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
             onError={() => setImageError(true)}
             referrerPolicy="no-referrer"

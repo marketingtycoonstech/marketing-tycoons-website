@@ -275,6 +275,26 @@
       },
       "required": ["id", "name", "email"]
     },
+    "content_items": {
+      "title": "Dynamic Website Content Items",
+      "description": "Dynamic section-based media, images, videos, banners and gallery assets managed by CEO admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sectionId": { "type": "string" },
+        "contentType": { "type": "string", "enum": ["image", "video", "banner", "gallery", "logo", "hero", "other"] },
+        "storagePath": { "type": "string" },
+        "downloadURL": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "caption": { "type": "string" },
+        "order": { "type": "number" },
+        "isPublished": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "sectionId", "contentType", "downloadURL", "title", "isPublished"]
+    },
     "test": {
       "title": "Connection Test",
       "description": "Health check document for connection verification",
@@ -285,6 +305,10 @@
     }
   },
   "firestore": {
+    "/content_items/{itemId}": {
+      "schema": "content_items",
+      "description": "Dynamic section-based media, images, videos and banners"
+    },
     "/users/{userId}": {
       "schema": "users",
       "description": "User profiles and credentials"

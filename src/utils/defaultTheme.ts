@@ -1,0 +1,142 @@
+import { SiteThemeConfig, ModeThemePalette, HeadingThemeConfig } from '../types';
+
+const defaultHeading: HeadingThemeConfig = {
+  textColor: '#FFFFFF',
+  accentColor: '#d4af37',
+  fontWeight: '700',
+  letterSpacing: '-0.02em'
+};
+
+const defaultLightHeading: HeadingThemeConfig = {
+  textColor: '#111111',
+  accentColor: '#d4af37',
+  fontWeight: '700',
+  letterSpacing: '-0.02em'
+};
+
+export const DEFAULT_DARK_PALETTE: ModeThemePalette = {
+  bgPrimary: '#000000',
+  bgSecondary: '#0A0A0A',
+  bgSection: '#050505',
+  bgCard: '#0A0A0A',
+  bgTile: '#0A0A0A',
+  bgHeader: '#000000',
+  bgFooter: '#000000',
+  bgNav: '#000000',
+  headingColor: '#FFFFFF',
+  textMain: '#D1D5DB',
+  textSecondary: '#9CA3AF',
+  textMuted: '#6B7280',
+  buttonBg: '#d4af37',
+  buttonText: '#000000',
+  buttonHover: '#DFAB40',
+  borderColor: 'rgba(212, 175, 55, 0.25)',
+  iconColor: '#d4af37',
+  linkColor: '#d4af37',
+  linkHoverColor: '#F6C453',
+  accentColor: '#d4af37',
+  highlightColor: '#DFAB40',
+  inputBg: '#090a0d',
+  inputBorder: 'rgba(212, 175, 55, 0.4)',
+  inputText: '#FFFFFF',
+  inputPlaceholder: '#6B7280',
+  modalBg: '#121319',
+
+  h1: { ...defaultHeading, fontSize: '3rem' },
+  h2: { ...defaultHeading, fontSize: '2.25rem' },
+  h3: { ...defaultHeading, fontSize: '1.75rem' },
+  h4: { ...defaultHeading, fontSize: '1.25rem' },
+  h5: { ...defaultHeading, fontSize: '1rem' },
+  h6: { ...defaultHeading, fontSize: '0.875rem' },
+
+  pageTitleColor: '#FFFFFF',
+  sectionTitleColor: '#FFFFFF',
+  cardTitleColor: '#FFFFFF',
+  serviceTitleColor: '#FFFFFF',
+  navTextColor: '#D1D5DB',
+  bodyTextColor: '#D1D5DB',
+  descTextColor: '#9CA3AF',
+  labelColor: '#D1D5DB',
+  captionColor: '#d4af37',
+
+  cardBg: '#0A0A0A',
+  tileBg: '#0A0A0A',
+  cardBorder: 'rgba(212, 175, 55, 0.25)',
+  tileBorder: 'rgba(212, 175, 55, 0.25)',
+  cardTitleColorToken: '#FFFFFF',
+  cardTextColorToken: '#D1D5DB',
+  cardIconColor: '#d4af37',
+  cardHoverBg: '#121319',
+  cardHoverBorder: 'rgba(212, 175, 55, 0.6)',
+  cardHoverText: '#FFFFFF',
+  cardShadow: '0 20px 40px rgba(0,0,0,0.8)',
+  cardHighlight: '#d4af37'
+};
+
+export const DEFAULT_LIGHT_PALETTE: ModeThemePalette = {
+  bgPrimary: '#F8F7F3',
+  bgSecondary: '#FFFFFF',
+  bgSection: '#F3F1EB',
+  bgCard: '#FFFFFF',
+  bgTile: '#FFFFFF',
+  bgHeader: '#F8F7F3',
+  bgFooter: '#F8F7F3',
+  bgNav: '#F8F7F3',
+  headingColor: '#111111',
+  textMain: '#333333',
+  textSecondary: '#555555',
+  textMuted: '#777777',
+  buttonBg: '#111111',
+  buttonText: '#FFFFFF',
+  buttonHover: '#d4af37',
+  borderColor: 'rgba(0, 0, 0, 0.12)',
+  iconColor: '#d4af37',
+  linkColor: '#111111',
+  linkHoverColor: '#d4af37',
+  accentColor: '#d4af37',
+  highlightColor: '#DFAB40',
+  inputBg: '#FFFFFF',
+  inputBorder: 'rgba(0, 0, 0, 0.2)',
+  inputText: '#111111',
+  inputPlaceholder: '#888888',
+  modalBg: '#FFFFFF',
+
+  h1: { ...defaultLightHeading, fontSize: '3rem' },
+  h2: { ...defaultLightHeading, fontSize: '2.25rem' },
+  h3: { ...defaultLightHeading, fontSize: '1.75rem' },
+  h4: { ...defaultLightHeading, fontSize: '1.25rem' },
+  h5: { ...defaultLightHeading, fontSize: '1rem' },
+  h6: { ...defaultLightHeading, fontSize: '0.875rem' },
+
+  pageTitleColor: '#111111',
+  sectionTitleColor: '#111111',
+  cardTitleColor: '#111111',
+  serviceTitleColor: '#111111',
+  navTextColor: '#333333',
+  bodyTextColor: '#333333',
+  descTextColor: '#555555',
+  labelColor: '#333333',
+  captionColor: '#d4af37',
+
+  cardBg: '#FFFFFF',
+  tileBg: '#FFFFFF',
+  cardBorder: 'rgba(0, 0, 0, 0.1)',
+  tileBorder: 'rgba(0, 0, 0, 0.1)',
+  cardTitleColorToken: '#111111',
+  cardTextColorToken: '#333333',
+  cardIconColor: '#d4af37',
+  cardHoverBg: '#FAFAF8',
+  cardHoverBorder: 'rgba(212, 175, 55, 0.5)',
+  cardHoverText: '#111111',
+  cardShadow: '0 10px 30px rgba(0,0,0,0.08)',
+  cardHighlight: '#d4af37'
+};
+
+export const DEFAULT_SITE_THEME: SiteThemeConfig = {
+  dark: DEFAULT_DARK_PALETTE,
+  light: DEFAULT_LIGHT_PALETTE,
+  version: 1,
+  updatedAt: new Date().toISOString(),
+  updatedBy: 'marketingtycoons.tech@gmail.com',
+  isPublished: true
+};

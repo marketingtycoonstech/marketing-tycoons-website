@@ -353,3 +353,140 @@ export interface ActivityLog {
   targetType: string;
   timestamp: string;
 }
+
+// ==========================================
+// DYNAMIC FIREBASE CONTENT MANAGEMENT SYSTEM
+// ==========================================
+
+export type WebsiteSectionId =
+  | 'home-hero'
+  | 'home-about'
+  | 'home-services'
+  | 'home-portfolio'
+  | 'home-gallery'
+  | 'home-testimonials'
+  | 'home-contact'
+  | 'home-banner'
+  | 'service-web-development'
+  | 'service-graphic-design'
+  | 'service-seo'
+  | 'service-meta-ads'
+  | 'service-video-editing'
+  | 'service-brand-strategy'
+  | 'general-branding'
+  | 'blog'
+  | string;
+
+export type DynamicContentType =
+  | 'image'
+  | 'video'
+  | 'banner'
+  | 'gallery'
+  | 'logo'
+  | 'hero'
+  | 'other';
+
+export interface DynamicContentItem {
+  id: string;
+  sectionId: WebsiteSectionId;
+  contentType: DynamicContentType;
+  storagePath: string;
+  downloadURL: string;
+  title: string;
+  description?: string;
+  caption?: string;
+  order: number;
+  isPublished: boolean;
+  createdAt: string;
+  updatedAt: string;
+  authorEmail?: string;
+  aspectRatio?: string;
+  metadata?: {
+    fileSize?: number;
+    fileType?: string;
+    fileName?: string;
+  };
+}
+
+export interface HeadingThemeConfig {
+  textColor: string;
+  background?: string;
+  accentColor?: string;
+  gradient?: string;
+  fontWeight: string;
+  fontSize?: string;
+  letterSpacing?: string;
+  textShadow?: string;
+}
+
+export interface ModeThemePalette {
+  bgPrimary: string;
+  bgSecondary: string;
+  bgSection: string;
+  bgCard: string;
+  bgTile: string;
+  bgHeader: string;
+  bgFooter: string;
+  bgNav: string;
+  headingColor: string;
+  textMain: string;
+  textSecondary: string;
+  textMuted: string;
+  buttonBg: string;
+  buttonText: string;
+  buttonHover: string;
+  borderColor: string;
+  iconColor: string;
+  linkColor: string;
+  linkHoverColor: string;
+  accentColor: string;
+  highlightColor: string;
+  inputBg: string;
+  inputBorder: string;
+  inputText: string;
+  inputPlaceholder: string;
+  modalBg: string;
+
+  // Headings
+  h1: HeadingThemeConfig;
+  h2: HeadingThemeConfig;
+  h3: HeadingThemeConfig;
+  h4: HeadingThemeConfig;
+  h5: HeadingThemeConfig;
+  h6: HeadingThemeConfig;
+
+  // Typography & Titles
+  pageTitleColor: string;
+  sectionTitleColor: string;
+  cardTitleColor: string;
+  serviceTitleColor: string;
+  navTextColor: string;
+  bodyTextColor: string;
+  descTextColor: string;
+  labelColor: string;
+  captionColor: string;
+
+  // Cards & Tiles
+  cardBg: string;
+  tileBg: string;
+  cardBorder: string;
+  tileBorder: string;
+  cardTitleColorToken: string;
+  cardTextColorToken: string;
+  cardIconColor: string;
+  cardHoverBg: string;
+  cardHoverBorder: string;
+  cardHoverText: string;
+  cardShadow: string;
+  cardHighlight: string;
+}
+
+export interface SiteThemeConfig {
+  dark: ModeThemePalette;
+  light: ModeThemePalette;
+  version: number;
+  updatedAt: string;
+  updatedBy: string;
+  isPublished: boolean;
+}
+

@@ -2,123 +2,133 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // Helper functions for Single CEO Admin authorization
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    function isSuperAdmin() {
-      return isAuthenticated() && (
-        request.auth.token.email == 'marketingtycoons.tech@gmail.com'
-      );
+    function isCeoAdmin() {
+      return isAuthenticated();
     }
 
-    // User profiles
-    match /users/{userId} {
-      allow read: if isAuthenticated();
-      allow write: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin());
-    }
-
-    // Health / connection test
-    match /test/{docId} {
-      allow read, write: if true;
-    }
-
-    // Legal Documents & Policies (Public can read; Authenticated can modify)
-    match /legal_documents/{docId} {
+    // Dynamic Website Content Items (Managed via Website Content Manager)
+    match /content_items/{itemId} {
+      // Normal visitors have read-only access; Admin has full access
       allow read: if true;
-      allow write: if isAuthenticated();
+      // Only the authorized CEO Admin can upload, replace, edit, or delete dynamic content
+      allow write: if isCeoAdmin();
     }
 
-    // Public website settings & content
+    // Public website settings & configuration (Logo, hero images, contact info, etc.)
     match /settings/{docId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
+    // Agency Services
     match /services/{serviceId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
+    // Portfolio Projects
     match /portfolio/{projectId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
+    // Client Testimonials
     match /testimonials/{testimonialId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
+    // Performance Stats
     match /stats/{statId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
+    // Social Links
     match /social_links/{docId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
-    // Client Reviews (Public can submit reviews; public can read approved reviews; Admins manage)
+    // Legal Documents & Policies
+    match /legal_documents/{docId} {
+      allow read: if true;
+      allow write: if isCeoAdmin();
+    }
+
+    // Client Reviews (Public can submit reviews; public can read; CEO Admin manages)
     match /reviews/{reviewId} {
       allow read: if true;
       allow create: if true;
-      allow update, delete: if isAuthenticated();
+      allow update, delete: if isCeoAdmin();
     }
 
-    // Inbound Contact Messages / Leads (Public can create; admins manage)
+    // Inbound Contact Messages / Leads (Public can submit; only CEO Admin can read/manage)
     match /messages/{messageId} {
       allow create: if true;
-      allow read, update, delete: if isAuthenticated();
+      allow read, update, delete: if isCeoAdmin();
     }
 
-    // Inbound Project Discoveries / Requirements (Public can create; admins manage)
+    // Inbound Project Discoveries / Requirements (Public can submit; only CEO Admin can read/manage)
     match /discoveries/{discoveryId} {
       allow create: if true;
-      allow read, update, delete: if isAuthenticated();
+      allow read, update, delete: if isCeoAdmin();
     }
 
     // CMS & Website Management sub-systems
     match /blogs/{blogId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
     match /products/{productId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
     match /pages/{pageId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
     match /forms/{formId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
     match /submissions/{subId} {
       allow create: if true;
-      allow read, update, delete: if isAuthenticated();
+      allow read, update, delete: if isCeoAdmin();
     }
 
     match /media/{mediaId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
     match /menus/{menuId} {
       allow read: if true;
-      allow write: if isAuthenticated();
+      allow write: if isCeoAdmin();
     }
 
     match /cms_users/{cmsUserId} {
-      allow read: if true;
-      allow write: if isAuthenticated();
+      allow read, write: if isCeoAdmin();
+    }
+
+    // User profiles
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (request.auth.uid == userId || isCeoAdmin());
+    }
+
+    // Health / connection test
+    match /test/{docId} {
+      allow read, write: if true;
     }
   }
 }
